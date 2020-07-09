@@ -1,0 +1,85 @@
+#########################################################
+# Project Settings
+#########################################################
+# The name of database
+proj_name = "test"
+
+# Absolute path of fasta file for tRNAs which was created by tRNA_db_preparing
+trna_fa = "/home/hqyone/python_code/testrepo/new_tools/tRNAExplorer/test_data/ChIP/hg38_tRNA_60.fa"
+
+# Absolute path of bed file for tRNA annotations which was created by tRNA_db_preparing
+trna_anno_file = "/home/hqyone/python_code/testrepo/new_tools/tRNAExplorer/test_data/ChIP/hg38_tRNA_60.bed"
+
+# Absolute path of sample information
+sample_tsv = "/home/hqyone/python_code/testrepo/new_tools/tRNAExplorerII/samples"
+
+# The directory storing FASTQ files (Input Directory)
+fastq_dir = "/home/server2/data2/sunzf/bam"
+
+# The directory of output files (Out Directory)
+out_dir = "/home/hqyone/python_code/testrepo/new_tools/tRNAExplorerII/output"
+
+# The length of UTRs, default = 60', should match utr length in  trna_anno_file
+# url_len = 60
+
+#########################################################
+# Trimmomatic
+#########################################################
+# Whether do trimming sequences 0 means "no" others means "yes"
+# t_do=1
+
+# Absolute path to Trimmomatic jar file
+t_path="/home/hqyone/python_code/testrepo/new_tools/Trimmomatic-0.36/trimmomatic-0.36.jar"
+
+# phred cutoff to trim sequence
+# t_phred=33
+
+# Cut bases off the start of a read, if below a threshold quality
+# t_leading=3
+
+# Cut bases off the end of a read, if below a threshold quality
+# t_tailing=3
+
+# Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold.
+# t_slidingwindow="4:15"
+
+# Drop the read if it is below a specified length
+# t_minlen=18
+
+# The number of thread to run trimmomatic
+# t_threads=2
+
+
+
+#########################################################
+# Read Filtering
+#########################################################
+# remove reads, if it contains any base below a threshold quality
+# min_read_qscore = 20
+
+# remove reads, if the read appears less than certain times in the FASTQ file
+# min_reads_count = 50
+
+#########################################################
+# BLASTN settings
+#########################################################
+# absolute path to blastn execute file
+blastn = "/usr/bin/blastn"
+
+# absolute path to makeblastdb execute file
+mkdb = "/usr/bin/makeblastdb"
+
+# The cutoff to report the match
+# blastn_e_cutoff = 0.001
+
+# The maximum number of matched hits
+# blastn_max_hit_num = 40
+
+#########################################################
+# TRF analyiss settinss
+#########################################################
+# The minmum of tRF length
+# min_trf_len = 20
+
+# The max mismatch allow for valid matches
+# blastn_max_mismatch = 2
