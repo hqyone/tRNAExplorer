@@ -1,6 +1,6 @@
 # tRNAExplorer (v1.0)
 ## 1. Introduction
-A Python pipeline optimized for analysing tRF (tRNA-derived fragments) profiles of multiple samples using small-RNA-seq data.
+tRNAExplorer is a Python pipeline optimized for analysing tRF (tRNA-derived fragments) profiles of multiple samples using small-RNA-seq data.
 * Major functions:
     * Categorize and quantify tRNA/tRFs.
     * Discover novel tRNA cleavage sites.
@@ -35,12 +35,12 @@ A Python pipeline optimized for analysing tRF (tRNA-derived fragments) profiles 
 * Get help information  `python <root path>/tRNAExploer.py -h`
 * Run with customized data: `python <root path>/tRNAExploer.py -n <proj_name> -f <trna_fa> -a <trna_anno_file> -s <sample tsv> -i <fastq_dir> -o <out_dir>`
 * Run with advanced settings using config file: 
-    *   Modify config.txt  (taken [config.txt][config.txt] in root directory as template)
+    *   Modify config.txt  (taken [config.txt](config.txt) in root directory as template)
     *   Run `python <root path>/tRNAExplorer.py -c config.txt`
-    *   Details about tRNAExploer.py can be found [here] [./help/tRNAExplorer.md]
+    *   Details about tRNAExploer.py can be found [here](./help/tRNAExplorer_manual.md)
 * Make Customized tRNA Databases
     *   Run `python tRNA_db_maker.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <offset> --no_mit <1/else> --no_pseu <1/else> --minq <number>`
-    *   Details about tRNA_db_maker.py can be found [here] [./help/tRNA_db_maker.md]
+    *   Details about tRNA_db_maker.py can be found [here](./help/tRNA_db_maker_manual.md)
 
 ## 5. Mapping Strategy
 tRNAExplorer uses BLASTN as the engine to map small-RNA-Seq reads to a hybrid tRNA sequences database containing four major style of tRNA gene transcripts:
@@ -67,6 +67,14 @@ Processing steps are summarized in Figure 2
 ![alt text](./images/architecture.png)
 Figure 2. The architecture of tRNAExplorer. 
 
-## License
-Copyright (c) 2020 Quanyuan He. Released under GPLv3. See
-[LICENSE.txt][license] for details.
+## 7. Visualization
+tRNAExplorer will generate several tsv files. 
+The program design a jupyter notebook [Report_creator.ipynb](./visualization/Report_creater.ipynb) to analysis and visualization them.
+This notebook is self-explained.
+The user can also do their own analysis based on these tsv files.
+
+## 8. License
+Copyright (c) 2020 Quanyuan He Ph.D, 
+School of Medicine, Hunan Normal University.
+Released under GPLv3. See
+[license](LICENSE.txt) for details.
