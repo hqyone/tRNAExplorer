@@ -36,126 +36,138 @@ def rseq_blastn_pipeline(proj_name,
                          min_trf_len =20,
                          trim_seq=1,
                          ):
-    print("Begin the tRNA processing pipeline with fastq....")
-    # Read sample_tsv
-    # Load information about tRNAs
-    tRNAFile = open(trna_anno_bed, 'r')
-    tRNA_dic = {}
-    for line in tRNAFile:
-        if not line.startswith("#"):
-            t = tRNA()
-            t.LoadStr(line.strip())
-            tRNA_dic[t.name] = t
-    tRNAFile.close()
+    try:
+        print("Begin the tRNA processing pipeline with fastq....")
+        # Read sample_tsv
+        # Load information about tRNAs
+        if not os.path.isfile(trna_anno_bed):
+            print("The tRNA annotation bed file :"+trna_anno_bed+" is not exist. Abort!")
+            return -1
+        tRNAFile = open(trna_anno_bed, 'r')
+        tRNA_dic = {}
+        for line in tRNAFile:
+            if not line.startswith("#"):
+                t = tRNA()
+                t.LoadStr(line.strip())
+                tRNA_dic[t.name] = t
+        tRNAFile.close()
 
-    # Load sample information
-    sample_dic = {}
-    SAMPLES = open(sample_tsv, 'r')
-    for line in SAMPLES:
-        if not line.startswith("#"):
-            contents = line.strip().split("\t")
-            if len(contents) > 1:
-                sample_dic[contents[0]] = contents[1]
-    SAMPLES.close()
+        # Load sample information
+        sample_dic = {}
+        if not os.path.isfile(sample_tsv):
+            print("The sample file :"+sample_tsv+" is not exist. Abort!")
+            return -1
+        SAMPLES = open(sample_tsv, 'r')
+        for line in SAMPLES:
+            if not line.startswith("#"):
+                contents = line.strip().split("\t")
+                if len(contents) > 1:
+                    sample_dic[contents[0]] = contents[1]
+        SAMPLES.close()
 
-    loginfor = {}
-    # Run fastq file one by one
-    ext=".fastq"
-    fastq_files = share.getExtFileList(fastq_dir, ".fastq")
-    if len(fastq_files)==0:
-        fastq_files = share.getExtFileList(fastq_dir, ".fq")
-        ext = ".fq"
+        loginfor = {}
+        # Run fastq file one by one
+        ext=".fastq"
+        fastq_files = share.getExtFileList(fastq_dir, ".fastq")
+        if len(fastq_files)==0:
+            fastq_files = share.getExtFileList(fastq_dir, ".fq")
+            ext = ".fq"
 
-    for f in fastq_files:
-        s_id = os.path.basename(f).replace(".fastq", "").replace(".fq", "")
-        fastq_dir = os.path.dirname(os.path.abspath(f))
-        if s_id in sample_dic:
-            start_time = time.time()
-            end_time = time.time()
-            processing_time = 0
-            raw_fastq = fastq_dir + "/" + s_id + ext
-            cmd_bash = fastq_dir + "/" + s_id + "_blast.sh"
-            CMD_FILE = open(cmd_bash, "w")
-            trimmed_fastq = raw_fastq
-
-            trim_start_time = time.time()
-            if trim_seq!=0:
-                # Trimed fastq
-                trimmed_fastq = fastq_dir + "/" + s_id + "_trimmed"+ext
-                T = Trimmomatic(t_path)
-                trimmomatics_cmd = T.TrimSE(raw_fastq, trimmed_fastq,adapter_fa=t_adapter,phred=t_phred,LEADING=t_leading, TRAILING=t_tailing, SLIDINGWINDOW=t_slidingwindow,MINLEN=t_minlen,threads=t_threads)
-
-                CMD_FILE.write(trimmomatics_cmd + "\n")
-                CMD_FILE.close()
-                process = subprocess.Popen("bash " + cmd_bash, shell=True, stdout=subprocess.PIPE)
-                process.wait()
-            trim_end_time = time.time()
-
-            filter_start_time = time.time()
-            #Removed redundant read Filter and get the read number file
-            filtered_fasta = fastq_dir + "/" + s_id + "_filtered.fa"
-            num_dic_txt = fastq_dir + "/" + s_id + "_num_dic.txt"
-            static_infor = share.filterFastQ2FastA(trimmed_fastq, filtered_fasta, num_dic_txt,qcutoff=min_read_qscore, num_cutoff=min_reads_count)
-            # delete trmmed FASTQ to save space
-            if os.path.exists(trimmed_fastq):
-                os.remove(trimmed_fastq)
-            print(static_infor)
-            loginfor[s_id]=static_infor
-            filter_end_time = time.time()
-
-            # Do BLASTN
-            blastn_start_time = time.time()
-            blast_out_file = blast_tools.RunBLASTN(blastn, mkdb, s_id, trna_fa, filtered_fasta, out_dir,eval=blastn_e_cutoff,hit_number=blastn_max_hit_num)
-            #blast_out_file = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/output/SRR1836126_1_tRNA_blast_out.tab"
-            # Analysis BLASTN result
-            if blast_out_file != "":
-                print("BLASTN Successfully, processing BLAST out tab file: " + blast_out_file)
-                tRNA_reads_count_file = out_dir + "/" + s_id + "_" + proj_name + "_count.tab"
-                tRNA_reads_hit_file = out_dir + "/" + s_id + "_" + proj_name + "_hit.tab"
-                blast_tools.AnalysisBlastOut2(blast_out_file, num_dic_txt, tRNA_dic,
-                                            tRNA_reads_count_file, tRNA_reads_hit_file, url_len,tRF_Min_Length=min_trf_len,max_mismatch=blastn_max_mismatch)
-                print("Hit file :"+tRNA_reads_hit_file)
+        for f in fastq_files:
+            s_id = os.path.basename(f).replace(".fastq", "").replace(".fq", "")
+            fastq_dir = os.path.dirname(os.path.abspath(f))
+            if s_id in sample_dic:
+                start_time = time.time()
                 end_time = time.time()
-                processing_time = end_time - start_time
-                print("Processing time :" + str(round(processing_time,3))+" Secs")
-            else:
-                print("Something wrong while blastn " + s_id)
-            blastn_end_time = time.time()
+                processing_time = 0
+                raw_fastq = fastq_dir + "/" + s_id + ext
+                cmd_bash = fastq_dir + "/" + s_id + "_blast.sh"
+                CMD_FILE = open(cmd_bash, "w")
+                trimmed_fastq = raw_fastq
 
-            loginfor[s_id]["start_time"]=time.asctime( time.localtime(start_time))
-            loginfor[s_id]["end_time"] = time.asctime( time.localtime(end_time))
-            loginfor[s_id]["processing_time"] = str(int(processing_time))
-            loginfor[s_id]["trim_time"] = str(int(trim_end_time-trim_start_time))
-            loginfor[s_id]["filter_time"] = str(int(filter_end_time-filter_start_time))
-            loginfor[s_id]["blastn_time"] = str(int(blastn_end_time - blastn_start_time))
+                trim_start_time = time.time()
+                if trim_seq!=0:
+                    # Trimed fastq
+                    trimmed_fastq = fastq_dir + "/" + s_id + "_trimmed"+ext
+                    T = Trimmomatic(t_path)
+                    trimmomatics_cmd = T.TrimSE(raw_fastq, trimmed_fastq,adapter_fa=t_adapter,phred=t_phred,LEADING=t_leading, TRAILING=t_tailing, SLIDINGWINDOW=t_slidingwindow,MINLEN=t_minlen,threads=t_threads)
+
+                    CMD_FILE.write(trimmomatics_cmd + "\n")
+                    CMD_FILE.close()
+                    process = subprocess.Popen("bash " + cmd_bash, shell=True, stdout=subprocess.PIPE)
+                    process.wait()
+                trim_end_time = time.time()
+
+                filter_start_time = time.time()
+                #Removed redundant read Filter and get the read number file
+                filtered_fasta = fastq_dir + "/" + s_id + "_filtered.fa"
+                num_dic_txt = fastq_dir + "/" + s_id + "_num_dic.txt"
+                static_infor = share.filterFastQ2FastA(trimmed_fastq, filtered_fasta, num_dic_txt,qcutoff=min_read_qscore, num_cutoff=min_reads_count)
+                # delete trmmed FASTQ to save space
+                if os.path.exists(trimmed_fastq):
+                    os.remove(trimmed_fastq)
+                print(static_infor)
+                loginfor[s_id]=static_infor
+                filter_end_time = time.time()
+
+                # Do BLASTN
+                blastn_start_time = time.time()
+                blast_out_file = blast_tools.RunBLASTN(blastn, mkdb, s_id, trna_fa, filtered_fasta, out_dir,eval=blastn_e_cutoff,hit_number=blastn_max_hit_num)
+                #blast_out_file = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/output/SRR1836126_1_tRNA_blast_out.tab"
+                # Analysis BLASTN result
+                if blast_out_file != "":
+                    print("BLASTN Successfully, processing BLAST out tab file: " + blast_out_file)
+                    tRNA_reads_count_file = out_dir + "/" + s_id + "_" + proj_name + "_count.tab"
+                    tRNA_reads_hit_file = out_dir + "/" + s_id + "_" + proj_name + "_hit.tab"
+                    blast_tools.AnalysisBlastOut2(blast_out_file, num_dic_txt, tRNA_dic,
+                                                tRNA_reads_count_file, tRNA_reads_hit_file, url_len,tRF_Min_Length=min_trf_len,max_mismatch=blastn_max_mismatch)
+                    print("Hit file :"+tRNA_reads_hit_file)
+                    end_time = time.time()
+                    processing_time = end_time - start_time
+                    print("Processing time :" + str(round(processing_time,3))+" Secs")
+                else:
+                    print("Something wrong while blastn " + s_id)
+                blastn_end_time = time.time()
+
+                loginfor[s_id]["start_time"]=time.asctime( time.localtime(start_time))
+                loginfor[s_id]["end_time"] = time.asctime( time.localtime(end_time))
+                loginfor[s_id]["processing_time"] = str(int(processing_time))
+                loginfor[s_id]["trim_time"] = str(int(trim_end_time-trim_start_time))
+                loginfor[s_id]["filter_time"] = str(int(filter_end_time-filter_start_time))
+                loginfor[s_id]["blastn_time"] = str(int(blastn_end_time - blastn_start_time))
 
 
-    static_dic = make_report.getTrfReportFile(proj_name, out_dir, tRNA_dic, sample_dic, out_dir)
-    for s_id in static_dic:
-        if s_id in loginfor:
-            for key in static_dic[s_id]:
-                loginfor[s_id][key]=static_dic[s_id][key]
-    logfile = out_dir + "/static.log"
-    LOG = open(logfile, 'w')
-    #LOG.write("#FASTQ_STATISTICS\n")
-    title =""
-    key_ls = ['total_num','removed_num','survived_num',
-              'non_redundent_num','start_time','end_time','processing_time',
-              'trim_time', 'filter_time', 'blastn_time', 'A','B','C','D','E',
-              'F','G','H','I','intro_cl_ratio','u5_cl_ratio','u3_cl_ratio','cca_add_ratio']
-    for s_id in loginfor:
-        statis_obj = loginfor[s_id]
-        if title=="":
-            title ="#SampleID"+"\t"+ "\t".join(key_ls)
-            LOG.write(title + "\n")
-        line = s_id
-        for key in key_ls:
-            if key in statis_obj:
-                line += "\t"+str(statis_obj[key])
-            else:
-                line += "\t" + ""
-        LOG.write(line+"\n")
-    LOG.close()
+        static_dic = make_report.getTrfReportFile(proj_name, out_dir, tRNA_dic, sample_dic, out_dir)
+        for s_id in static_dic:
+            if s_id in loginfor:
+                for key in static_dic[s_id]:
+                    loginfor[s_id][key]=static_dic[s_id][key]
+        logfile = out_dir + "/static.log"
+        LOG = open(logfile, 'w')
+        #LOG.write("#FASTQ_STATISTICS\n")
+        title =""
+        key_ls = ['total_num','removed_num','survived_num',
+                  'non_redundent_num','start_time','end_time','processing_time',
+                  'trim_time', 'filter_time', 'blastn_time', 'A','B','C','D','E',
+                  'F','G','H','I','intro_cl_ratio','u5_cl_ratio','u3_cl_ratio','cca_add_ratio']
+        for s_id in loginfor:
+            statis_obj = loginfor[s_id]
+            if title=="":
+                title ="#SampleID"+"\t"+ "\t".join(key_ls)
+                LOG.write(title + "\n")
+            line = s_id
+            for key in key_ls:
+                if key in statis_obj:
+                    line += "\t"+str(statis_obj[key])
+                else:
+                    line += "\t" + ""
+            LOG.write(line+"\n")
+        LOG.close()
+        return 0
+    except:
+        print('Some things wrong during pipeline running!')
+        return -1
+        # sys.exit(2)
 
 class Config:
     def __init__(self):
@@ -247,11 +259,11 @@ def main(argv):
         # Project Settings
         #########################################################
         "proj_name" : "test",
-        "trna_fa" : "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/hg38_tRNA_60.fa",
-        "trna_anno_file" : "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/hg38_tRNA_60.bed",
-        "sample_tsv" :"/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/sample.tsv",
-        "fastq_dir" : "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/fastq",
-        "out_dir" :"/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/output",
+        "trna_fa" : "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/hg38_tRNA_60.fa",
+        "trna_anno_file" : "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/hg38_tRNA_60.bed",
+        "sample_tsv" :"/Users/hqyone/PycharmProjects/tRNAExplorer/samples",
+        "fastq_dir" : "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/RNASeq/fastq",
+        "out_dir" :"/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/RNASeq/output",
         "url_len" : 60,
 
         #########################################################
