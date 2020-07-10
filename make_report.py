@@ -34,6 +34,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
     mean_trna_trf_sample_matrix_file = out_dir + "/trf_sample_matrix.tsv"  # trf vs sample matrix
     MEAN_RNA_TRF_SAMPLE_MATRIX = open(mean_trna_trf_sample_matrix_file, 'w')
 
+
     mean_trna_trf_matrix_file = out_dir + "/trna_trftype_matrix.tsv"  # sample:trna vs trf type matrix
     MEAN_RNA_TRF_MATRIX = open(mean_trna_trf_matrix_file, 'w')  # For TRF type
 
@@ -303,6 +304,13 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
                                         "\t" + site_obj["c_3_seq"] + \
                                         "\t" + site_obj["c_5_seq"] + site_obj["c_3_seq"]
                     MEAN_CLEAVAGE.write(cleavage_site_str + "\n")
+    print("Output 1: " + mean_trna_trf_sample_matrix_file)
+    print("Output 2: " + mean_trna_trf_matrix_file)
+    print("Output 3: " + mean_sample_trf_matrix_file)
+    print("Output 4: " + mean_profile_file)
+    print("Output 5: " + combined_cleavage_sites)
+    print("Output 6: " + trna_sample_readcount_matrix_file)
+    print("Output 7: " + trna_sample_pileup_matrix_file)
 
     MEAN_PROFILE.close()
     MEAN_CLEAVAGE.close()

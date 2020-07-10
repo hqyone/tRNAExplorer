@@ -2,9 +2,9 @@ import re, os, subprocess
 import share
 from trna import tRNA
 import sys, getopt
-import pathlib
 
 #Generate four tRNA fasta files
+# offset is the URL length
 def CreatetRNAFastas(bed,name,ref_fasta,trna_db_dir,offset=60):
     #f0 = open(trna_db_dir+"/"+name+"_"+str(offset)+".bed",'w')  # BED file
     fasta_file = trna_db_dir + "/"+name+"_"+str(offset)+".fasta"
@@ -320,7 +320,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "n:b:r:s:u:", ["name=","bed=","ref=","scan=","offset=","no_mit=", "no_pseu=","minq="])
     except getopt.GetoptError:
-        print('# Usage: python tRNA_db_preparing.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <offset> -no_mit_tRNA')
+        print('# Usage: python tRNA_db_maker.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <offset> --no_mit <1/else> --no_pseu <1/else> --minq <number>')
         print('# -n <name> : The pref name of database')
         print('# -b <bed> : Absolute path of bed file for tRNAs')
         print('# -r <ref> : Absolute path of Genome FASTA file coordinating with bed file')
@@ -328,14 +328,14 @@ def main(argv):
         print('# -u <offset> : The length of UTRs')
         print('# --no_mit <1/else> : 1 means removing all nucleic mitochondrial tRNA genes')
         print('# --no_pseu <1/else> : 1 means removing all pseudogene tRNA genes')
-        print('# --minq <number> : The minimum of quality scores of tRNAs')
+        print('# --minq <number> : The minimum of quality scores of tRNAs, default 30')
         print('# Output 1: annotation bed file of tRNAs <Directory of tRNA bed file>/<name>.bed')
         print('# Output 2: FASTA file of hybrid tRNA library <Directory of tRNA bed file>/<name>.fa')
         sys.exit(2)
     print('The configs are as following"')
     for opt, arg in opts:
         if opt == '-h':
-            print('# Usage: python tRNA_db_preparing.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <offset> -no_mit_tRNA')
+            print('# Usage: python tRNA_db_maker.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <offset> --no_mit <1/else> --no_pseu <1/else> --minq <number>')
             print('# -n <name> : The name of database')
             print('# -b <bed> : Absolute path of bed file for tRNAs')
             print('# -r <ref> : Absolute path of Genome FASTA file coordinating with bed file')
@@ -379,12 +379,12 @@ if __name__ == "__main__":
     main(sys.argv[1:])
 
 # # Local Test
-bed = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/ucsc_hg38_tRNA.bed"
-name = "hg38_tRNA"
-ref_fasta="/Users/hqyone/Desktop/hg38/hg38.fa"
-trna_db_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools"
-tRNAscanSE="/usr/local/bin/tRNAscan-SE"
-print(tRNA_DB_Preparing(name, bed, ref_fasta, tRNAscanSE))
+# bed = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/ucsc_hg38_tRNA.bed"
+# name = "hg38_tRNA"
+# ref_fasta="/Users/hqyone/Desktop/hg38/hg38.fa"
+# trna_db_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools"
+# tRNAscanSE="/usr/local/bin/tRNAscan-SE"
+# print(tRNA_DB_Preparing(name, bed, ref_fasta, tRNAscanSE))
 
 # Server Test
 # bed = "/home/hqyone/python_code/testrepo/szf/ucsc_hg38_tRNA.bed"

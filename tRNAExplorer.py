@@ -6,6 +6,7 @@ from cmd_tools import Trimmomatic
 import subprocess
 import sys, getopt
 import time
+import pathlib, shutil
 
 
 version = 1.0
@@ -57,6 +58,9 @@ def rseq_blastn_pipeline(proj_name,
         if not os.path.isfile(sample_tsv):
             print("The sample file :"+sample_tsv+" is not exist. Abort!")
             return -1
+        # Copy sample tsv for visualization
+        cp_sample_tsv = out_dir+"/samples"
+        shutil.copy(sample_tsv, cp_sample_tsv)
         SAMPLES = open(sample_tsv, 'r')
         for line in SAMPLES:
             if not line.startswith("#"):
@@ -103,7 +107,7 @@ def rseq_blastn_pipeline(proj_name,
                 filtered_fasta = fastq_dir + "/" + s_id + "_filtered.fa"
                 num_dic_txt = fastq_dir + "/" + s_id + "_num_dic.txt"
                 static_infor = share.filterFastQ2FastA(trimmed_fastq, filtered_fasta, num_dic_txt,qcutoff=min_read_qscore, num_cutoff=min_reads_count)
-                # delete trmmed FASTQ to save space
+                # delete trmmed fastq to save space
                 if os.path.exists(trimmed_fastq):
                     os.remove(trimmed_fastq)
                 print(static_infor)
@@ -135,8 +139,6 @@ def rseq_blastn_pipeline(proj_name,
                 loginfor[s_id]["trim_time"] = str(int(trim_end_time-trim_start_time))
                 loginfor[s_id]["filter_time"] = str(int(filter_end_time-filter_start_time))
                 loginfor[s_id]["blastn_time"] = str(int(blastn_end_time - blastn_start_time))
-
-
         static_dic = make_report.getTrfReportFile(proj_name, out_dir, tRNA_dic, sample_dic, out_dir)
         for s_id in static_dic:
             if s_id in loginfor:
@@ -253,23 +255,24 @@ def main(argv):
         "min_trf_len"
     ]
     currentDirectory = os.getcwd()
+    wdir = pathlib.Path(__file__).parent.absolute()
     config = {
         # Default settings
         #########################################################
         # Project Settings
         #########################################################
-        "proj_name" : "test",
-        "trna_fa" : "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/hg38_tRNA_60.fa",
-        "trna_anno_file" : "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/hg38_tRNA_60.bed",
-        "sample_tsv" :"/Users/hqyone/PycharmProjects/tRNAExplorer/samples",
-        "fastq_dir" : "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/RNASeq/fastq",
-        "out_dir" :"/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/RNASeq/output",
-        "url_len" : 60,
+        "proj_name": "test",
+        "trna_fa": str(wdir)+"/test/trna_db/hg38_tRNA_60.fa",
+        "trna_anno_file": str(wdir)+"/test/trna_db/hg38_tRNA_60.bed",
+        "sample_tsv": str(wdir)+"/test/samples",
+        "fastq_dir": str(wdir)+"/test/fastq",
+        "out_dir": str(wdir)+"/test/output",
+        "url_len": 60,
 
         #########################################################
         # Trimmomatic
         #########################################################
-        "t_do": 1,
+        "t_do": 0,
         "t_adapter":"",
         "t_path": "/Users/hqyone/Downloads/Trimmomatic-0.39/trimmomatic-0.39.jar",
         "t_phred": 33,
@@ -311,10 +314,10 @@ def main(argv):
         print('# Usage: python tRNAExplorer.py -c <configfile> ')
         print('# -c config file> : The absolute path of config file')
         print('# -n <proj_name> : The name of project')
-        print('# -f <trna_fa> : Absolute path of FASTA file for tRNAs which was created by tRNA_db_preparing')
-        print('# -a <trna_anno_file> : Absolute path of bed file for tRNA annotations which was created by tRNA_db_preparing')
+        print('# -f <trna_fa> : Absolute path of FASTA file for tRNAs which was created by tRNA_db_maker')
+        print('# -a <trna_anno_file> : Absolute path of bed file for tRNA annotations which was created by tRNA_db_maker')
         print('# -s <sample tsv> : Absolute path of sample information')
-        print('# -i <fastq_dir> : The directory storing FASTQ files (Input Directory)')
+        print('# -i <fastq_dir> : The directory storing fastq files (Input Directory)')
         print('# -h : Show the help information')
         print('# -o <out_dir> : The directory of output files (Out Directory)')
         print('# Output 1: <out_dir>/static.log , Reads numbers, processing time for each sample')
@@ -339,11 +342,11 @@ def main(argv):
             print('# Usage: python tRNAExplorer.py -c <configfile> ')
             print('# -c <path to config file> : The absolute path of config file')
             print('# -h : Show the help information')
-            print('# -f <trna_fa> : Absolute path of FASTA file for tRNAs which was created by tRNA_db_preparing')
+            print('# -f <trna_fa> : Absolute path of FASTA file for tRNAs which was created by tRNA_db_maker')
             print(
-                '# -a <trna_anno_file> : Absolute path of bed file for tRNA annotations which was created by tRNA_db_preparing')
+                '# -a <trna_anno_file> : Absolute path of bed file for tRNA annotations which was created by tRNA_db_maker')
             print('# -s <sample tsv> : Absolute path of sample information')
-            print('# -i <fastq_dir> : The directory storing FASTQ files (Input Directory)')
+            print('# -i <fastq_dir> : The directory storing fastq files (Input Directory)')
             print('# -h : Show the help information')
             print('# -o <out_dir> : The directory of output files (Out Directory)')
             print('# Output 1: <out_dir>/static.log , Reads numbers, processing time for each sample')
@@ -376,8 +379,19 @@ def main(argv):
         elif opt in ("-c"):
             print("Load "+arg)
             config_file = arg
-
-    print('##  ------------------ The configs are as following ....  -----------------')
+    print('##  ------------------ Initialization ....  -----------------')
+    init_file = str(wdir)+"/init"
+    if os.path.isfile(init_file):
+        ic = Config()
+        ic.loadConfig(init_file)
+        for key in ic.config:
+            if key in config:
+                config[key] = ic.config[key]
+                print(key +":"+ic.config[key])
+        print("Loading init file successfully! ")
+    else:
+        print("No 'init' file was given, Abort!")
+    print('##  ------------------ The loading config ....  -----------------')
     if config_file!="":
         input_cfile = config_file
         if not os.path.isfile(config_file):
@@ -391,6 +405,9 @@ def main(argv):
         else:
             print("Can't find config file: " + input_cfile)
             print("Use default settings")
+    else:
+        print("No Config file was given, run for test data!")
+    print('##  ------------------ The configs are as following ....  -----------------')
     for key in config_key_ls:
         if key in config:
             print("## "+key+"="+str(config[key])+"\n")

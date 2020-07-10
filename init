@@ -1,0 +1,11 @@
+#######################################################################
+# Global settings for tRNAExplorer 1.0
+#######################################################################
+# Absolute path to Trimmomatic jar file
+t_path="/Users/hqyone/Downloads/Trimmomatic-0.39/trimmomatic-0.39.jar"
+
+# absolute path to blastn execute file
+blastn = "/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/blastn"
+
+# absolute path to makeblastdb execute file
+mkdb = "/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/makeblastdb"

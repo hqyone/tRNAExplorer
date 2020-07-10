@@ -43,6 +43,7 @@ def RunBLASTN(blastn, mkdb, id, db_fasta, query_fasta, blast_out_dir, eval=0.01,
         process = subprocess.Popen("bash " + cmd_bash, shell=True, stdout=subprocess.PIPE)
         process.wait()
         print (process.returncode)
+        os.remove(cmd_bash)
         print("Finish processing " + id)
         return blast_out_file
     except():

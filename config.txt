@@ -11,7 +11,7 @@ trna_fa = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/tes
 trna_anno_file = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/hg38_tRNA_60.bed"
 
 # Absolute path of sample information
-sample_tsv = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/sample.tsv"
+sample_tsv = "/Users/hqyone/PycharmProjects/tRNAExplorer/test/samples"
 
 # The directory storing FASTQ files (Input Directory)
 fastq_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/fastq"
@@ -28,9 +28,6 @@ out_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/tes
 # Whether do trimming sequences 0 means "no" others means "yes"
 # If the input are trimmed FASTQ files, you can set it as 0 to save time.
 # t_do=1
-
-# Absolute path to Trimmomatic jar file
-t_path="/Users/hqyone/Downloads/Trimmomatic-0.39/trimmomatic-0.39.jar"
 
 # Absolute path for adapter FASTA file
 # When the file is not available using <trimmomatic_dir>+"/adapters/TruSeq3-SE.fa"
@@ -66,11 +63,6 @@ t_path="/Users/hqyone/Downloads/Trimmomatic-0.39/trimmomatic-0.39.jar"
 #########################################################
 # BLASTN settings
 #########################################################
-# absolute path to blastn execute file
-blastn = "/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/blastn"
-
-# absolute path to makeblastdb execute file
-mkdb = "/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/makeblastdb"
 
 # The cutoff to report the match
 # blastn_e_cutoff = 0.001
