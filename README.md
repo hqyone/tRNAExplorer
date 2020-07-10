@@ -30,7 +30,7 @@ A Python pipeline optimized for analysing tRF (tRNA-derived fragments) profiles 
     * Find and modify the file named "init" at tRNAExplorer root directory
     * Change the absolute path for Trimmomatics, BLASTN and makeblastdb in the file.
 
-## 4. Running Cases
+## 4. Running
 * Run test data by      `python <root path>/tRNAExploer.py`
 * Get help information  `python <root path>/tRNAExploer.py -h`
 * Run with customized data: `python <root path>/tRNAExploer.py -n <proj_name> -f <trna_fa> -a <trna_anno_file> -s <sample tsv> -i <fastq_dir> -o <out_dir>`
@@ -42,7 +42,7 @@ A Python pipeline optimized for analysing tRF (tRNA-derived fragments) profiles 
     *   Run `python tRNA_db_maker.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <offset> --no_mit <1/else> --no_pseu <1/else> --minq <number>`
     *   Details about tRNA_db_maker.py can be found [here] [./help/tRNA_db_maker.md]
 
-## 5. Read Mapping Strategy
+## 5. Mapping Strategy
 tRNAExplorer uses BLASTN as the engine to map small-RNA-Seq reads to a hybrid tRNA sequences database containing four major style of tRNA gene transcripts:
    *   pre-tRNA with intron(s) (I)
    *   pre-tRNA without intron(s) (P)
@@ -66,3 +66,7 @@ The tRNAExplorer contains three parts
 Processing steps are summarized in Figure 2 
 ![alt text](./images/architecture.png)
 Figure 2. The architecture of tRNAExplorer. 
+
+## License
+Copyright (c) 2020 Quanyuan He. Released under GPLv3. See
+[LICENSE.txt][license] for details.
