@@ -8,8 +8,8 @@ Major functions:
 3. Comparison and visualization of tRF profile across multiple samples
 
 ## 2. Requirements
-2.1.    Trimmomatics 0.39 http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
-2.2.	BLASTN (ncbi-blast-2.10.0+) https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+1. Trimmomatics 0.39 http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
+2. BLASTN (ncbi-blast-2.10.0+) https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
 2.3.    Python (version 2.7 or 3.x)
 i.	jupyter>=1.0.0
 ii.	scipy==1.1.0
