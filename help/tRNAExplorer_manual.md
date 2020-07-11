@@ -199,8 +199,7 @@ The file includes reads numbers, processing time for each sample.
 | mean_number  | The number of reads mapping to tRNA|
 | hit_tRNAs_num | The number of tRNA that the read map to|
 | TRF_type | The type of TRF |
-| brief_mapping_infor | A string presents the mapping detailed information. The pattern are as following: 
-<Read Type>,<map_start>,<map_end>,<read_number>,<read_map_seq>,<tRNA_map_seq>. The start and end position here is 1 based|
+| brief_mapping_infor | A string presents the mapping detailed information. The pattern are as following: <Read Type>,<map_start>,<map_end>,<read_number>,<read_map_seq>,<tRNA_map_seq>. The start and end position here is 1 based|
 | Read_type| The type of read (A-I), please see figure 1 of [README.md](../README.md)|
 | mapping_ratio| The ratio of the length of mapping region  to the length of read|
 | mapping_ratio| The ratio of the length of mapping region  to the length of read|
