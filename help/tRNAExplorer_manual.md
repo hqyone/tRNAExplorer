@@ -74,6 +74,7 @@ The file includes reads numbers, processing time for each sample.
 ### 3.2 trf_sample_matrix.tsv 
 * Read number matrix of tRFs across tRFs and samples
 * See a [sample](../test/output/trf_sample_matrix.tsv)
+
 | Column  | Description  |
 | :------------ |:--------------------------------| 
 | tRF_ID      | Sequence based ID of tRF | 
@@ -124,14 +125,29 @@ The file includes reads numbers, processing time for each sample.
 
 ### 3.7 cleavage_sites.tsv
 * Cleavage sites information for tRNAs in different samples
+* Theoretically，a cleavage of RNA will create two reads (5' and 3' reads) (A)
+* tRNAExplorer defined eleven types of cleavage sites (B)
+![alt text](../images/cleavage.png)
 * See a [sample](../test/output/cleavage_sites.tsv)
+
+
+
 
 | Column  | Description  |
 | :------------ |:--------------------------------| 
 | #SampleID      | Sample ID | 
-| tRF type ...     | The type of tRFs includes full_tRNA,   |  
-| Sample IDs ....     | List of sample IDs  | 
-
+| tRNA_family     | The ID of tRNA family   |  
+| tRNA_ID     | The ID of tRNA  | 
+| ID     | The ID of cleavage sites P+location in tRNA precursor   |  
+| Position     | The location of cleavage site (the index of last base of 5' reads, the index of the first base of mature tRNA is 0 )  | 
+| PType     | 11 types of cleavage site including 5-UTR, Start, 3-UTR, End, Anticodon, D-loop, A-loop, T-loop, stem_for, stem_rev, Other.|  
+| Intensity | The number of observed reads (5' reads + 3' reads) supporting the cleavage site | 
+| Intensity_5     | The number of 5' reads | 
+| Intensity_3     | The number of 3' reads |  
+| SNRatio     | Signal/Noise ratio of the cleavage site  | 
+| Seq_5     | The 5' clipped sequences  |  
+| Seq_3 | The 3' clipped sequences  | 
+| full_Seq | Seq5 + Seq3   | 
 
 ### 3.8 profiles.tsv
 * Pileup information for tRNAs in different samples
@@ -140,5 +156,54 @@ The file includes reads numbers, processing time for each sample.
 | Column  | Description  |
 | :------------ |:--------------------------------| 
 | #SampleID      | Sample ID | 
-| tRF type ...     | The type of tRFs includes full_tRNA,   |  
-| Sample IDs ....     | List of sample IDs  | 
+| tRNA_family     | The ID of tRNA family   |  
+| tRNA_ID     | The ID of tRNA  | 
+| type     | Three types of profile including "start_pos","end_pos","total" | 
+| Profile     | Pileup intensity in base solution across tRNA precursors without intron | 
+
+### 3.9 <SAMPLE_ID>_<project_name>_hit.tab
+* Details about read mapping to mRNA for each sample
+* The meaning of tRNA transcription type can be found in figure 1 of [README.md](../README.md)
+* See a [sample](../test/output/profiles.tsv)
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #tRNA_family      | Sample ID | 
+| tRNA_id     | The ID of tRNA |  
+| read_id     | ID of read in FASTQ  |
+| direction     | The direction of read to map to sequences  |
+| I     | A marker indicates whether the read map to I type transcript (0 means not mapping)   |
+| I_read_start   | The start position in read (-1 means not mapping) |
+| I_read_end     | The end position in read  (-1 means not mapping)|
+| I_trna_start   | The start position in tRNA  (-1 means not mapping)|
+| I_trna_end | The end position in tRNA  (-1 means not mapping)|
+| P     | A marker indicates whether the read map to P type transcript (0 means not mapping)   |
+| P_read_start   | The start position in read (-1 means not mapping) |
+| P_read_end     | The end position in read  (-1 means not mapping)|
+| P_trna_start   | The start position in tRNA  (-1 means not mapping)|
+| P_trna_end | The end position in tRNA  (-1 means not mapping)|
+| M     | A marker indicates whether the read map to M type transcript (0 means not mapping)   |
+| M_read_start   | The start position in read (-1 means not mapping) |
+| M_read_end     | The end position in read  (-1 means not mapping)|
+| M_trna_start   | The start position in tRNA  (-1 means not mapping)|
+| M_trna_end | The end position in tRNA  (-1 means not mapping)|
+| C     | A marker indicates whether the read map to C type transcript (0 means not mapping)   |
+| C_read_start   | The start position in read (-1 means not mapping) |
+| C_read_end     | The end position in read  (-1 means not mapping)|
+| C_trna_start   | The start position in tRNA  (-1 means not mapping)|
+| C_trna_end | The end position in tRNA  (-1 means not mapping)|
+| 5T     | A marker indicates whether the read begin at 5'-term of tRNA (0 means no, 1 means yes)  |
+| 3T     | A marker indicates whether the read end at 3'-term of tRNA (0 means no, 1 means yes)  |
+| 5C     | A marker indicates whether the read begin at 5'-term of tRNA (0 means no, 1 means yes)  |
+| 3C     | A marker indicates whether the read begin at 5'-term of tRNA (0 means no, 1 means yes)  |
+| mean_number  | The number of reads mapping to tRNA|
+| hit_tRNAs_num | The number of tRNA that the read map to|
+| TRF_type | The type of TRF |
+| brief_mapping_infor | A string presents the mapping detailed information. The pattern are as following: 
+<Read Type>,<map_start>,<map_end>,<read_number>,<read_map_seq>,<tRNA_map_seq>. The start and end position here is 1 based|
+| Read_type| The type of read (A-I), please see figure 1 of [README.md](../README.md)|
+| mapping_ratio| The ratio of the length of mapping region  to the length of read|
+| mapping_ratio| The ratio of the length of mapping region  to the length of read|
+| read_5_fragment | The 5' part of read which dose not mapping to tRNA sequences |
+| read_fragment | The part of read which mapping to tRNA sequences |
+| read_3_fragment | The 3' part of read which dose not mapping to tRNA sequences |
