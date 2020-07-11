@@ -40,13 +40,13 @@ tRNAExplorer is a Python pipeline optimized for analysing tRF (tRNA-derived frag
     | Column  | Description  |
     | :------------ |:--------------------------------| 
     | ID    | ID of sample, match the name of FASTQ file in fastq_dir. For example: ID.fastq or ID.fq | 
-    | Description     | The short string descript the sample |  
+    | Description     | Short string describe the sample |  
 
 * Run with customized data: `python tRNAExploer.py -n <proj_name> -f <trna_fa> -a <trna_anno_file> -s <sample tsv> -i <fastq_dir> -o <out_dir>`
 * Run with advanced settings using config file: 
     *   Modify config.txt  (taken [config.txt](config.txt) in root directory as template)
     *   Run `python tRNAExplorer.py -c config.txt`
-    *   Details about tRNAExploer.py can be found [here](./help/tRNAExplorer_manual.md)
+    *   Details about tRNAExplorer.py can be found [here](./help/tRNAExplorer_manual.md)
 * Make Customized tRNA Databases
     *   Run `python tRNA_db_maker.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <offset> --no_mit <1/else> --no_pseu <1/else> --minq <number>`
     *   Details about tRNA_db_maker.py can be found [here](./help/tRNA_db_maker_manual.md)
