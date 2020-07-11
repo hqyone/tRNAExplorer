@@ -1,31 +1,82 @@
 # Manual for tRNAExplorer.py
-## 1. Introduction
-A Python pipeline optimized for analysing tRF (tRNA-derived fragments) profiles of multiple samples using small-RNA-seq data.
-Major functions:
-1. Categorize and quantify tRNA/tRFs.
-2. Discover novel tRNA cleavage sites.
-3. Discover new base additions on tRFs 
-3. Comparison and visualization of tRF profile across multiple samples
+## 1. Usage
+Usage: python tRNAExplorer.py -c <configfile>
+## 2. Settings
+### 2.1 -c : path to config file
+Config file include all options available to 
 
-## 2. Requirements
-1. Trimmomatics 0.39 http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
-2. BLASTN (ncbi-blast-2.10.0+) https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
-3. Python (version 2.7 or 3.x) and packages
-   * jupyter>=1.0.0
-   * scipy==1.1.0
-   * numpy>=1.16.1
-   * pandas==0.23.0
-   * matplotlib==2.2.5
-   * seaborn>=0.9.0
-   * pysam >= 0.8
-   * HTSeq>=0.11.0
+## 3. Output
+### 3.1 static.log
+The file includes reads numbers, processing time for each sample.
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #SampleID      | sample ID | 
+| total_num     | Total number of reads in input FASTQ file  |  
+| removed_num     | Total number of reads removed by trimming and filtering |  
+| survived_num     | Total number of reads in the trimmed and filtered FASTQ file  |  
+| non_redundant_num     | The number of non redundant reads in FASTA file  |  
+| start_time     |  Time stamp to starting processing  |  
+| end_time     | Time stamp to ending processing  |  
+| processing_time     | Total time used for processing the sample  |  
+| trim_time     | Time used by trimming (seconds)  |  
+| filter_time     | Time used by filtering and removing redundant reads (seconds)  |  
+| blastn_time     | Time used by mapping using BLASTN (seconds)  |  
+| A - I    | The numbers of nine types of reads  |  
+| intro_cl_ratio     | Intron cleavage ratio = F/(E+F)  |  
+| u5_cl_ratio     | 5’ UTR cleavage ratio = (C)/(C+B)  | 
+| u3_cl_ratio     | 3’ UTR cleavage ratio = (H+I)/(G+H+I)  | 
+| cca_add_ratio     | CCA addition ratio = (I)/(I+H)| 
 
 
-## 3. Installation and Case Run
-* Step 1: Download whole pipeline  https://github.com/hqyone/tRNAExplorer/archive/master.zip
-* Step 2: Install requirements 
-* Step 3: Download whole pipeline
+### 3.2 trf_sample_matrix.tsv
+Read number matrix of tRFs across tRFs and samples
 
-##
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| tRF_ID      | Sequence based ID of tRF | 
+| tRNA_Families     | tRNA Family  |  
+| tRNA_IDs     | ID list of tRNA which may generated the tRF |  
+| seq     | Sequence of tRF  |  
+| sample IDs ....     | List of sample IDs  |  
 
-![alt text](./images/architecture.png)
+### 3.3 trna_sample_readcount_matrix.tsv
+Read number matrix across tRNAs and samples
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #RNA_family      | tRNA Family ID | 
+| tRNA_ID     | ID of tRNA  |  
+| sample IDs ....     | List of sample IDs  |    
+
+### 3.4 trna_sample_pileup_matrix.tsv
+Pileup depth matrix across tRNAs and samples 
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #RNA_family      | tRNA Family ID | 
+| tRNA_ID     | ID of tRNA  |  
+| sample IDs ....     | List of sample IDs  | 
+  
+### 3.5 trna_trftype_matrix.tsv
+The read number matrix across samples/tRNAs and tRF types
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #SampleID      | Sample ID | 
+| tRNA_ID     | ID of tRNA  |  
+| Sample IDs ....     | List of sample IDs  | 
+
+### 3.6 sample_trftype_matrix.tsv
+The read number matrix across samples and tRF types
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #SampleID      | Sample ID | 
+| tRF type ...     | The type of tRFs includes full_tRNA,   |  
+| Sample IDs ....     | List of sample IDs  | 
+
+### 3.7 cleavage_sites.tsv
+Cleavage sites information for tRNAs in different samples
+### 3.8 profiles.tsv
+Pileup information for tRNAs in different samples
