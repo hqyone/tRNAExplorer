@@ -58,7 +58,8 @@ tRNAExplorer uses BLASTN as the engine to map small-RNA-Seq reads to a hybrid tR
    *   mature tRNA (M)
    *   mature tRNA with CCA (C)
  
- Only best alignment hits will be keep for further analysis. 
+ Only the best alignment hits will be keep for further analysis. When there are several best hits with equal fidelity, all of them will be keep.
+ For example, the type D reads in figure 1 can be mapped to all four types of transcripts.
  Based on the mapped transcript types and mapping locations, all mapped reads can be categorized into 9 types (A-I). 
  Using this information we can elucidate the relative abundance of four transcript types for each tRNA.
  We also can monitor the efficiency of intron, 5'-term & 3'-term cleavage and CCA addition. (Figure 1)
