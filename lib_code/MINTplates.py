@@ -2,7 +2,7 @@
 """
 MINTplates.py: Terms and conditions located in README_TermsOfUse_MINTplates.txt
 
-This code was created by Venetia Pliatsika, Isidore Rigoutsos, Jeffery Ma, Phillipe Loher
+This lib_code was created by Venetia Pliatsika, Isidore Rigoutsos, Jeffery Ma, Phillipe Loher
 It can be used to create/encode molecular "license-plates" from sequences and to also decode the "license-plates"
 back to sequences.  While initially created for tRFs (tRNA fragments), this tool can be used for
 any genomic sequences including but not limited to:  tRFs, isomiRs, reference miRNA, etc.

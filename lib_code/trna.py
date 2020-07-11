@@ -301,11 +301,11 @@ class tRNA():
             trna_end = int(i[2])   #75
             read_num = float(i[3])
             loc = self.CalculateAlignmentLocInI(c, trna_start, trna_end)
-            profiles["total"]=share.plusNumList(profiles["total"],loc[0]-1,loc[1]-1,read_num)
+            profiles["total"]= share.plusNumList(profiles["total"], loc[0] - 1, loc[1] - 1, read_num)
             loc = self.CalculateAlignmentLocInI(c, trna_start, trna_start)
-            profiles["start_pos"] = share.plusNumList(profiles["start_pos"], loc[0]-1, loc[0]-1, read_num)
+            profiles["start_pos"] = share.plusNumList(profiles["start_pos"], loc[0] - 1, loc[0] - 1, read_num)
             loc = self.CalculateAlignmentLocInI(c, trna_end, trna_end)
-            profiles["end_pos"] = share.plusNumList(profiles["end_pos"], loc[1]-1, loc[1]-1, read_num)
+            profiles["end_pos"] = share.plusNumList(profiles["end_pos"], loc[1] - 1, loc[1] - 1, read_num)
             profiles["total_reads_num"] += read_num
         profiles["pileup_height"]=max(profiles["total"])
         profiles["cleavage_site_dic"] = self.FindCleavageSites(profiles["start_pos"],profiles["end_pos"])

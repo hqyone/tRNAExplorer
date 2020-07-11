@@ -247,8 +247,8 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
         MEAN_SAMPLE_TRF_MATRIX.write(mean_line + "\n")
     MEAN_SAMPLE_TRF_MATRIX.close()
 
-    SAMPLE_ReadCount_MATRIX.write("#RNA_family\tRNA_ID\t" + "\t".join(sample_ls)+"\n")
-    SAMPLE_PileUP_MATRIX.write("#RNA_family\tRNA_ID\t" + "\t".join(sample_ls)+"\n")
+    SAMPLE_ReadCount_MATRIX.write("#tRNA_family\ttRNA_ID\t" + "\t".join(sample_ls)+"\n")
+    SAMPLE_PileUP_MATRIX.write("#tRNA_family\ttRNA_ID\t" + "\t".join(sample_ls)+"\n")
     for rna_id in rna_ls:
         if rna_id in tRNA_dic:
             rna = tRNA_dic[rna_id]
@@ -269,9 +269,9 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
     SAMPLE_ReadCount_MATRIX.close()
     SAMPLE_PileUP_MATRIX.close()
 
-    MEAN_PROFILE.write("#SampleID\tRNA_family\tRNA_ID\ttype\tprofile\n")
+    MEAN_PROFILE.write("#SampleID\ttRNA_family\ttRNA_ID\ttype\tprofile\n")
     MEAN_CLEAVAGE.write(
-        "#SampleID\tRNA_family\tRNA_ID\tID\tPosition\tPType\tIntensity\tIntensity_5\tIntensity_3\tSNRatio\tSeq_5\tSeq_3\tfull_Seq\n")
+        "#SampleID\ttRNA_family\ttRNA_ID\tID\tPosition\tPType\tIntensity\tIntensity_5\tIntensity_3\tSNRatio\tSeq_5\tSeq_3\tfull_Seq\n")
     for sample in sample_ls:
         for rna_id in rna_ls:
             family = "Unknown"

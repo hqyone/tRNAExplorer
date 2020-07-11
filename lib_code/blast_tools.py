@@ -162,7 +162,7 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                         }
             else:
                 obj = read_trna_dic[cur_read_id]
-                if cur_percent >= obj["percent"] and cur_length >= obj["length"] and cur_tRNA_id not in obj["tRNAs"] and (sseq == obj["sseq"] or sseq==share.reverse_complement(obj["sseq"])):
+                if cur_percent >= obj["percent"] and cur_length >= obj["length"] and cur_tRNA_id not in obj["tRNAs"] and (sseq == obj["sseq"] or sseq == share.reverse_complement(obj["sseq"])):
                     obj["percent"] = cur_percent
                     obj["length"] = cur_length
                     obj["sseq"] = sseq
@@ -351,7 +351,7 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                 else:
                     for c in class_obj:
                         trf_type = trna.getTRFType(tRNA_anno_dic[tRNA_id].GetKeySitesInfor(c),
-                                                            class_obj[c]["trna_start"], class_obj[c]["trna_end"])
+                                                   class_obj[c]["trna_start"], class_obj[c]["trna_end"])
                         mapping_ratio=(class_obj[c]["trna_end"]-class_obj[c]["trna_start"]+1)/class_obj[c]["qlen"]
                         break
             tRNA_READS_HIT.write(family_id+"\t"+tRNA_id + "\t" + read_id +"\t" +str(direction)+

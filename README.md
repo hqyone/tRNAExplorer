@@ -22,17 +22,23 @@ tRNAExplorer is a Python pipeline optimized for analysing tRF (tRNA-derived frag
    * HTSeq>=0.11.0
    * pathlib
 
-
 ## 3. Installation
-* Step 1: Download whole pipeline  https://github.com/hqyone/tRNAExplorer/archive/master.zip
+* Step 1: Download and unzip the pipeline  https://github.com/hqyone/tRNAExplorer/archive/master.zip
 * Step 2: Install requirements ...
-* Step 3: Initialization settings.
-    * Find and modify the file named "init" at tRNAExplorer root directory
+* Step 3: Initialization settings:
+    * Find and modify the file named [init](init) at the root directory of tRNAExplorer 
     * Change the absolute path for Trimmomatics, BLASTN and makeblastdb in the file.
 
 ## 4. Running
 * Run test data by      `python <root path>/tRNAExploer.py`
 * Get help information  `python <root path>/tRNAExploer.py -h`
+* Create a sample tsv file with two columns ([example](./test/samples))
+
+    | Column  | Description  |
+    | :------------ |:--------------------------------| 
+    | ID    | ID of sample, match the name of FASTQ file in fastq_dir. For example: ID.fastq or ID.fq | 
+    | Description     | The short string descript the sample |  
+
 * Run with customized data: `python <root path>/tRNAExploer.py -n <proj_name> -f <trna_fa> -a <trna_anno_file> -s <sample tsv> -i <fastq_dir> -o <out_dir>`
 * Run with advanced settings using config file: 
     *   Modify config.txt  (taken [config.txt](config.txt) in root directory as template)
@@ -55,25 +61,36 @@ tRNAExplorer uses BLASTN as the engine to map small-RNA-Seq reads to a hybrid tR
  We also can monitor the efficiency of intron, 5'-term & 3'-term cleavage and CCA addition. (Figure 1)
  
 ![alt text](./images/read_classfication.png)
+
 Figure 1: The definitions of four tRNA transcript types and nine read types. 
 
 ## 6. Architecture
-The tRNAExplorer contains three parts
+The tRNAExplorer contains three modules:
 *   tRNAExplorer.py : main program to mapping and quantify tRNA/tRF
 *   tRNA_db_maker.py : program to format the tRNA database which will be used by tRNAExplorer.py
 *   Report_create.ipynb : program to analysis data and draw chart to visualization data.
 
 Processing steps are summarized in Figure 2 
+
 ![alt text](./images/architecture.png)
+
 Figure 2. The architecture of tRNAExplorer. 
 
-## 7. Visualization
+## 7. tRF types
+Actually, tRFs are any RNA fragments or transcripts that divided from tRNA genes.
+tRNAExplorer defines 12 types of tRFs based on their mapping place on tRNA genes.
+
+![alt text](./images/trf_types.png)
+
+Figure 3. tRF types in tRNAExplorer 
+
+## 8. Visualization
 tRNAExplorer will generate several tsv files. 
-The program design a jupyter notebook [Report_creator.ipynb](./visualization/Report_creater.ipynb) to analysis and visualization them.
+A jupyter notebook [Report_creator.ipynb](./visualization/Report_creater.ipynb) to analysis and visualization them.
 This notebook is self-explained.
 The user can also do their own analysis based on these tsv files.
 
-## 8. License
+## 9. License
 Copyright (c) 2020 Quanyuan He Ph.D, 
 School of Medicine, Hunan Normal University.
 Released under GPLv3. See

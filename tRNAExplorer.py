@@ -1,8 +1,8 @@
 # coding=utf-8
 import os
-from trna import tRNA
-import share, make_report, blast_tools
-from cmd_tools import Trimmomatic
+from lib_code.trna import tRNA
+from lib_code import blast_tools, make_report, share
+from lib_code.cmd_tools import Trimmomatic
 import subprocess
 import sys, getopt
 import time
@@ -106,9 +106,9 @@ def rseq_blastn_pipeline(proj_name,
                 #Removed redundant read Filter and get the read number file
                 filtered_fasta = fastq_dir + "/" + s_id + "_filtered.fa"
                 num_dic_txt = fastq_dir + "/" + s_id + "_num_dic.txt"
-                static_infor = share.filterFastQ2FastA(trimmed_fastq, filtered_fasta, num_dic_txt,qcutoff=min_read_qscore, num_cutoff=min_reads_count)
+                static_infor = share.filterFastQ2FastA(trimmed_fastq, filtered_fasta, num_dic_txt, qcutoff=min_read_qscore, num_cutoff=min_reads_count)
                 # delete trmmed fastq to save space
-                if os.path.exists(trimmed_fastq):
+                if trim_seq!=0 and os.path.exists(trimmed_fastq):
                     os.remove(trimmed_fastq)
                 print(static_infor)
                 loginfor[s_id]=static_infor
@@ -116,7 +116,7 @@ def rseq_blastn_pipeline(proj_name,
 
                 # Do BLASTN
                 blastn_start_time = time.time()
-                blast_out_file = blast_tools.RunBLASTN(blastn, mkdb, s_id, trna_fa, filtered_fasta, out_dir,eval=blastn_e_cutoff,hit_number=blastn_max_hit_num)
+                blast_out_file = blast_tools.RunBLASTN(blastn, mkdb, s_id, trna_fa, filtered_fasta, out_dir, eval=blastn_e_cutoff, hit_number=blastn_max_hit_num)
                 #blast_out_file = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/output/SRR1836126_1_tRNA_blast_out.tab"
                 # Analysis BLASTN result
                 if blast_out_file != "":
@@ -124,7 +124,7 @@ def rseq_blastn_pipeline(proj_name,
                     tRNA_reads_count_file = out_dir + "/" + s_id + "_" + proj_name + "_count.tab"
                     tRNA_reads_hit_file = out_dir + "/" + s_id + "_" + proj_name + "_hit.tab"
                     blast_tools.AnalysisBlastOut2(blast_out_file, num_dic_txt, tRNA_dic,
-                                                tRNA_reads_count_file, tRNA_reads_hit_file, url_len,tRF_Min_Length=min_trf_len,max_mismatch=blastn_max_mismatch)
+                                                  tRNA_reads_count_file, tRNA_reads_hit_file, url_len, tRF_Min_Length=min_trf_len, max_mismatch=blastn_max_mismatch)
                     print("Hit file :"+tRNA_reads_hit_file)
                     end_time = time.time()
                     processing_time = end_time - start_time
@@ -281,7 +281,6 @@ def main(argv):
         "t_slidingwindow": "4:15",
         "t_minlen" : 18,
         "t_threads" : 2,
-
 
         #########################################################
         # Read Filtering

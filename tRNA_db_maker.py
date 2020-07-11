@@ -1,6 +1,6 @@
 import re, os, subprocess
-import share
-from trna import tRNA
+from lib_code import share
+from lib_code.trna import tRNA
 import sys, getopt
 
 #Generate four tRNA fasta files
@@ -29,7 +29,7 @@ def CreatetRNAFastas(bed,name,ref_fasta,trna_db_dir,offset=60):
 
             #f0.write(chr+"\t"+str(u_start)+"\t"+str(u_end)+"\t"+name+"\t0\t"+strand+"\n")
             #full_seq= share.getFasta(ref_fasta, chr, start, end)
-            seq_url = share.getFasta(ref_fasta,chr,u_start,u_end).strip()
+            seq_url = share.getFasta(ref_fasta, chr, u_start, u_end).strip()
             #seq_sel = seq[offset:offset+end-start]
             if strand=="-":
                 seq_url = share.reverse_complement(seq_url)

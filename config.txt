@@ -1,13 +1,15 @@
-#########################################################
-# Project Settings
-#########################################################
+#######################################################################
+# Project settings for tRNAExplorer 1.0
+#######################################################################
+# Remove started '#' to active the options
+#----------------------------------------------------------------------
 # The name of project
 proj_name = "test"
 
-# Absolute path of fasta file for tRNAs which was created by tRNA_db_preparing
+# Absolute path of fasta file for tRNAs which was created by tRNA_db_maker
 trna_fa = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/hg38_tRNA_60.fa"
 
-# Absolute path of bed file for tRNA annotations which was created by tRNA_db_preparing
+# Absolute path of bed file for tRNA annotations which was created by tRNA_db_maker
 trna_anno_file = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/hg38_tRNA_60.bed"
 
 # Absolute path of sample information
@@ -64,16 +66,16 @@ out_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/tes
 # BLASTN settings
 #########################################################
 
-# The cutoff to report the match
+# The evalue cutoff to report the match
 # blastn_e_cutoff = 0.001
 
 # The maximum number of matched hits
 # blastn_max_hit_num = 40
 
 #########################################################
-# TRF analyiss settinss
+# TRF analyiss settings
 #########################################################
-# The minmum of tRF length
+# The minimum of tRF length
 # min_trf_len = 20
 
 # The max mismatch allow for valid matches
