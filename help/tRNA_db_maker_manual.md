@@ -1,8 +1,22 @@
-# Manual for tRNAExplorer.py
+# Manual for tRNA_db_maker.py
 ## 1. Usage
 Usage: python tRNAExplorer.py -c <configfile>
 ## 2. Settings
-### 2.1 -c : path to config file
+
+### 2.1 Command options
+
+| Option  | Description  |
+| :------------ |:--------------------------------| 
+| -c     | The absolute path of config file | 
+| -n     | The name of project  |  
+| -f     | Absolute path of FASTA file for tRNAs which was created by tRNA_db_maker |  
+| -a     | Absolute path of bed file for tRNA annotations which was created by tRNA_db_maker  |  
+| -s     | Absolute path of sample information  |  
+| -i     | The directory storing fastq files (Input Directory)  |  
+| -h     | Show the help information  |  
+| -o     | The directory of output files (Out Directory)  | 
+
+
 Config file include all options available to 
 
 ## 3. Output
