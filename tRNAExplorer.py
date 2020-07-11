@@ -419,7 +419,6 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-
 # Test
 # db_dir = "/home/hqyone/python_code/testrepo/szf"
 # tRNA_bed = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/hg38_tRNA_60.bed"
