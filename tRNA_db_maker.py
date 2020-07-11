@@ -29,10 +29,10 @@ def CreatetRNAFastas(bed,name,ref_fasta,trna_db_dir,offset=60):
 
             #f0.write(chr+"\t"+str(u_start)+"\t"+str(u_end)+"\t"+name+"\t0\t"+strand+"\n")
             #full_seq= share.getFasta(ref_fasta, chr, start, end)
-            seq_url = share.getFasta(ref_fasta, chr, u_start, u_end).strip()
+            seq_utr = share.getFasta(ref_fasta, chr, u_start, u_end).strip()
             #seq_sel = seq[offset:offset+end-start]
             if strand=="-":
-                seq_url = share.reverse_complement(seq_url)
+                seq_utr = share.reverse_complement(seq_utr)
 
             # <BLOCKQUOTE>tRNA intron at pos 38-49<BR>GAGGCTGAAGGC(12 bp)</BLOCKQUOTE>
             s = re.search(r'pos\s(\d+)-(\d+)<BR>(\w+)\(', intron)
@@ -45,7 +45,7 @@ def CreatetRNAFastas(bed,name,ref_fasta,trna_db_dir,offset=60):
                 s_end = int(s.group(2))
                 s_seq = s.group(3)
 
-            full_seq = seq_url[offset:offset+end-start]
+            full_seq = seq_utr[offset:offset+end-start]
             seq = full_seq.replace(s_seq,"")
             t = tRNA()
             t.name = name
@@ -55,13 +55,13 @@ def CreatetRNAFastas(bed,name,ref_fasta,trna_db_dir,offset=60):
             t.strand = strand
             t.seq = seq
             t.full_seq = seq
-            t.seq_url = seq_url
-            t.url_len = offset
+            t.seq_utr = seq_utr
+            t.utr_len = offset
             t.intron_infor = intron
 
             tRNA_Dic[t.name] = t
 
-            f1.write(">"+name+"\n"+seq_url.upper()+'\n')
+            f1.write(">"+name+"\n"+seq_utr.upper()+'\n')
             #f2.write(">" + name + "\n" + seq2.upper() + '\n')
             #f3.write(">" + name + "\n" + seq3.upper() + '\n')
             #f4.write(">" + name + "\n" + seq4.upper() + '\n')
@@ -240,10 +240,10 @@ def parsetRNAScanFile(tRNAscan, tRNA_Dir, tabFile, faFile, no_mit_tRNA=True, no_
                 if t.intron_infor=="":
                     # Because the is no intron in tRNA
                     OUT_FASTA.write(">PI::" + t.name + "\n")  # Pre tRNA and Pre Intron tRNA
-                    OUT_FASTA.write(t.seq_url + "\n")
+                    OUT_FASTA.write(t.seq_utr + "\n")
                 else:
                     OUT_FASTA.write(">I::" + t.name + "\n")  # Pre tRNA and Pre Intron tRNA
-                    OUT_FASTA.write(t.seq_url + "\n")
+                    OUT_FASTA.write(t.seq_utr + "\n")
                     OUT_FASTA.write(">P::" + t.name + "\n")  # Pre tRNA and Pre Intron tRNA
                     OUT_FASTA.write(t.GetPreMatureNoIntronSeq() + "\n")
                 OUT_FASTA.write(">C::"+t.name + "\n") # Mature CCA tRNA
@@ -280,10 +280,10 @@ def tRNA_DB_Preparing(db_name, tRNA_bed, ref_fasta, tRNAscanSE, offset=60, no_mi
     trna_db_dir = os.path.dirname(os.path.abspath(tRNA_bed))
     print("###### Create FASTA file for tRNAscan SE scanning ")
     result = CreatetRNAFastas(tRNA_bed, db_name, ref_fasta, trna_db_dir, offset)
-    trna_url_fasta= result['fastafile']
+    trna_utr_fasta= result['fastafile']
     trna_scan_out = trna_db_dir+"/"+db_name+"_scan_"+str(offset)+".out"
     trna_detail_bed = trna_db_dir + "/" + db_name + "_" + str(offset) + ".bed"
-    output_code = RuntRNAScan(trna_db_dir, tRNAscanSE, trna_url_fasta, trna_scan_out)
+    output_code = RuntRNAScan(trna_db_dir, tRNAscanSE, trna_utr_fasta, trna_scan_out)
     if output_code!=-1:
         print("###### tRNAScan-SE running is down, Generate bed file with annotations ...")
         fastfile = trna_db_dir+"/"+db_name+"_" + str(offset) +".fa"
@@ -303,7 +303,7 @@ def tRNA_DB_Preparing(db_name, tRNA_bed, ref_fasta, tRNAscanSE, offset=60, no_mi
         else:
             print("Something wrong when parsing tRNAScan out file: "+trna_scan_out)
     else:
-        print("Something wrong during running tRNA ScanSE with FASTA file :"+trna_url_fasta)
+        print("Something wrong during running tRNA ScanSE with FASTA file :"+trna_utr_fasta)
     return []
 
 
