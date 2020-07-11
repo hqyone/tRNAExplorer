@@ -127,7 +127,7 @@ The file includes reads numbers, processing time for each sample.
 * Cleavage sites information for tRNAs in different samples
 * Theoretically，a cleavage of RNA will create two reads (5' and 3' reads) (A)
 * tRNAExplorer defined eleven types of cleavage sites (B)
-![alt text](../images/cleavage.png)
+![cleavage](../images/cleavage.png | width=100)
 * See a [sample](../test/output/cleavage_sites.tsv)
 
 
