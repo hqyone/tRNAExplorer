@@ -22,9 +22,9 @@ tRNAExplorer is a Python pipeline optimized for analysing tRF (tRNA-derived frag
    * HTSeq>=0.11.0
    * pathlib
    
-  User can install these python libraries using requirement files ([Python3](./lib_code/requirements_3.txt), [Python2.7](./lib_code/requirements.txt)) 
+    User can install these python libraries using requirement files ([Python3](./lib_code/requirements_3.txt), [Python2.7](./lib_code/requirements.txt)) 
   
-  Using : `pip3 install -r requirements_3.txt` or `pip install -r requirements.txt`
+    Using : `pip3 install -r requirements_3.txt` or `pip install -r requirements.txt`
 ## 3. Installation
 * Step 1: Download and unzip the pipeline  https://github.com/hqyone/tRNAExplorer/archive/master.zip
 * Step 2: Install requirements ...
