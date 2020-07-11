@@ -166,7 +166,9 @@ def rseq_blastn_pipeline(proj_name,
             LOG.write(line+"\n")
         LOG.close()
         return 0
-    except:
+    except Exception as inst:
+        print(type(inst))  # the exception instance
+        print(inst)
         print('Some things wrong during pipeline running!')
         return -1
         # sys.exit(2)
@@ -219,7 +221,9 @@ def rseq_blastn_pipeline2(config):
         print('Project ['+config["proj_name"]+'] running completely!')
         return 0
         #sys.exit(0)
-    except:
+    except Exception as inst:
+        print(type(inst))  # the exception instance
+        print(inst)
         print('Some things wrong during pipeline running!')
         return -1
         #sys.exit(2)
