@@ -214,3 +214,12 @@
 | read_5_fragment | The 5' part of read which dose not mapping to tRNA sequences |
 | read_fragment | The part of read which mapping to tRNA sequences |
 | read_3_fragment | The 3' part of read which dose not mapping to tRNA sequences |
+
+### 3.9 visual_config.tsv
+A tsv file including paths of files required for the visualization module.
+
+| Row  | Description  |
+| :------------ |:--------------------------------| 
+| out_dir    | Directory of output | 
+| sample_tsv     | The tsv of sample sheet |  
+| trna_anno_bed     | The BED file with tRNA sequence and annotations  |

@@ -77,6 +77,14 @@ def rseq_blastn_pipeline(proj_name,
             fastq_files = share.getExtFileList(fastq_dir, ".fq")
             ext = ".fq"
 
+        # Create visual_config file
+        visual_config = out_dir + "/visual_config.tsv"  # trna vs sample: pileup max matrix
+        VISUAL_CONFIG = open(visual_config, 'w')
+        VISUAL_CONFIG.write("out_dir="+out_dir)
+        VISUAL_CONFIG.write("sample_tsv=" + sample_tsv)
+        VISUAL_CONFIG.write("trna_anno_bed=" + trna_anno_bed)
+        VISUAL_CONFIG.close()
+
         for f in fastq_files:
             s_id = os.path.basename(f).replace(".fastq", "").replace(".fq", "")
             fastq_dir = os.path.dirname(os.path.abspath(f))
