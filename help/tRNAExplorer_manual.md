@@ -1,8 +1,15 @@
-# Manual for tRNAExplorer.py
+# Manual for tRNAExplorer.py (2020/7/11)
 ## 1. Usage
-Usage: python tRNAExplorer.py -c <configfile>
+* Run test data by      `python <root path>/tRNAExploer.py`
+* Get help information  `python <root path>/tRNAExploer.py -h`
+* Run with customized data: `python <root path>/tRNAExploer.py -n <proj_name> -f <trna_fa> -a <trna_anno_file> -s <sample tsv> -i <fastq_dir> -o <out_dir>`
+* Run with advanced settings using config file: 
+    *   Modify config.txt  (taken [config.txt](config.txt) in root directory as template)
+    *   Run `python <root path>/tRNAExplorer.py -c config.txt`
+    *   Details about tRNAExploer.py can be found following ...
 ## 2. Settings
-
+* There are two ways to config the pipeline: using command options or a config file.
+* When you use both way together, the options in config files will overwrite command options
 ### 2.1 Command options
 * User can use command options to launch pipeline in 
 
@@ -48,8 +55,9 @@ Usage: python tRNAExplorer.py -c <configfile>
 | blastn_max_mismatch   | TRF | 2 | The max mismatch allow for valid matches |
 
 ## 3. Output
-### 3.1 static.log [(see a sample)](../test/output/static.log)
-The file includes reads numbers, processing time for each sample.
+### 3.1 static.log
+* The file includes reads numbers, processing time for each sample.
+* See a [sample](../test/output/static.log)
 
 | Column  | Description  |
 | :------------ |:--------------------------------| 
@@ -64,7 +72,7 @@ The file includes reads numbers, processing time for each sample.
 | trim_time     | Time used by trimming (seconds)  |  
 | filter_time     | Time used by filtering and removing redundant reads (seconds)  |  
 | blastn_time     | Time used by mapping using BLASTN (seconds)  |  
-| A - I    | The numbers of nine types of reads  |  
+| A ... I    | The numbers of nine types of reads  |  
 | intro_cl_ratio     | Intron cleavage ratio = F/(E+F)  |  
 | u5_cl_ratio     | 5’ UTR cleavage ratio = (C)/(C+B)  | 
 | u3_cl_ratio     | 3’ UTR cleavage ratio = (H+I)/(G+H+I)  | 
@@ -127,10 +135,10 @@ The file includes reads numbers, processing time for each sample.
 * Cleavage sites information for tRNAs in different samples
 * Theoretically，a cleavage of RNA will create two reads (5' and 3' reads) (A)
 * tRNAExplorer defined eleven types of cleavage sites (B)
-![cleavage](../images/cleavage.png | width=100 )
+
+![cleavage](../images/cleavage.png)
+
 * See a [sample](../test/output/cleavage_sites.tsv)
-
-
 
 
 | Column  | Description  |
