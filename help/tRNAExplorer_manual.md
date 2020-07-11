@@ -1,31 +1,124 @@
-# tRNAExplorer (v1.0)
-## 1. Introduction
-A Python pipeline optimized for analysing tRF (tRNA-derived fragments) profiles of multiple samples using small-RNA-seq data.
-Major functions:
-1. Categorize and quantify tRNA/tRFs.
-2. Discover novel tRNA cleavage sites.
-3. Discover new base additions on tRFs 
-3. Comparison and visualization of tRF profile across multiple samples
+# Manual for tRNAExplorer.py
+## 1. Usage
+Usage: python tRNAExplorer.py -c <configfile>
+## 2. Settings
 
-## 2. Requirements
-1. Trimmomatics 0.39 http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
-2. BLASTN (ncbi-blast-2.10.0+) https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
-3. Python (version 2.7 or 3.x) and packages
-   * jupyter>=1.0.0
-   * scipy==1.1.0
-   * numpy>=1.16.1
-   * pandas==0.23.0
-   * matplotlib==2.2.5
-   * seaborn>=0.9.0
-   * pysam >= 0.8
-   * HTSeq>=0.11.0
+### 2.1 Command options
+* User can use command options to launch pipeline in 
+
+| Option  | Description  |
+| :------------ |:--------------------------------| 
+| -c     | The absolute path of config file | 
+| -n     | The name of project  |  
+| -f     | Absolute path of FASTA file for tRNAs which was created by tRNA_db_maker |  
+| -a     | Absolute path of bed file for tRNA annotations which was created by tRNA_db_maker  |  
+| -s     | Absolute path of sample information  |  
+| -i     | The directory storing fastq files (Input Directory)  |  
+| -h     | Show the help information  |  
+| -o     | The directory of output files (Out Directory)| 
+
+### 2.2 Configure file
+* Configure file is a place to set all options available for the pipeline. 
+* User can use [config.txt](config.txt) as a template to customize it.
+* Removing/Adding the "#" at the start of line will enable/disable following option
+* Notice: The option in configure file will overwrite the settings in command line
+
+| Name  | Section  | Default  |Description
+| :---------|:---------|:-------------|:--------------------------------| 
+| proj_name  | General  | NA | Project name | 
+| trna_fa    | General  | NA | Absolute path of fasta file for tRNAs which was created by tRNA_db_maker |   
+| trna_anno_file    | General | NA  | Absolute path of bed file for tRNA annotations which was created by tRNA_db_maker |
+| sample_tsv  | General | NA  | Absolute path of sample information | 
+| fastq_dir    | General | NA | The directory storing FASTQ files (Input Directory) |   
+| out_dir    | General | NA | The directory of output files (Out Directory) |
+| url_len    | General | 60 | The length of UTRs, default = 60', should match utr length in trna_anno bed |
+| t_do  | Trimmomatic  | 1 | Whether trimming sequences 0 means "no" others means "yes"| 
+| t_adapter    | Trimmomatic | Space | Absolute path for adapter FASTA file, When the file is not available using <trimmomatic_dir>+"/adapters/TruSeq3-SE.fa |   
+| t_phred    | Trimmomatic  | 33 | 33 | Absolute path of bed file for tRNA annotations which was created by tRNA_db_maker |
+| t_leading  | Trimmomatic  | 3 | Absolute path of sample information | 
+| t_tailing    | Trimmomatic  | 3 | The directory storing FASTQ files (Input Directory) |   
+| t_slidingwindow   | Trimmomatic |"4:15" | The directory of output files (Out Directory) |
+| t_minlen    | Trimmomatic  | 18 | The length of UTRs, default = 60', should match utr length in trna_anno bed |
+| t_threads   | Trimmomatic  | 2 | The length of UTRs, default = 60', should match utr length in trna_anno bed |
+| min_read_qscore  | Filtering  | 20 | Remove reads, if it contains any base below a threshold quality| 
+| min_reads_count    | Filtering | 50 | Remove reads, if the read appears less than certain times in the FASTQ file |   
+| blastn_e_cutoff    | BLASTN  | 0.001 | The evalue cutoff to report the match|
+| blastn_max_hit_num  | BLASTN  | 40 | The maximum number of matched hits | 
+| min_trf_len    | TRF  | 20 | The minimum of tRF length |   
+| blastn_max_mismatch   | TRF | 2 | The max mismatch allow for valid matches |
+
+## 3. Output
+### 3.1 static.log
+The file includes reads numbers, processing time for each sample.
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #SampleID      | sample ID | 
+| total_num     | Total number of reads in input FASTQ file  |  
+| removed_num     | Total number of reads removed by trimming and filtering |  
+| survived_num     | Total number of reads in the trimmed and filtered FASTQ file  |  
+| non_redundant_num     | The number of non redundant reads in FASTA file  |  
+| start_time     |  Time stamp to starting processing  |  
+| end_time     | Time stamp to ending processing  |  
+| processing_time     | Total time used for processing the sample  |  
+| trim_time     | Time used by trimming (seconds)  |  
+| filter_time     | Time used by filtering and removing redundant reads (seconds)  |  
+| blastn_time     | Time used by mapping using BLASTN (seconds)  |  
+| A - I    | The numbers of nine types of reads  |  
+| intro_cl_ratio     | Intron cleavage ratio = F/(E+F)  |  
+| u5_cl_ratio     | 5’ UTR cleavage ratio = (C)/(C+B)  | 
+| u3_cl_ratio     | 3’ UTR cleavage ratio = (H+I)/(G+H+I)  | 
+| cca_add_ratio     | CCA addition ratio = (I)/(I+H)| 
 
 
-## 3. Installation and Case Run
-* Step 1: Download whole pipeline  https://github.com/hqyone/tRNAExplorer/archive/master.zip
-* Step 2: Install requirements 
-* Step 3: Download whole pipeline
+### 3.2 trf_sample_matrix.tsv
+Read number matrix of tRFs across tRFs and samples
 
-##
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| tRF_ID      | Sequence based ID of tRF | 
+| tRNA_Families     | tRNA Family  |  
+| tRNA_IDs     | ID list of tRNA which may generated the tRF |  
+| seq     | Sequence of tRF  |  
+| sample IDs ....     | List of sample IDs  |  
 
-![alt text](./images/architecture.png)
+### 3.3 trna_sample_readcount_matrix.tsv
+Read number matrix across tRNAs and samples
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #RNA_family      | tRNA Family ID | 
+| tRNA_ID     | ID of tRNA  |  
+| sample IDs ....     | List of sample IDs  |    
+
+### 3.4 trna_sample_pileup_matrix.tsv
+Pileup depth matrix across tRNAs and samples 
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #RNA_family      | tRNA Family ID | 
+| tRNA_ID     | ID of tRNA  |  
+| sample IDs ....     | List of sample IDs  | 
+  
+### 3.5 trna_trftype_matrix.tsv
+The read number matrix across samples/tRNAs and tRF types
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #SampleID      | Sample ID | 
+| tRNA_ID     | ID of tRNA  |  
+| Sample IDs ....     | List of sample IDs  | 
+
+### 3.6 sample_trftype_matrix.tsv
+The read number matrix across samples and tRF types
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #SampleID      | Sample ID | 
+| tRF type ...     | The type of tRFs includes full_tRNA,   |  
+| Sample IDs ....     | List of sample IDs  | 
+
+### 3.7 cleavage_sites.tsv
+Cleavage sites information for tRNAs in different samples
+### 3.8 profiles.tsv
+Pileup information for tRNAs in different samples
