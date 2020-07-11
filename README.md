@@ -39,7 +39,7 @@ tRNAExplorer is a Python pipeline optimized for analysing tRF (tRNA-derived frag
 
     | Column  | Description  |
     | :------------ |:--------------------------------| 
-    | ID    | ID of sample, match the name of FASTQ file in fastq_dir. For example: ID.fastq or ID.fq | 
+    | ID    | ID of sample, match the name of FASTQ file in fastq_dir. For example: `<ID>.fastq` or `<ID>.fq` | 
     | Description     | Short string describe the sample |  
 
 * Run with customized data: `python tRNAExploer.py -n <proj_name> -f <trna_fa> -a <trna_anno_file> -s <sample tsv> -i <fastq_dir> -o <out_dir>`
