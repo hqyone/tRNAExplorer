@@ -310,7 +310,7 @@ def tRNA_DB_Preparing(db_name, tRNA_bed, ref_fasta, tRNAscanSE, offset=60, no_mi
 def main(argv):
     # Default settings
     db_name= "hg38_tRNA"
-    tRNA_bed= "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/ucsc_hg38_tRNA.bed"
+    tRNA_bed= "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/ucsc_hg38_tRNA.bed"
     ref_fasta ="/Users/hqyone/Desktop/hg38/hg38.fa"
     tRNAscanSE="/usr/local/bin/tRNAscan-SE"
     offset=60
@@ -378,8 +378,8 @@ def main(argv):
 if __name__ == "__main__":
     main(sys.argv[1:])
 
-# # Local Test
-# bed = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/ucsc_hg38_tRNA.bed"
+# Local Test
+# bed = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/ucsc_hg38_tRNA.bed"
 # name = "hg38_tRNA"
 # ref_fasta="/Users/hqyone/Desktop/hg38/hg38.fa"
 # trna_db_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools"
