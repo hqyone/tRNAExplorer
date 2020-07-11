@@ -1,96 +1,85 @@
 # Manual for tRNA_db_maker.py
+The program can generate two file as a tRNA database which will be used by downstream [tRNAExplorer.py](../tRNAExplorer.py) processing
+## 1. Requirements
+1. tRNA bed file which can be download from UCSC table browser ([Sample](../test/trna_db/hg38_tRNA.bed)) (https://genome.ucsc.edu/cgi-bin/hgTables)
+2. FASTA file of the genome with same version using by tRNA bed file.
+3. tRNAScan-SE should be download and installed 
+
 ## 1. Usage
-Usage: python tRNAExplorer.py -c <configfile>
+Usage: `python tRNA_db_maker.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <offset> --no_mit <1/else> --no_pseu <1/else> --minq <number>`
 ## 2. Settings
 
-### 2.1 Command options
+| Option  | Default | Description  |
+| :------------| :------ |:--------------------------------| 
+| -n    |NA| The name of tRNA database  |  
+| -b     |NA | BED file of tRNA genes which can be downloaded from UCSC table browser (https://genome.ucsc.edu/cgi-bin/hgTables) |  
+| -r      |NA| Absolute path of the FASTA file of genome  |  
+| -s      |NA| Absolute path of tRNAScan-SE  |  
+| -o     |60 | The length of UTR |  
+| --no_mit    |1| 1 means removing all nucleic mitochondrial tRNA genes |  
+| --no_pseu   |1 | 1 means removing all pseudogene tRNA genes  | 
+| --minq | 30| The minimum of quality scores of tRNAs  | 
 
-| Option  | Description  |
-| :------------ |:--------------------------------| 
-| -c     | The absolute path of config file | 
-| -n     | The name of project  |  
-| -f     | Absolute path of FASTA file for tRNAs which was created by tRNA_db_maker |  
-| -a     | Absolute path of bed file for tRNA annotations which was created by tRNA_db_maker  |  
-| -s     | Absolute path of sample information  |  
-| -i     | The directory storing fastq files (Input Directory)  |  
-| -h     | Show the help information  |  
-| -o     | The directory of output files (Out Directory)  | 
-
-
-Config file include all options available to 
 
 ## 3. Output
-### 3.1 static.log
-The file includes reads numbers, processing time for each sample.
+
+tRNA_db_maker will create two files:
+
+1. FASTA file of hybrid tRNA library ([Example](../test/trna_db/hg38_tRNA_60.fa))
+   *   pre-tRNA with intron(s) (I)
+   *   pre-tRNA without intron(s) (P)
+   *   mature tRNA (M)
+   *   mature tRNA with CCA (C)
+   
+2. A extended bed file with tRNAs sequence and structure annotations ([Example](../test/trna_db/hg38_tRNA_60.bed))
+* All position are 1 based
 
 | Column  | Description  |
 | :------------ |:--------------------------------| 
-| #SampleID      | sample ID | 
-| total_num     | Total number of reads in input FASTQ file  |  
-| removed_num     | Total number of reads removed by trimming and filtering |  
-| survived_num     | Total number of reads in the trimmed and filtered FASTQ file  |  
-| non_redundant_num     | The number of non redundant reads in FASTA file  |  
-| start_time     |  Time stamp to starting processing  |  
-| end_time     | Time stamp to ending processing  |  
-| processing_time     | Total time used for processing the sample  |  
-| trim_time     | Time used by trimming (seconds)  |  
-| filter_time     | Time used by filtering and removing redundant reads (seconds)  |  
-| blastn_time     | Time used by mapping using BLASTN (seconds)  |  
-| A - I    | The numbers of nine types of reads  |  
-| intro_cl_ratio     | Intron cleavage ratio = F/(E+F)  |  
-| u5_cl_ratio     | 5’ UTR cleavage ratio = (C)/(C+B)  | 
-| u3_cl_ratio     | 3’ UTR cleavage ratio = (H+I)/(G+H+I)  | 
-| cca_add_ratio     | CCA addition ratio = (I)/(I+H)| 
+| #chrom    | Chromosome name  |  
+| start     | Start position in chromosome | 
+| end     | End position in chromosome |   
+| name     | Name of tRNA  |  
+| score     | No used , always 0  |  
+| strand     | The strand of tRNA gene (-/+) |  
+| full_seq     | tRNA sequence with intron |  
+| seq     | Mature tRNA sequence without intron  | 
+| intron_infor | A string describe intron : intron: 38-58 (98-118) | 
+| anticodon     | Anticodon of the tRNA |  
+| anticodon_start  | start position at UTR+tRNA with intron | 
+| anticodon_end | end position at UTR+tRNA with intron |
+| acceptor | Acceptor (Amino acid carried by the tRNA)|
+| family | Family ID|
+| seq_utr | tRNA seq |
+| utr_len | The length of URT |
+| map_start | The start position of region predicted by tRNAScan-SE in tRNA|
+| map_end | The end position of region predicted by tRNAScan-SE in tRNA|
+| map_len | The length of region predicted by tRNAScan-SE in tRNA|
+| map_structure_str| String for structure prediction predicted by tRNAScan-SE|
+| map_seq|The sequenced predicted by tRNAScan-SE in tRNA. It should be the same of full_seq |
+| anticodon_start_in_map|The start position of anticodon in map_seq |
+| anticodon_end_in_map|The end position of anticodon in map_seq|
+| map_scan_score|tRNAScan-SE score indicating possibility to be tRNA |
+| possible_type|pseudogene or not|
+| d_loop_start| The start position of D loop stem |
+| d_loop_lstart|The start position of D loop (not including the stem of D loop)|
+| d_loop_lend|The end position of D loop (not including the stem of D loop)|
+| d_loop_end|The end position of A loop stem|
+| a_loop_start| The start position of A loop stem |
+| a_loop_lstart|The start position of A loop (not including the stem of A loop)|
+| a_loop_lend|The end position of A loop (not including the stem of A loop)|
+| a_loop_end|The end position of A loop stem|
+| v_loop_start| The start position of Variant loop stem |
+| v_loop_lstart|The start position of Variant loop (not including the stem of Variant loop)|
+| v_loop_lend|The end position of Variant loop (not including the stem of Variant loop)|
+| v_loop_end|The end position of Variant loop stem|
+| t_loop_start| The start position of T loop stem |
+| t_loop_lstart|The start position of T loop (not including the stem of T loop)|
+| t_loop_lend|The end position of T loop (not including the stem of T loop)|
+| t_loop_end|The end position of T loop stem|
+| stem_for_start|The start position of 5' stem of tRNA |
+| stem_for_end|The end position of 5' stem of tRNA |
+| stem_rev_start|The start position of 3' stem of tRNA |
+| stem_rev_end|The end position of 3' stem of tRNA |
+   
 
-
-### 3.2 trf_sample_matrix.tsv
-Read number matrix of tRFs across tRFs and samples
-
-| Column  | Description  |
-| :------------ |:--------------------------------| 
-| tRF_ID      | Sequence based ID of tRF | 
-| tRNA_Families     | tRNA Family  |  
-| tRNA_IDs     | ID list of tRNA which may generated the tRF |  
-| seq     | Sequence of tRF  |  
-| sample IDs ....     | List of sample IDs  |  
-
-### 3.3 trna_sample_readcount_matrix.tsv
-Read number matrix across tRNAs and samples
-
-| Column  | Description  |
-| :------------ |:--------------------------------| 
-| #RNA_family      | tRNA Family ID | 
-| tRNA_ID     | ID of tRNA  |  
-| sample IDs ....     | List of sample IDs  |    
-
-### 3.4 trna_sample_pileup_matrix.tsv
-Pileup depth matrix across tRNAs and samples 
-
-| Column  | Description  |
-| :------------ |:--------------------------------| 
-| #RNA_family      | tRNA Family ID | 
-| tRNA_ID     | ID of tRNA  |  
-| sample IDs ....     | List of sample IDs  | 
-  
-### 3.5 trna_trftype_matrix.tsv
-The read number matrix across samples/tRNAs and tRF types
-
-| Column  | Description  |
-| :------------ |:--------------------------------| 
-| #SampleID      | Sample ID | 
-| tRNA_ID     | ID of tRNA  |  
-| Sample IDs ....     | List of sample IDs  | 
-
-### 3.6 sample_trftype_matrix.tsv
-The read number matrix across samples and tRF types
-
-| Column  | Description  |
-| :------------ |:--------------------------------| 
-| #SampleID      | Sample ID | 
-| tRF type ...     | The type of tRFs includes full_tRNA,   |  
-| Sample IDs ....     | List of sample IDs  | 
-
-### 3.7 cleavage_sites.tsv
-Cleavage sites information for tRNAs in different samples
-### 3.8 profiles.tsv
-Pileup information for tRNAs in different samples
