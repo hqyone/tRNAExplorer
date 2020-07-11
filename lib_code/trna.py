@@ -17,8 +17,8 @@ class tRNA():
         self.acceptor = ""
         self.family = ""
         # Fasta file
-        self.seq_url = ""
-        self.url_len = 0
+        self.seq_utr = ""
+        self.utr_len = 0
         # tRNAScan SE results
         self.map_start = ""
         self.map_end = ""
@@ -39,7 +39,7 @@ class tRNA():
     def GetTabTitle(self):
         return "#chrom\tstart\tend\tname\tscore\tstrand\tfull_seq\tseq\tintron_infor\tanticodon\tanticodon_start"+ \
                "\tanticodon_end\tacceptor"+ \
-               "\tfamily\tseq_url\turl_len\tmap_start\tmap_end\tmap_len\tmap_structure_str\tmap_seq"+\
+               "\tfamily\tseq_utr\tutr_len\tmap_start\tmap_end\tmap_len\tmap_structure_str\tmap_seq"+\
                "\tanticodon_start_in_map\tanticodon_end_in_map\tmap_scan_score\tpossible_type"+\
                "\td_loop_start\td_loop_lstart\td_loop_lend\td_loop_end" + \
                "\ta_loop_start\ta_loop_lstart\ta_loop_lend\ta_loop_end" + \
@@ -51,7 +51,7 @@ class tRNA():
     def GetTabStr(self):
         a = str(self.chrom)+"\t"+str(self.start)+"\t"+str(self.end)+"\t"+self.name+"\t0\t"+str(self.strand)+"\t"+str(self.full_seq)+"\t"+str(self.seq)+"\t"+ \
             self.intron_infor + "\t" + self.anticodon+"\t"+str(self.anticodon_start) +"\t"+str(self.anticodon_end) + "\t" + \
-            str(self.acceptor)+"\t"+str(self.family) +"\t"+ str(self.seq_url) + "\t" +str(self.url_len) + "\t" +\
+            str(self.acceptor)+"\t"+str(self.family) +"\t"+ str(self.seq_utr) + "\t" +str(self.utr_len) + "\t" +\
             str(self.map_start)+"\t"+str(self.map_end)+ "\t"+str(self.map_len) +"\t"+self.map_structure_str +"\t"+self.map_seq +"\t"+ \
             str(self.anticodon_start_in_map)+"\t"+str(self.anticodon_end_in_map)+"\t"+str(self.map_scan_score)+"\t"+str(self.possible_type)+"\t"+ \
             str(self.d_loop["start"])+"\t"+str(self.d_loop["l_start"])+"\t"+str(self.d_loop["l_end"])+"\t"+str(self.d_loop["end"])+"\t"+ \
@@ -79,8 +79,8 @@ class tRNA():
             self.acceptor = contents[12]
             self.family = contents[13]
             # Fasta file
-            self.seq_url = contents[14]
-            self.url_len = int(contents[15])
+            self.seq_utr = contents[14]
+            self.utr_len = int(contents[15])
             # tRNAScan SE results
             self.map_start = int(contents[16])
             self.map_end = int(contents[17])
@@ -125,9 +125,9 @@ class tRNA():
             if s:
                 s_start = int(s.group(3))
                 s_end = int(s.group(4))
-            return self.seq_url[0:s_start-1]+self.seq_url[s_end:]
+            return self.seq_utr[0:s_start-1]+self.seq_utr[s_end:]
         else:
-            return self.seq_url
+            return self.seq_utr
 
     def GetKeySitesInfor(self, type):
         if type=="I":
@@ -160,7 +160,7 @@ class tRNA():
     # end: end position of read in object position
     # I,1,75
     def CalculateAlignmentLocInI(self, read_class, start, end):
-        offset = self.url_len
+        offset = self.utr_len
         if read_class!="A" or read_class!="B":
             start+=offset
             end+=offset
@@ -195,7 +195,7 @@ class tRNA():
             ptype = "3-UTR"
         elif pos == len(self.full_seq)-1:
             ptype = "End"
-        elif pos >=self.anticodon_start-self.url_len and pos <=self.anticodon_end-self.url_len:
+        elif pos >=self.anticodon_start-self.utr_len and pos <=self.anticodon_end-self.utr_len:
             ptype = "Anticodon"
         elif self.d_loop["start"]!=-1 and  pos >= self.d_loop["start"] and pos <= self.d_loop["end"]:
             ptype = "D-loop"
@@ -265,17 +265,17 @@ class tRNA():
                 context_5_seq = ""
                 context_3_seq =""
                 if type == "startpos":
-                    context_5_seq= self.seq_url[max(0,pos-context_seq_len):min(len(self.seq_url),pos)]
-                    context_3_seq = self.seq_url[max(0,pos): min(len(self.seq_url),pos+context_seq_len)]
+                    context_5_seq= self.seq_utr[max(0,pos-context_seq_len):min(len(self.seq_utr),pos)]
+                    context_3_seq = self.seq_utr[max(0,pos): min(len(self.seq_utr),pos+context_seq_len)]
                 elif type == "endpos":
-                    context_5_seq = self.seq_url[max(0, pos - context_seq_len+1):min(len(self.seq_url), pos+1)]
-                    context_3_seq = self.seq_url[max(0, pos+1): min(len(self.seq_url), pos + context_seq_len+1)]
+                    context_5_seq = self.seq_utr[max(0, pos - context_seq_len+1):min(len(self.seq_utr), pos+1)]
+                    context_3_seq = self.seq_utr[max(0, pos+1): min(len(self.seq_utr), pos + context_seq_len+1)]
                 if type == "startpos":
                     pos-=1
                 potential_peak["P"+str(pos)]={
-                    "pos":pos-self.url_len,
+                    "pos":pos-self.utr_len,
                     "int":profile[i],
-                    "ptype":self.FindPosType(pos-self.url_len),
+                    "ptype":self.FindPosType(pos-self.utr_len),
                     #"sn_ratio":round(float(profile[i])/median,3),
                     "c_5_seq" :context_5_seq,
                     "c_3_seq": context_3_seq
@@ -284,7 +284,7 @@ class tRNA():
 
     #I,1,75
     def CreateTrfProfiles(self, brief_mapping_infor_ls, offset):
-        profile_length = len(self.seq_url)
+        profile_length = len(self.seq_utr)
         profiles = {
             "total_reads_num": 0,
             "pileup_height": 0,
