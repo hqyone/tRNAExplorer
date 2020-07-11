@@ -1,6 +1,7 @@
 #######################################################################
 # Global settings for tRNAExplorer 1.0
 #######################################################################
+
 # Absolute path to Trimmomatic jar file
 t_path="/Users/hqyone/Downloads/Trimmomatic-0.39/trimmomatic-0.39.jar"
 
