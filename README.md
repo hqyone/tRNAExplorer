@@ -94,7 +94,16 @@ This notebook is self-explained. User can launch the notebook using following co
  *  ` jupyter notebook`
 The user can also do their own analysis based on these tsv files.
 
-## 9. License
+## 9. Testing Data
+* Trimming FASTQ files can be found ` <root>/test/fastq` 
+* The testing data (SRA_ID: SRP055858, SRA files) was downloaded from https://www.ebi.ac.uk/ena/data/view/PRJNA277309
+* For reducing testing time, only 50000 spots from each sample are extracted using the command :
+`fastq-dump -X 50000 -Z sra > fastq`
+* References
+    1. Zheng G, Qin Y, Clark WC, et al. Efficient and quantitative high-throughput tRNA sequencing. Nature Methods. 2015 Sep;12(9):835-837. DOI: 10.1038/nmeth.3478.
+    2. Clark WC, Evans ME, Dominissini D, Zheng G, Pan T. tRNA base methylation identification and quantification via high-throughput sequencing. RNA (New York, N.Y.). 2016 Nov;22(11):1771-1784. DOI: 10.1261/rna.056531.116.
+
+## 10. License
 Copyright (c) 2020 Quanyuan He Ph.D, 
 School of Medicine, Hunan Normal University.
 Released under GPLv3. See
