@@ -72,7 +72,8 @@
 | trim_time     | Time used by trimming (seconds)  |  
 | filter_time     | Time used by filtering and removing redundant reads (seconds)  |  
 | blastn_time     | Time used by mapping using BLASTN (seconds)  |  
-| A ... I    | The numbers of nine types of reads  |  
+| A ... I    | The numbers of nine types of reads  |
+| total     | Total number of tRNA mapped reads  |    
 | intro_cl_ratio     | Intron cleavage ratio = F/(E+F)  |  
 | u5_cl_ratio     | 5’ UTR cleavage ratio = (C)/(C+B)  | 
 | u3_cl_ratio     | 3’ UTR cleavage ratio = (H+I)/(G+H+I)  | 
@@ -216,7 +217,8 @@
 | read_3_fragment | The 3' part of read which dose not mapping to tRNA sequences |
 
 ### 3.9 visual_config.tsv
-A tsv file including paths of files required for the visualization module.
+* A tsv file including paths of files required for the visualization module.
+* See a [sample](../test/output/visual_config.tsv)
 
 | Row  | Description  |
 | :------------ |:--------------------------------| 

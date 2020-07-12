@@ -80,8 +80,8 @@ def rseq_blastn_pipeline(proj_name,
         # Create visual_config file
         visual_config = out_dir + "/visual_config.tsv"  # trna vs sample: pileup max matrix
         VISUAL_CONFIG = open(visual_config, 'w')
-        VISUAL_CONFIG.write("out_dir="+out_dir)
-        VISUAL_CONFIG.write("sample_tsv=" + sample_tsv)
+        VISUAL_CONFIG.write("out_dir="+out_dir+"\n")
+        VISUAL_CONFIG.write("sample_tsv=" + sample_tsv+"\n")
         VISUAL_CONFIG.write("trna_anno_bed=" + trna_anno_bed)
         VISUAL_CONFIG.close()
 
@@ -159,7 +159,7 @@ def rseq_blastn_pipeline(proj_name,
         key_ls = ['total_num','removed_num','survived_num',
                   'non_redundent_num','start_time','end_time','processing_time',
                   'trim_time', 'filter_time', 'blastn_time', 'A','B','C','D','E',
-                  'F','G','H','I','intro_cl_ratio','u5_cl_ratio','u3_cl_ratio','cca_add_ratio']
+                  'F','G','H','I','total','intro_cl_ratio','u5_cl_ratio','u3_cl_ratio','cca_add_ratio']
         for s_id in loginfor:
             statis_obj = loginfor[s_id]
             if title=="":
@@ -339,6 +339,8 @@ def main(argv):
         print('# Output 6: <out_dir>/sample_trftype_matrix.tsv , The read number matrix across samples and tRF types')
         print('# Output 7: <out_dir>/cleavage_sites.tsv , Cleavage sites information for tRNAs in different samples')
         print('# Output 8: <out_dir>/profiles.tsv , Pileup information for tRNAs in different samples')
+        print(
+            '# Output 9: <out_dir>/visual_config.tsv , A tsv file including paths of files required for the visualization module')
         sys.exit(2)
     print('###########################################################################################')
     print('############                      tRNAExplorer ['+str(version)+"]                          #############")
@@ -372,6 +374,7 @@ def main(argv):
             print(
                 '# Output 7: <out_dir>/cleavage_sites.tsv , Cleavage sites information for tRNAs in different samples')
             print('# Output 8: <out_dir>/profile.tsv , Pileup information for tRNAs in different samples')
+            print('# Output 9: <out_dir>/visual_config.tsv , A tsv file including paths of files required for the visualization module')
             sys.exit(0)
         elif opt == '-n':
             config["proj_name"] = arg
