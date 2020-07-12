@@ -62,6 +62,7 @@
 | Column  | Description  |
 | :------------ |:--------------------------------| 
 | #SampleID      | sample ID | 
+| Description     | Description of sample  |  
 | total_num     | Total number of reads in input FASTQ file  |  
 | removed_num     | Total number of reads removed by trimming and filtering |  
 | survived_num     | Total number of reads in the trimmed and filtered FASTQ file  |  
