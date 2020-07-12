@@ -216,7 +216,7 @@
 | read_fragment | The part of read which mapping to tRNA sequences |
 | read_3_fragment | The 3' part of read which dose not mapping to tRNA sequences |
 
-### 3.9 visual_config.tsv
+### 3.10 visual_config.tsv
 * A tsv file including paths of files required for the visualization module.
 * See a [sample](../test/output/visual_config.tsv)
 
