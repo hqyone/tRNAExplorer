@@ -1,8 +1,8 @@
 # coding=utf-8
 import os
-import share
+import lib_code.share as share
 import ntpath
-import MINTplates
+import lib_code.MINTplates as MINTplates
 
 
 # getExpMatrixFile(blast_out_dir,out_dir)

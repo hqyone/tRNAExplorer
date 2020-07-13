@@ -1,7 +1,7 @@
 import os, subprocess
 import lib_code.share as share
 import lib_code.trna as trna
-from cmd_tools import BLASTN
+from lib_code.cmd_tools import BLASTN
 
 # Indexing the tRNA FASTA file
 def CreateBLASTdb(fasta):
