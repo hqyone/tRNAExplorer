@@ -303,7 +303,7 @@ def main(argv):
         #########################################################
         # Read Filtering
         #########################################################
-        "min_read_qscore":20,
+        "min_read_qscore":5,
         "min_read_length":18,
         "min_reads_count":10,
 
