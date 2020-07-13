@@ -1,0 +1,3 @@
+out_dir=/Users/hqyone/PycharmProjects/tRNAExplorer/test/output
+sample_tsv=/Users/hqyone/PycharmProjects/tRNAExplorer/test/samples
+trna_anno_bed=/Users/hqyone/PycharmProjects/tRNAExplorer/test/trna_db/hg38_tRNA_60.bed
