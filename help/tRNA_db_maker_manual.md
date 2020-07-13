@@ -15,10 +15,10 @@ Usage: `python tRNA_db_maker.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <
 | -b     |NA | BED file of tRNA genes which can be downloaded from UCSC table browser (https://genome.ucsc.edu/cgi-bin/hgTables) |  
 | -r      |NA| Absolute path of the FASTA file of genome (see below) |  
 | -s      |NA| Absolute path of tRNAScan-SE  |  
-| -o     |60 | The length of UTR |  
+| -u      |60 | The length of UTR |  
 | --no_mit    |1| 1 means removing all nucleic mitochondrial tRNA genes |  
 | --no_pseu   |1 | 1 means removing all pseudogene tRNA genes  | 
-| --minq | 30| The minimum of quality scores of tRNAs  | 
+| --minq      | 30| The minimum of quality scores of tRNAs  | 
 
 Genome FASTA Sequences can be downloaded from NCBI or UCSC FTP server
 * Human hg38 genome FASTA file [hg38.fa](http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz)

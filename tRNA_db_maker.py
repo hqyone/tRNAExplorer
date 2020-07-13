@@ -320,7 +320,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "n:b:r:s:u:", ["name=","bed=","ref=","scan=","offset=","no_mit=", "no_pseu=","minq="])
     except getopt.GetoptError:
-        print('# Usage: python tRNA_db_maker.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <offset> --no_mit <1/else> --no_pseu <1/else> --minq <number>')
+        print('# Usage: python tRNA_db_maker.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -u <offset> --no_mit <1/else> --no_pseu <1/else> --minq <number>')
         print('# -n <name> : The pref name of database')
         print('# -b <bed> : Absolute path of bed file for tRNAs')
         print('# -r <ref> : Absolute path of Genome FASTA file coordinating with bed file')
@@ -358,7 +358,7 @@ def main(argv):
             print("genome references: " + ref_fasta)
         elif opt in ("-s", "--scan"):
             tRNAscanSE = arg
-        elif opt in ("-o", "--offset"):
+        elif opt in ("-u", "--offset"):
             offset = int(arg)
         elif opt in ("--no_mit"):
             if arg.strip() != "1":
