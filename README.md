@@ -72,7 +72,7 @@ Figure 1: The definitions of four tRNA transcript types and nine read types.
 The tRNAExplorer contains three modules:
 *   tRNAExplorer.py : main program to mapping and quantify tRNA/tRF
 *   tRNA_db_maker.py : program to format the tRNA database which will be used by tRNAExplorer.py
-*   Report_create.ipynb : program to analysis data and draw chart to visualization data.
+*   Report_creater.ipynb : program to analysis data and draw chart to visualization data.
 
 Processing steps are summarized in Figure 2 
 
