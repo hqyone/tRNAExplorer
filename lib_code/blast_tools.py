@@ -1,4 +1,6 @@
-import os, subprocess, share, trna
+import os, subprocess
+import lib_code.share as share
+import lib_code.trna as trna
 from cmd_tools import BLASTN
 
 # Indexing the tRNA FASTA file

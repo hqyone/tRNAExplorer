@@ -1,5 +1,5 @@
-
-import share, re
+import lib_code.share as share
+import re
 
 class tRNA():
     def __init__(self):
