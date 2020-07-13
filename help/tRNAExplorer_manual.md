@@ -52,7 +52,7 @@
 | blastn_e_cutoff    | BLASTN  | 0.001 | The evalue cutoff to report the match|
 | blastn_max_hit_num  | BLASTN  | 40 | The maximum number of matched hits | 
 | blastn_max_mismatch | BLASTN | 2 |The max allow mismatch number |
-| blastn_pident | BLASTN | 98 |The minimum percentage of identify |
+| blastn_pident | BLASTN | 98 |The minimum percentage of identify (0-100) |
 | min_trf_len    | TRF  | 18 | The minimum of tRF length |   
 | blastn_max_mismatch   | TRF | 2 | The max mismatch allow for valid matches |
 
