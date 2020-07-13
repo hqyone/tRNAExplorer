@@ -81,9 +81,11 @@ def drawTrfDistForSamples(d):
     buttom1=np.asarray([0]*len(sample_ls))
     buttom2=np.asarray([0]*len(sample_ls))
     index = 0
+    used_types = []
     for t in types:
         #axs[0].set_xticks(df["#SampleID"])
         if t in df:
+            used_types.append(t)
             axs[0].bar(df["#SampleID"], df[t].values, width, bottom=buttom1, color=types_colors[index])
             axs[1].bar(ratio_df["#SampleID"], ratio_df[t].values, width, bottom=buttom2, color=types_colors[index])
             index+=1
@@ -93,7 +95,7 @@ def drawTrfDistForSamples(d):
     axs[0].set_ylabel("Normalized Reads (K)", fontsize=12)
     axs[1].set_xticklabels(df["Description"], rotation=40, horizontalalignment="right")
     #https://pythonspot.com/matplotlib-legend/
-    axs[1].legend(types,loc='upper center', bbox_to_anchor=(1.1, 1.02), ncol=1)
+    axs[1].legend(used_types,loc='upper center', bbox_to_anchor=(1.1, 1.02), ncol=1)
     axs[1].set_ylabel("Ratio", fontsize=12)
     plt.show()
     plt.savefig(d["report_dir"] +"/tRNA_components.png", dpi=100)
@@ -162,7 +164,7 @@ def drawTrfDistForAcceptersInSamples(d, test=False):
         #axs[0].get_xaxis().set_ticks([])
         axs[0].set_ylabel("Normalized Reads (K)", fontsize=15)
         #https://pythonspot.com/matplotlib-legend/
-        axs[1].legend(types,loc='upper center', bbox_to_anchor=(1.15, 1.02), ncol=1)
+        axs[1].legend(exist_types,loc='upper center', bbox_to_anchor=(1.15, 1.02), ncol=1)
         axs[1].set_ylabel("Ratio", fontsize=14)
         axs[1].set_xlabel("Amino acid", fontsize=15)
         axs[1].set_xticklabels(aa_group.index.tolist(), rotation=40, horizontalalignment="right")
