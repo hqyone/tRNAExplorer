@@ -163,9 +163,13 @@ def rseq_blastn_pipeline(proj_name,
         for s_id in loginfor:
             statis_obj = loginfor[s_id]
             if title=="":
-                title ="#SampleID"+"\t"+ "\t".join(key_ls)
+                title ="#SampleID"+"\tDescription\t"+ "\t".join(key_ls)
                 LOG.write(title + "\n")
-            line = s_id
+
+            sample_des = s_id
+            if s_id in sample_dic:
+                sample_des = sample_dic[s_id]
+            line = s_id+"\t"+sample_des
             for key in key_ls:
                 if key in statis_obj:
                     line += "\t"+str(statis_obj[key])
