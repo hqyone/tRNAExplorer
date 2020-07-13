@@ -73,6 +73,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
                 "G": 0,
                 "H": 0,
                 "I": 0,
+                "total":0,
                 "u3_cl_ratio": 0,
                 "intro_cl_ratio": 0,
                 "u5_cl_ratio": 0,
@@ -115,6 +116,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
                     for a in read_type:
                         if a in statistic_dic[sample_id]:
                             statistic_dic[sample_id][a] += mean_exp
+                            statistic_dic[sample_id]["total"] += mean_exp
                     statistic_dic[sample_id]["trna_mapped_read"] += mean_exp
                     hit_trna_number = int(contents[29])  # Unique/Multiple 1 or above 1
                     trf_type = contents[30]  # Nine Types of tRFs
