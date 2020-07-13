@@ -51,8 +51,12 @@
 | min_reads_count    | Filtering | 50 | Remove reads, if the read appears less than certain times in the FASTQ file |   
 | blastn_e_cutoff    | BLASTN  | 0.001 | The evalue cutoff to report the match|
 | blastn_max_hit_num  | BLASTN  | 40 | The maximum number of matched hits | 
-| min_trf_len    | TRF  | 20 | The minimum of tRF length |   
+| blastn_max_mismatch | BLASTN | 2 |The max allow mismatch number |
+| blastn_pident | BLASTN | 98 |The minimum percentage of identify |
+| min_trf_len    | TRF  | 18 | The minimum of tRF length |   
 | blastn_max_mismatch   | TRF | 2 | The max mismatch allow for valid matches |
+
+Notice: All filtering criteria should be meet in the same time. 
 
 ## 3. Output
 ### 3.1 static.log

@@ -77,7 +77,7 @@ def RunBLASTN(blastn, mkdb, id, db_fasta, query_fasta, blast_out_dir, eval=0.01,
 # 13. sseq
 
 # trna_read_dic is unique map reads number
-def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_count_file, tRNA_reads_hit_file, url_len, tRF_Min_Length=19, max_mismatch=2):
+def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_count_file, tRNA_reads_hit_file, url_len, max_mismatch=2, pident=98):
     dist_dic = {}
     trna_unique_read_dic={}  #For quantifiation
 
@@ -134,7 +134,7 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             sseq = share.reverse_complement(sseq)
             direction = "-"
         #Cutoff here 98 means only reads length longer than 60 bp were allowed for two missmatch
-        if cur_percent>=98 and cur_mismatch+cur_gap<=max_mismatch and len(sseq)>tRF_Min_Length:
+        if cur_percent>=pident and cur_mismatch+cur_gap<=max_mismatch:
             # Get the best hits for each read and accumulate matched tRNA id
             if cur_read_id not in read_trna_dic:
                 read_trna_dic[cur_read_id] = {

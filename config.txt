@@ -72,6 +72,12 @@ out_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/tes
 # The maximum number of matched hits
 # blastn_max_hit_num = 40
 
+# The minimum percentage of identify
+# blastn_pident = 98
+
+# The minimum percentage of identify
+# blastn_max_mismatch = 2
+
 #########################################################
 # TRF analyiss settings
 #########################################################

@@ -34,7 +34,8 @@ def rseq_blastn_pipeline(proj_name,
                          blastn_e_cutoff=0.001,
                          blastn_max_mismatch=2,
                          blastn_max_hit_num=40,
-                         min_trf_len =20,
+                         blastn_pident=98,
+                         min_trf_len =18,
                          trim_seq=1,
                          ):
     try:
@@ -132,7 +133,7 @@ def rseq_blastn_pipeline(proj_name,
                     tRNA_reads_count_file = out_dir + "/" + s_id + "_" + proj_name + "_count.tab"
                     tRNA_reads_hit_file = out_dir + "/" + s_id + "_" + proj_name + "_hit.tab"
                     blast_tools.AnalysisBlastOut2(blast_out_file, num_dic_txt, tRNA_dic,
-                                                  tRNA_reads_count_file, tRNA_reads_hit_file, url_len, tRF_Min_Length=min_trf_len, max_mismatch=blastn_max_mismatch)
+                                                  tRNA_reads_count_file, tRNA_reads_hit_file, url_len, max_mismatch=blastn_max_mismatch,pident=blastn_pident)
                     print("Hit file :"+tRNA_reads_hit_file)
                     end_time = time.time()
                     processing_time = end_time - start_time
@@ -228,6 +229,7 @@ def rseq_blastn_pipeline2(config):
             blastn_e_cutoff=config["blastn_e_cutoff"],
             blastn_max_mismatch=config["blastn_max_mismatch"],
             blastn_max_hit_num=config["blastn_max_hit_num"],
+            blastn_pident=config["blastn_pident"],
             min_trf_len=config["min_trf_len"],
             trim_seq=config["t_do"])
         print('Project ['+config["proj_name"]+'] running completely!')
@@ -302,8 +304,8 @@ def main(argv):
         # Read Filtering
         #########################################################
         "min_read_qscore":20,
-        "min_read_length":20,
-        "min_reads_count":50,
+        "min_read_length":18,
+        "min_reads_count":10,
 
         #########################################################
         # BLASTN settings
@@ -313,11 +315,12 @@ def main(argv):
         "blastn_e_cutoff" : 0.001,
         "blastn_max_mismatch" : 2,
         "blastn_max_hit_num" :40,
+        "blastn_pident" :98,
 
         #########################################################
         # TRF analyiss settinss
         #########################################################
-        "min_trf_len" :20
+        "min_trf_len" :18
     }
 
     c = Config()
