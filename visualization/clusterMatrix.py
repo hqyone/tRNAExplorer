@@ -26,9 +26,9 @@ def generateDisMatrix(df):
 # data = [[5, 7], [7, 3], [8, 1]]
 # ctys = ['Boston', 'Phoenix', 'New York']
 # df = pd.DataFrame(data, columns=['xcord', 'ycord'], index=ctys)
-def drawCorrelationClusterMatrix(df, fig_name, annot=True, annot_font_size=7):
+def drawCorrelationClusterMatrix(df, fig_name, method="pearson", annot=True, annot_font_size=7):
     #D = generateDisMatrix(df.transpose())
-    D = df.corr()
+    D = df.corr(method=method)
     condensedD  = D
     #sns.set(font_scale=0.8)
     sns.set(rc={'figure.figsize': (15, 15)})
