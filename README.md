@@ -1,6 +1,6 @@
 # tRNAExplorer (v1.0)
 ## 1. Introduction
-tRNAExplorer is a Python pipeline optimized for analysing tRF (tRNA-derived fragments) profiles of multiple samples using small-RNA-seq data.
+tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived fragments) profiles of multiple samples using small-RNA-seq data.
 * Major functions:
     * Categorize and quantify tRNA/tRFs.
     * Discover novel tRNA cleavage sites.
