@@ -3,7 +3,11 @@ The program can generate two file as a tRNA database which will be used by downs
 ## 1. Requirements
 1. tRNA bed file which can be download from UCSC table browser ([Sample](../test/trna_db/hg38_tRNA.bed)) (https://genome.ucsc.edu/cgi-bin/hgTables)
 2. FASTA file of the genome with same version using by tRNA bed file.
-3. tRNAScan-SE should be download and installed 
+3. tRNAScan-SE should be download and installed. 
+    * The infernal-1.1.2 library is required for tRNAScan-SE running. And low version (e.g. infernal-1.1.1) may result problem.
+    * You can use `cmscan -h` to check the version. 
+    * Download the source code of infernal-1.1.2 using the command `wget eddylab.org/infernal/infernal-1.1.2.tar.gz`
+    * Compile and install it following the README in the package or see [here](https://docs.rfam.org/en/latest/genome-annotation.html)
 
 ## 1. Usage
 Usage: `python tRNA_db_maker.py -n <name> -b <bed> -r <ref> -s <tRNAScanSE> -o <offset> --no_mit <1/else> --no_pseu <1/else> --minq <number>`
