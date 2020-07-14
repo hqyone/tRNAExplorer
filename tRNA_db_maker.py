@@ -358,8 +358,10 @@ def main(argv):
             print("genome references: " + ref_fasta)
         elif opt in ("-s", "--scan"):
             tRNAscanSE = arg
+            print("tRNAscanSE: " + tRNAscanSE)
         elif opt in ("-u", "--offset"):
             offset = int(arg)
+            print("offset: " + str(offset))
         elif opt in ("--no_mit"):
             if arg.strip() != "1":
                 no_mit_tRNA = False
