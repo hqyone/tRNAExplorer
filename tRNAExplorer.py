@@ -434,6 +434,15 @@ def main(argv):
             print("## "+key+"="+str(config[key])+"\n")
     print('##  ------------------            End Settings             ----------------')
     print('###########################################################################################')
+    print('## Setting testing .... ')
+    if not os.path.isfile(config["blastn"]):
+        print("The BLASTN path "+config["blastn"]+" is not valid. Abort!!!\n")
+        print("Please modify the file <wdir>/init \n")
+        exit(-1)
+    if not os.path.isfile(config["mkdb"]):
+        print("The BLASTN mkdb path "+config["mkdb"]+" is not valid. Abort!!!\n")
+        print("Please modify the file <wdir>/init \n")
+        exit(-1)
     print('## Run pipeline ..... ')
     print(rseq_blastn_pipeline2(config))
     exit(0)
