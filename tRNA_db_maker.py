@@ -285,7 +285,7 @@ def tRNA_DB_Preparing(db_name, tRNA_bed, ref_fasta, tRNAscanSE, offset=60, no_mi
     trna_detail_bed = trna_db_dir + "/" + db_name + "_" + str(offset) + ".bed"
     output_code = RuntRNAScan(trna_db_dir, tRNAscanSE, trna_utr_fasta, trna_scan_out)
     if output_code!=-1:
-        print("###### tRNAScan-SE running is down, Generate bed file with annotations ...")
+        print("###### tRNAScan-SE running is done, Generate bed file with annotations ...")
         fastfile = trna_db_dir+"/"+db_name+"_" + str(offset) +".fa"
         print("######  Parsing tRNAScan-SE output file")
         if parsetRNAScanFile(trna_scan_out,
