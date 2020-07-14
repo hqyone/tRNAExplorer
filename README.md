@@ -52,17 +52,18 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
     *   Details about tRNA_db_maker.py can be found [here](./help/tRNA_db_maker_manual.md)
 
 ## 5. Mapping Strategy
-tRNAExplorer uses BLASTN as the engine to map small-RNA-Seq reads to a hybrid tRNA sequences database containing four major style of tRNA gene transcripts:
+tRNAExplorer uses BLASTN as the engine to map small-RNA-Seq reads to a hybrid tRNA sequences database containing four major styles of tRNA gene transcript:
    *   pre-tRNA with intron(s) (I)
    *   pre-tRNA without intron(s) (P)
    *   mature tRNA (M)
    *   mature tRNA with CCA (C)
  
- Only the best alignment hits will be keep for further analysis. When there are several best hits with equal fidelity, all of them will be keep.
- For example, the type D reads in figure 1 can be mapped to all four types of transcripts.
- Based on the mapped transcript types and mapping locations, all mapped reads can be categorized into 9 types (A-I). 
- Using this information we can elucidate the relative abundance of four transcript types for each tRNA.
- We also can monitor the efficiency of intron, 5'-term & 3'-term cleavage and CCA addition. (Figure 1)
+For each read/tRF, only the best alignments will be kept for further analysis. For example, the type D reads in figure S1 can be mapped to all four types of transcripts from a tRNA gene. Based on the mapped transcript types and mapping locations, the reads can be categorized into one of 9 types (A-I). 
+
+For a tRNA gene, based on the composition of reads mapping to it, we can elucidate the relative abundance of four transcripts of a tRNA gene. For example, tRFs of type E and F should derived from tRNA transcripts before and after intron splicing. Using read count will can elucidate the relative abundant of transcript I.
+
+Additionally, a tRF can be map to multiple tRNAs with the best/equal fidelity. Its related reads will be split into and assigned to them equally. Although, the assignment is ambiguous, the method makes it easy to estimate transcriptional amounts of tRFs/tRNAs in multiple level (gene, families, isodecoder and isoacceptor sets) by summing them up.
+
  
 ![alt text](./images/read_classfication.png)
 
