@@ -1,5 +1,7 @@
 # Manual for tRNA_db_maker.py  (2020/07/11)
-The program can generate two file as a tRNA database which will be used by downstream [tRNAExplorer.py](../tRNAExplorer.py) processing
+The program can generate two file as a tRNA database which will be used by downstream [tRNAExplorer.py](../tRNAExplorer.py) processing.
+
+
 It usually take several minutes to finish the process.
 ## 1. Requirements
 1. tRNA bed file which can be download from UCSC table browser ([Sample](../test/trna_db/hg38_tRNA.bed)) (https://genome.ucsc.edu/cgi-bin/hgTables)
