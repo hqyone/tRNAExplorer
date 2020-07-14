@@ -79,7 +79,7 @@ def RuntRNAScan(wdir, tRNAscanSE, trna_fasta, out_file):
         cmd_file = wdir+"/cmd.sh"
         if os.path.isfile(tRNAscanSE):
             CMD_FILE = open(cmd_file, "w")
-            print("Begin to run tRNAScan-SE, which may take several minutes ....")
+            print("Begin to run tRNAScan-SE, which may take 10-20 minutes. Be patient ....")
             print("tRNAscanSE command : "+tRNAscanSE+" -E -f " + out_file + " " + trna_fasta + "\n")
             CMD_FILE.write(tRNAscanSE+" -E -f " + out_file + " " + trna_fasta + "\n")
         CMD_FILE.close()
