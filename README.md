@@ -27,9 +27,9 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
     Using : `pip3 install -r requirements_3.txt` or `pip install -r requirements.txt`
 ## 3. Installation
 * Step 1: Download and unzip the pipeline  https://github.com/hqyone/tRNAExplorer/archive/master.zip
-* Step 2: Install requirements ...
+* Step 2: Install software in requirements ...
 * Step 3: Initialization settings:
-    * Find and modify the file named [init](init) at the root directory of tRNAExplorer 
+    * Find and modify the file named [init](init) at the root directory of tRNAExplorer (Important !!!)
     * Change the absolute path for Trimmomatics, BLASTN and makeblastdb in the file.
 
 ## 4. Running
@@ -52,17 +52,21 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
     *   Details about tRNA_db_maker.py can be found [here](./help/tRNA_db_maker_manual.md)
 
 ## 5. Mapping Strategy
-tRNAExplorer uses BLASTN as the engine to map small-RNA-Seq reads to a hybrid tRNA sequences database containing four major styles of tRNA gene transcript:
-   *   pre-tRNA with intron(s) (I)
-   *   pre-tRNA without intron(s) (P)
-   *   mature tRNA (M)
-   *   mature tRNA with CCA (C)
- 
+In tRNAExplorer, any tRNA fragments derived from tRNA genes are considered as tRFs including mature tRNAs and their precursors. 
+
+As the tRFs usually are subjects of chemical modifications and editing, the global and exactly match strategy is not good enough to identify tRFs from small-RNA-Seq data. Therefore, tRNAExplorer takes BLASTN as the engine to map small-RNA-Seq reads to tRNA related transcript database.
+The database contains four major style of tRNA gene transcripts:
+
+* tRNA precursor with intron(s) (I)
+* tRNA precursor without intron(s) (P)
+* Mature tRNA (M)
+* Mature tRNA with CCA (C)
+
 For each read/tRF, only the best alignments will be kept for further analysis. For example, the type D reads in figure S1 can be mapped to all four types of transcripts from a tRNA gene. Based on the mapped transcript types and mapping locations, the reads can be categorized into one of 9 types (A-I). 
 
 For a tRNA gene, based on the composition of reads mapping to it, we can elucidate the relative abundance of four transcripts of a tRNA gene. For example, tRFs of type E and F should derived from tRNA transcripts before and after intron splicing. Using read count will can elucidate the relative abundant of transcript I.
+Additionally, a tRF can be map to multiple tRNAs with the best/equal fidelity. Its related reads will be split into and assigned to them equally. Although, the assignment is ambiguous, the method makes it easy to estimate transcription level of tRFs/tRNAs in multiple level (gene, families, isodecoder and isoacceptor sets) by summing them up.
 
-Additionally, a tRF can be map to multiple tRNAs with the best/equal fidelity. Its related reads will be split into and assigned to them equally. Although, the assignment is ambiguous, the method makes it easy to estimate transcriptional amounts of tRFs/tRNAs in multiple level (gene, families, isodecoder and isoacceptor sets) by summing them up.
 
  
 ![alt text](./images/read_classfication.png)
@@ -94,6 +98,7 @@ A jupyter notebook [Report_creator.ipynb](./visualization/Report_creater.ipynb) 
 This notebook is self-explained. User can launch the notebook using following commands
  *  ` cd <root>/visualization`
  *  ` jupyter notebook`
+
 The user can also do their own analysis based on these tsv files.
 
 ## 9. Testing Data
