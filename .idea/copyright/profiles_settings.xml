@@ -1,0 +1,14 @@
+<component name="CopyrightManager">
+  <settings default="RNAExplorer">
+    <module2copyright>
+      <element module="Project Files" copyright="RNAExplorer" />
+    </module2copyright>
+    <LanguageOptions name="Properties">
+      <option name="fileTypeOverride" value="3" />
+    </LanguageOptions>
+    <LanguageOptions name="Python">
+      <option name="fileTypeOverride" value="3" />
+      <option name="block" value="false" />
+    </LanguageOptions>
+  </settings>
+</component>
