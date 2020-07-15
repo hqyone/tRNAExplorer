@@ -345,7 +345,7 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
 
             if brief_mapping_infor == "":
                 brief_mapping_infor = Read_type + "," + str(trna_start) + "," + str(trna_end) + "," + str(
-                    round(mean_exp, 3)) + "," + qseq.replace("-", "") + "," + sseq.replace("-", "")
+                    round(mean_exp, 3)) + "," + qseq + "," + sseq
             read_seq = read_seq_dic[read_id]
             if direction == "-":
                 read_seq = share.reverse_complement(read_seq)

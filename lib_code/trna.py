@@ -169,8 +169,8 @@ class tRNA():
     def CalculateAlignmentLocInI(self, read_class, start, end):
         offset = self.utr_len
         if read_class!="A" or read_class!="B":
-            start+=offset
-            end+=offset
+            start += offset
+            end += offset
         # Remove the effect of CCA
         if read_class=="I":
             end-=3
@@ -294,11 +294,13 @@ class tRNA():
         profile_length = len(self.seq_utr)
         profiles = {
             "total_reads_num": 0,
+            "isequence":self.seq_utr,
             "pileup_height": 0,
             "start_pos": [0] * profile_length,
             "end_pos": [0] * profile_length,
             "total": [0] * profile_length,
-            "cleavage_site_dic":{}
+            "cleavage_site_dic":{},
+            "mutation_dic_str":""
         }
         # Both "start_pos" and "end_pos" are 1 based
         for bi in brief_mapping_infor_ls:
@@ -316,7 +318,65 @@ class tRNA():
             profiles["total_reads_num"] += read_num
         profiles["pileup_height"]=max(profiles["total"])
         profiles["cleavage_site_dic"] = self.FindCleavageSites(profiles["start_pos"],profiles["end_pos"])
+        profiles["mutation_dic_str"] = self.CreateMutationDicStr(brief_mapping_infor_ls)
         return profiles
+
+
+    def BriefMappingInfor2MutationDic(self,brief_mapping_infor):
+        # Mutation IDs
+        # Mutation: M:B>A:Location->Reads
+        # Deletion: D:B:Location->Reads
+        # Insertion: I:A:Location->Reads
+        i = brief_mapping_infor.split(",")
+        c = i[0]  # I
+        trna_start = int(i[1])  # 1
+        trna_end = int(i[2])  # 75
+        loc = self.CalculateAlignmentLocInI(c, trna_start, trna_start)
+        read_num = float(i[3])
+        read_seq = i[4]
+        ref_seq = i[5]
+        mut_dic = {}
+        if read_seq==ref_seq:
+            return mut_dic
+        if len(read_seq) == len(ref_seq):
+            for i in range(0,len(read_seq)):
+                A = read_seq[i]
+                B = ref_seq[i]
+                Mutaion_Str=""
+                location = loc[0]+i
+                if A=="*":
+                    #Deletion
+                    Mutaion_Str="D:"+B+":"+str(location)
+                elif B=="*":
+                    #Insertion
+                    Mutaion_Str = "I:" + A + ":" + str(location)
+                elif A!=B:
+                    #Mutaion
+                    Mutaion_Str = "M:" + B +">"+ A + ":" + str(location)
+                else:
+                    #Unexpect
+                    continue
+                if Mutaion_Str!="":
+                    if Mutaion_Str not in mut_dic:
+                        mut_dic[Mutaion_Str]=0
+                    mut_dic[Mutaion_Str]+=read_num
+        return mut_dic
+
+    def CreateMutationDicStr(self, brief_mapping_infor_ls):
+        # Both "start_pos" and "end_pos" are 1 based
+        mut_dic ={}
+        for bi in brief_mapping_infor_ls:
+            cur_dic = self.BriefMappingInfor2MutationDic(bi)
+            for k in cur_dic:
+                if k not in mut_dic:
+                    mut_dic[k]=cur_dic[k]
+                else:
+                    mut_dic[k] += cur_dic[k]
+        mut_str_ls = []
+        for key in mut_dic:
+            value = mut_dic[key]
+            mut_str_ls.append(key+"="+str(value))
+        return ",".join(mut_str_ls)
 
 
 def getTRFType(tc, s, e, c_offset=2, t_offset=3):

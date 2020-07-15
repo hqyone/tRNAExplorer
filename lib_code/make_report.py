@@ -11,8 +11,6 @@ import os
 import lib_code.share as share
 import ntpath
 import lib_code.MINTplates as MINTplates
-
-
 # getExpMatrixFile(blast_out_dir,out_dir)
 # print("Matrix file created completely")
 
@@ -37,7 +35,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
     sample_ls = []
     rna_ls = list(tRNA_dic.keys())
     trf_type_ls = []
-    profile_type_ls = ["start_pos", "end_pos", "total"]
+
 
     mean_trna_trf_sample_matrix_file = out_dir + "/trf_sample_matrix.tsv"  # trf vs sample matrix
     MEAN_RNA_TRF_SAMPLE_MATRIX = open(mean_trna_trf_sample_matrix_file, 'w')
@@ -67,10 +65,13 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
     sample_hit_proifle_dic = {}
     # For all sample
     for tab in hit_tab_ls:
+        print(tab)
         filenanme = ntpath.basename(tab)
         sample_id = os.path.basename(tab).replace("_" + proj_name + "_hit.tab", "")
         if sample_id in sample_dic:
             print("Preparing report for " + tab)
+            if tab== "/Users/hqyone/PycharmProjects/tRNAExplorer/test/output/SRR1836127_test_hit.tab":
+                print(tab)
             statistic_dic[sample_id] = {
                 "A": 0,
                 "B": 0,
@@ -134,7 +135,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
                     brief_infor = contents[31]
                     sseq = brief_infor.split(",")[5]
 
-                    tRF_id = MINTplates.encode_sequence(sseq, "")
+                    tRF_id = MINTplates.encode_sequence(sseq.replace("-",""), "")
                     if tRF_id not in trf_type_dic:
                         trf_type_dic[tRF_id] = {'seq': sseq, 'trf_type': trf_type, 'hit_trna_number': hit_trna_number,
                                                 'tRNA_families': [rna_family], 'tRNA_IDs': [rna_id]}
@@ -185,6 +186,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
                 obj["cca_add_ratio"] = round((obj["I"]) / (obj["I"] + obj["H"]), 3)
 
             # Get profile and cleavage sites informataion
+            # Get mutation information
             profile_dic = {}
             for rna_id in trna_brief_infor_dic:
                 if rna_id in tRNA_dic:
@@ -201,7 +203,6 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
         # hit_trna_number = trf_type_dic[trf_id]['hit_trna_number']
         tRNA_Families = ",".join(trf_type_dic[trf_id]['tRNA_families'])
         tRNA_IDs = ",".join(trf_type_dic[trf_id]['tRNA_IDs'])
-
         line = trf_id + "\t" + tRNA_Families + "\t" + tRNA_IDs + "\t" + seq + "\t" + c_trf_type
         for sample_id in sample_ls:
             value = 0
@@ -282,6 +283,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
     MEAN_PROFILE.write("#SampleID\ttRNA_family\ttRNA_ID\ttype\tprofile\n")
     MEAN_CLEAVAGE.write(
         "#SampleID\ttRNA_family\ttRNA_ID\tID\tPosition\tPType\tIntensity\tIntensity_5\tIntensity_3\tSNRatio\tSeq_5\tSeq_3\tfull_Seq\n")
+    profile_type_ls = ["start_pos", "end_pos", "total", "mutation_dic_str","isequence"]
     for sample in sample_ls:
         for rna_id in rna_ls:
             family = "Unknown"
@@ -292,8 +294,12 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
                 if sample in sample_hit_proifle_dic \
                         and rna_id in sample_hit_proifle_dic[sample] \
                         and prof_type in sample_hit_proifle_dic[sample][rna_id]:
-                    mean_line = sample + "\t" + family + "\t" + rna_id + "\t" + prof_type + "\t" + ",".join(
-                        share.stringfyNumList(sample_hit_proifle_dic[sample][rna_id][prof_type]))
+                    profile_str = ""
+                    if prof_type == "mutation_dic_str" or prof_type == "isequence":
+                        profile_str = sample_hit_proifle_dic[sample][rna_id][prof_type]
+                    else:
+                        profile_str = ",".join(share.stringfyNumList(sample_hit_proifle_dic[sample][rna_id][prof_type]))
+                    mean_line = sample + "\t" + family + "\t" + rna_id + "\t" + prof_type + "\t" + profile_str
                     MEAN_PROFILE.write(mean_line + "\n")
 
             if sample in sample_hit_proifle_dic \

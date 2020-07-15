@@ -172,8 +172,13 @@ Notice: All filtering criteria should be meet in the same time.
 | #SampleID      | Sample ID | 
 | tRNA_family     | The ID of tRNA family   |  
 | tRNA_ID     | The ID of tRNA  | 
-| type     | Three types of profile including "start_pos","end_pos","total" | 
+| type     | Three types of profile including "start_pos","end_pos","total","isequence","mutation_dic_str" | 
 | Profile     | Pileup intensity in base solution across tRNA precursors without intron | 
+
+Notice: 
+* "isequence" is the sequences of precursor+intron 
+* "mutation_dic_str" contains mutation information such as type and position(1 based).
+    *  For example for `M:A>T:117=55.0` means a replacement of A to T at 117 th base (1 based ) with 55 reads to support. 
 
 ### 3.9 <SAMPLE_ID>_<project_name>_hit.tab
 * Details about read mapping to mRNA for each sample
