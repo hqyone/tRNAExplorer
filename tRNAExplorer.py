@@ -242,7 +242,6 @@ def rseq_blastn_pipeline2(config):
         return -1
         #sys.exit(2)
 
-
 # Main function
 def main(argv):
     config_key_ls = [

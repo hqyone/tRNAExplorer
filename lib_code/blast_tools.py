@@ -134,13 +134,13 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             sseq = share.reverse_complement(sseq)
             direction = "-"
         #Cutoff here 98 means only reads length longer than 60 bp were allowed for two missmatch
-        if cur_percent>=pident and cur_mismatch+cur_gap<=max_mismatch:
-            # Get the best hits for each read and accumulate matched tRNA id
+        if cur_mismatch+cur_gap<=max_mismatch:
             if cur_read_id not in read_trna_dic:
                 read_trna_dic[cur_read_id] = {
                     "percent": cur_percent,
                     "length": cur_length,
                     "direction":direction,
+                    "evalue": evalue,
                     "sseq":sseq,
                     "hit_type":"", # multiple or unique
                     "tRNAs": {}
@@ -163,8 +163,9 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                             "evalue": evalue
                         }
             else:
+                # Get the best hits for each read and accumulate matched tRNA id
                 obj = read_trna_dic[cur_read_id]
-                if cur_percent >= obj["percent"] and cur_length >= obj["length"] and cur_tRNA_id not in obj["tRNAs"] and (sseq == obj["sseq"] or sseq == share.reverse_complement(obj["sseq"])):
+                if evalue<=obj["evalue"] and cur_percent>=pident and cur_length >= obj["length"] and cur_tRNA_id not in obj["tRNAs"] and (sseq == obj["sseq"] or sseq == share.reverse_complement(obj["sseq"])):
                     obj["percent"] = cur_percent
                     obj["length"] = cur_length
                     obj["sseq"] = sseq
@@ -349,12 +350,12 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             if tRNA_id in tRNA_anno_dic:
                 if "P" in class_obj:
                     trf_type = trna.getTRFType(tRNA_anno_dic[tRNA_id].GetKeySitesInfor("P"), class_obj["P"]["trna_start"], class_obj["P"]["trna_end"])
-                    mapping_ratio = (class_obj["P"]["trna_end"] - class_obj["P"]["trna_start"] + 1) / class_obj["P"]["qlen"]
+                    mapping_ratio = round((float((class_obj["P"]["trna_end"] - class_obj["P"]["trna_start"] + 1))/ class_obj["P"]["qlen"]),3)
                 else:
                     for c in class_obj:
                         trf_type = trna.getTRFType(tRNA_anno_dic[tRNA_id].GetKeySitesInfor(c),
                                                    class_obj[c]["trna_start"], class_obj[c]["trna_end"])
-                        mapping_ratio=(class_obj[c]["trna_end"]-class_obj[c]["trna_start"]+1)/class_obj[c]["qlen"]
+                        mapping_ratio=round(float((class_obj[c]["trna_end"]-class_obj[c]["trna_start"]+1))/class_obj[c]["qlen"],3)
                         break
             tRNA_READS_HIT.write(family_id+"\t"+tRNA_id + "\t" + read_id +"\t" +str(direction)+
                                  "\t" +str(I)+"\t" +str(I_read_start)+"\t" +str(I_read_end)+"\t" +str(I_trna_start)+"\t" +str(I_trna_end)+
@@ -362,6 +363,6 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                                  "\t" +str(M)+"\t" +str(M_read_start)+"\t" +str(M_read_end)+"\t" +str(M_trna_start)+"\t" +str(M_trna_end)+
                                  "\t" +str(C)+"\t" +str(C_read_start)+"\t" +str(C_read_end)+"\t" +str(C_trna_start)+"\t" +str(C_trna_end)+
                                  "\t"+str(M_5T)+"\t"+str(M_3T)+"\t"+str(M_5C)+"\t"+str(M_3C)+ "\t" + str(round(mean_exp,3)) +"\t"+
-                                 str(hit_tRNAs_num) + "\t"+trf_type+"\t"+brief_mapping_infor+ "\t"+Read_type+"\t"+str(round(mapping_ratio,3))+"\t"+read_5_fragment+"\t"+read_fragment+"\t"+read_3_fragment+"\n")
+                                 str(hit_tRNAs_num) + "\t"+trf_type+"\t"+brief_mapping_infor+ "\t"+Read_type+"\t"+str(mapping_ratio)+"\t"+read_5_fragment+"\t"+read_fragment+"\t"+read_3_fragment+"\n")
     tRNA_READS_HIT.close()
     return dist_dic

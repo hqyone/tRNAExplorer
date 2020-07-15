@@ -65,7 +65,7 @@ def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, qcutoff=28, num_cutoff
                     dic[seq] = {
                         "title":title,
                         "seq":seq,
-                        "count":0
+                        "count":1
                     }
                     name_dic[seq] = title
                 else:
