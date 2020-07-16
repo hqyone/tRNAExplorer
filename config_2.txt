@@ -26,7 +26,7 @@ out_dir = "/home/hqyone/python_code/testrepo/new_tools/tRNAExplorerII/output"
 # Trimmomatic
 #########################################################
 # Whether do trimming sequences 0 means "no" others means "yes"
-# t_do=1
+t_do=1
 
 # Absolute path to Trimmomatic jar file
 t_path="/home/hqyone/python_code/testrepo/new_tools/Trimmomatic-0.36/trimmomatic-0.36.jar"
@@ -53,7 +53,7 @@ t_path="/home/hqyone/python_code/testrepo/new_tools/Trimmomatic-0.36/trimmomatic
 # Read Filtering
 #########################################################
 # remove reads, if it contains any base below a threshold quality
-# min_read_qscore = 20
+# min_read_qscore = 10
 
 # remove reads, if the read appears less than certain times in the FASTQ file
 # min_reads_count = 50
@@ -69,14 +69,20 @@ t_path="/home/hqyone/python_code/testrepo/new_tools/Trimmomatic-0.36/trimmomatic
 # blastn_max_hit_num = 40
 
 # The minimum percentage of identify
-# blastn_pident = 98
+blastn_pident = 96
+
+# absolute path to blastn execute file
+blastn = "/usr/bin/blastn"
+
+# absolute path to makeblastdb execute file
+mkdb = "/usr/bin/makeblastdb"
 
 
 #########################################################
 # TRF analyiss settinss
 #########################################################
 # The minmum of tRF length
-# min_trf_len = 20
+# min_trf_len = 18
 
 # The max mismatch allow for valid matches
 # blastn_max_mismatch = 2

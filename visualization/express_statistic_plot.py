@@ -241,6 +241,11 @@ def drawExpMatrixForFamily(d,figure="", sample_ls=[], groupby="tRNA_Families", f
     '''
     df = d["exp_df"]
     exp_df = df
+    # tRNA_Families	RNA_IDs	seq	Type
+    sample_df = d["s_df"]
+    all_sample_ls = sample_df["#SampleID"]
+    print("Available Samples :" + ",".join(all_sample_ls))
+
     sel_s_ls = []
     sel_s_des = []
     if len(sample_ls) > 1:
@@ -248,13 +253,9 @@ def drawExpMatrixForFamily(d,figure="", sample_ls=[], groupby="tRNA_Families", f
         if len(sel_s_ls) <= 1:
             exp_df = df
             print("The sample number is too small, sample filtering abort")
-        else:
-            print("Selected Samples :" + ",".join(sel_s_ls))
-
-    # tRNA_Families	RNA_IDs	seq	Type
-    sample_df = d["s_df"]
-    all_sample_ls = sample_df["#SampleID"]
-    print("Available Samples :" + ",".join(all_sample_ls))
+    else:
+        sel_s_ls = all_sample_ls
+    print("Selected Samples :" + ",".join(sel_s_ls))
 
     for s in sel_s_ls:
         sel_s_des.append(dl.getSampleLabel(s,sample_df))
