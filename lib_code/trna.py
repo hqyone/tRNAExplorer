@@ -376,7 +376,10 @@ class tRNA():
         for key in mut_dic:
             value = mut_dic[key]
             mut_str_ls.append(key+"="+str(value))
-        return ",".join(mut_str_ls)
+        if len(mut_str_ls)==0:
+            return '-'
+        else:
+            return ",".join(mut_str_ls)
 
 
 def getTRFType(tc, s, e, c_offset=2, t_offset=3):
