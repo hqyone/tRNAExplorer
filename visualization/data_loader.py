@@ -70,6 +70,8 @@ def LoadWDir(wdir, sample_tsv, trna_anno_bed, report_dir=""):
             pileup_exp_df = pd.read_csv(data["trna_sample_pileup_matrix"], sep="\t", index_col=False)
             data["pileup_exp_df"] = add_aa_column(pileup_exp_df, trna_id="tRNA_ID")
 
+            data["trf_exp_df"] = pd.read_csv(data["trf_sample_matrix"], sep="\t", index_col=False)
+
             # Get structure information
             st_df = pd.read_csv(trna_anno_bed, sep='\t')
             data["st_df"] = st_df

@@ -95,10 +95,11 @@ def drawCorrelationClusterMatrix(df, fig_name, method="pearson", annot=True, ann
 # df = normalize(group)
 # drawExpressionClusterMatrix(df,'matrix.png',fig_width=6, fig_height=10)
 def drawExpressionClusterMatrix(df, fig_name,
-                                x_linkage_method = "single",
-                                y_linkage_method = "centroid", #single
+                                xl_method = "single",
+                                yl_method = "centroid", #single
                                 xaxis_font_size=12,
                                 yaxis_font_size=12,
+                                cmap=pylab.cm.YlGnBu,
                                 fig_width =20,
                                 fig_height=20,
                                 layout=[0.25,0.18,0.55,0.73]):
@@ -113,14 +114,14 @@ def drawExpressionClusterMatrix(df, fig_name,
     fig = pylab.figure(figsize=(fig_width, fig_height))
 
     ax1 = fig.add_axes([matrix_x_r*(1-0.8), matrix_y_r,matrix_x_r*0.8,matrix_h_r],frame_on=False)
-    Y = sch.linkage(df, method=y_linkage_method)
+    Y = sch.linkage(df, method=yl_method)
     Z1 = sch.dendrogram(Y, orientation='left') #,distance_sort='descending'
     ax1.set_xticks([])
     ax1.set_yticks([])
 
     # Compute and plot y dendrogram.
     ax2 = fig.add_axes([matrix_x_r,matrix_y_r+matrix_h_r,matrix_w_r,0.8*(1-matrix_y_r-matrix_h_r)],frame_on=False)
-    Y = sch.linkage(df.T, method=x_linkage_method) # centroid, single, average
+    Y = sch.linkage(df.T, method=xl_method) # centroid, single, average
     Z2 = sch.dendrogram(Y)  #distance_sort='descending'
     ax2.set_xticks([])
     ax2.set_yticks([])
@@ -134,7 +135,7 @@ def drawExpressionClusterMatrix(df, fig_name,
     df = df.iloc[idx1,:]
     df = df.iloc[:,idx2]
 
-    im = axmatrix.imshow(df, aspect='auto', origin='lower',cmap=pylab.cm.YlGnBu)  #pylab.cm.YlGnBu
+    im = axmatrix.imshow(df, aspect='auto', origin='lower',cmap=cmap)  #pylab.cm.YlGnBu
     plt.grid(None)
     # #im = axmatrix.matshow(D, aspect='auto', origin='lower', cmap=pylab.cm.YlGnBu)
     axmatrix.set_xticks([]) # Hide tick lines
