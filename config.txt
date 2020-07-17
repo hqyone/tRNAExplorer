@@ -7,19 +7,19 @@
 proj_name = "test"
 
 # Absolute path of fasta file for tRNAs which was created by tRNA_db_maker
-trna_fa = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/hg38_tRNA_60.fa"
+# trna_fa = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/hg38_tRNA_60.fa"
 
 # Absolute path of bed file for tRNA annotations which was created by tRNA_db_maker
-trna_anno_file = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/ChIP/hg38_tRNA_60.bed"
+# trna_anno_file = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/hg38_tRNA_60.bed"
 
 # Absolute path of sample information
-sample_tsv = "/Users/hqyone/PycharmProjects/tRNAExplorer/test/samples"
+# sample_tsv = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/RNASeq/sample.tsv"
 
 # The directory storing FASTQ files (Input Directory)
-fastq_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/fastq"
+# fastq_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/RNASeq/fastq"
 
 # The directory of output files (Out Directory)
-out_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/output"
+# out_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/RNASeq/output"
 
 # The length of UTRs, default = 60', should match utr length in  trna_anno_file
 # url_len = 60
@@ -70,13 +70,13 @@ out_dir = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/tes
 # blastn_e_cutoff = 0.001
 
 # The maximum number of matched hits
-# blastn_max_hit_num = 40
+blastn_max_hit_num = 30
 
 # The minimum percentage of identify
-# blastn_pident = 98
+blastn_pident = 96
 
 # The minimum percentage of identify
-# blastn_max_mismatch = 2
+blastn_max_mismatch = 2
 
 #########################################################
 # TRF analyiss settings

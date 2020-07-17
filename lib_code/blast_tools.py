@@ -173,7 +173,7 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             else:
                 # Get the best hits for each read and accumulate matched tRNA id
                 obj = read_trna_dic[cur_read_id]
-                if evalue<=obj["evalue"] and cur_percent>=pident and cur_length >= obj["length"] and cur_tRNA_id not in obj["tRNAs"] and (sseq == obj["sseq"] or sseq == share.reverse_complement(obj["sseq"])):
+                if evalue<=obj["evalue"] and cur_percent>=float(pident) and cur_length >= obj["length"] and cur_tRNA_id not in obj["tRNAs"] and (sseq == obj["sseq"] or sseq == share.reverse_complement(obj["sseq"])):
                     obj["percent"] = cur_percent
                     obj["length"] = cur_length
                     obj["sseq"] = sseq

@@ -208,9 +208,23 @@ class Config:
                 contents = line.split("=")
                 if len(contents) == 2:
                     KEY = contents[0].strip().strip('"')
-                    VAL = contents[1].strip().strip('"')
+                    VAL = contents[1].strip()
+                    if VAL.startswith('"'):
+                        VAL =  VAL.strip('"')
+                    else:
+                        try:
+                            if "." in VAL:
+                                VAL = float(VAL)
+                            else:
+                                VAL = int(VAL)
+                        except Exception as e:
+                            print (e)
+                            print ("The option parser fails "+ line)
+                            print ("Please check the config file. The String options should be enbraced by \"")
+                            return False
                     self.config[KEY] = VAL
             FILE.close()
+        return True
 
 def rseq_blastn_pipeline2(config):
     try:
@@ -275,6 +289,7 @@ def main(argv):
         "blastn",
         "mkdb",
         "blastn_e_cutoff",
+        "blastn_pident",
         "blastn_max_mismatch",
         "blastn_max_hit_num",
         "min_trf_len"
@@ -411,11 +426,11 @@ def main(argv):
     init_file = str(wdir)+"/init"
     if os.path.isfile(init_file):
         ic = Config()
-        ic.loadConfig(init_file)
-        for key in ic.config:
-            if key in config:
-                config[key] = ic.config[key]
-                print(key +":"+ic.config[key])
+        if ic.loadConfig(init_file):
+            for key in ic.config:
+                if key in config:
+                    config[key] = ic.config[key]
+                    print(key +":"+ic.config[key])
         print("Loading init file successfully! ")
     else:
         print("No 'init' file was given, Abort!")
@@ -425,10 +440,10 @@ def main(argv):
         if not os.path.isfile(config_file):
             config_file = currentDirectory+"/"+config_file
         if os.path.isfile(config_file):
-            c.loadConfig(config_file)
-            for key in c.config:
-                if key in config:
-                    config[key] = c.config[key]
+            if c.loadConfig(config_file):
+                for key in c.config:
+                    if key in config:
+                        config[key] = c.config[key]
             print("Load config file: " + config_file)
         else:
             print("Can't find config file: " + input_cfile)

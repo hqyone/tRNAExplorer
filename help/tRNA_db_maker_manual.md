@@ -3,9 +3,9 @@ The program can generate two file as a tRNA database which will be used by downs
 
 It usually takes 10-20 minutes to finish the process.
 ## 1. Requirements
-1. tRNA bed file which can be download from UCSC table browser ([Sample](../test/trna_db/hg38_tRNA.bed)) (https://genome.ucsc.edu/cgi-bin/hgTables)
-2. FASTA file of the genome with same version using by tRNA bed file.
-3. tRNAScan-SE should be download and installed. 
+1. tRNA bed file can be download from UCSC table browser ([Sample](../test/trna_db/hg38_tRNA.bed)) (https://genome.ucsc.edu/cgi-bin/hgTables)
+2. The FASTA file of the genome. The version of genome should match tRNA bed file.
+3. tRNAScan-SE should be download and installed for running tRNAExplorer. 
     * The infernal-1.1.2 library is required for tRNAScan-SE running. And low version (e.g. infernal-1.1.1) may result problem.
     * You can use `cmscan -h` to check the version. 
     * Download the source code of infernal-1.1.2 using the command `wget eddylab.org/infernal/infernal-1.1.2.tar.gz`
@@ -40,8 +40,8 @@ tRNA_db_maker will create two files:
    *   mature tRNA (M)
    *   mature tRNA with CCA (C)
    
-2. A extended bed file with tRNAs sequence and structure annotations ([Example](../test/trna_db/hg38_tRNA_60.bed))
-* All position are 1 based
+2. A extended bed file with tRNA sequences and structure annotations ([Example](../test/trna_db/hg38_tRNA_60.bed))
+* All position information are 1 based
 
 | Column  | Description  |
 | :------------ |:--------------------------------| 
