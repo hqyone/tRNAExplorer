@@ -11,6 +11,8 @@ import numpy as np
 import matplotlib.patches as patches
 import os
 
+plt.rcParams['axes.facecolor'] = 'black'
+
 base_color_dic = {
     "A":"r",
     "T":"g",
@@ -268,6 +270,7 @@ def drawProfiles(d, test=False, output_dir ="", min_depth = 20, share_y_lim=True
                                 else:
                                     axs[s_index].set_ylabel(str(float('{0:.1f}'.format(profile_max))))
                             p_index += 1
+                        # axs[s_index].set_facecolor('xkcd:white')
                         if s_index < s_num - 1:
                             axs[s_index].get_xaxis().set_ticks([])
                         else:
