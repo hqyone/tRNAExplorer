@@ -368,6 +368,8 @@ def drawTrfLengthDistribution(d,sample_ls=[],type="read_count"):
                               va='center', fontsize=16, weight='bold', rotation=90)
         if i==len(sel_s_ls)-1:
             axs[i].set_xlabel("Length of tRFs (nt)", fontsize=16, weight='bold')
+        if i<len(sel_s_ls)-1:
+            axs[i].get_xaxis().set_ticks([])
         i += 1
 
 

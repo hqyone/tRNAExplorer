@@ -270,11 +270,11 @@ def drawProfiles(d, test=False, output_dir ="", min_depth = 20, share_y_lim=True
                                 else:
                                     axs[s_index].set_ylabel(str(float('{0:.1f}'.format(profile_max))))
                             p_index += 1
-                        # axs[s_index].set_facecolor('xkcd:white')
+                        #axs[s_index].set_facecolor('xkcd:white')
                         if s_index < s_num - 1:
                             axs[s_index].get_xaxis().set_ticks([])
                         else:
-                            axs[s_index].get_xaxis().set_ticks([])
+                            #axs[s_index].get_xaxis().set_ticks([])
                             axs[s_index].set_xlabel("Location (nt)", fontsize=12)
                             axs[s_index].legend(handles=legend_patchs, loc='lower center', bbox_to_anchor=(0.5, -1.5),
                                                 ncol=4, fontsize=14)
