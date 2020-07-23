@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="./js/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript" src="./js/jquery.tsv-0.96.min.js"></script>
+    <script type="text/javascript" src="./js/plotly.js"></script>
+    <script type="text/javascript" src="./js/trnaview.js"></script>
+    <link rel="stylesheet" href="./css/main.css" type="text/css" />
+    <title>CODE3</title>
+</head>
+
+<script type="text/javascript" >
+    let deploy_port = 3000;
+    let file_dic = {};
+    let data_dic = {};
+    var reader_dic = {}
+
+    $(function () {
+        var fileInput = document.getElementById("csv"),
+            readFile = function () {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    document.getElementById('out').innerHTML = reader.result;
+                };
+                // start reading the file. When it is done, calls the onload event defined above.
+                console.log (fileInput.files[0])
+                reader.readAsBinaryString(fileInput.files[0]);
+            };
+        fileInput.addEventListener('change', readFile);
+
+        let files,
+            file,
+            extension,
+            input = document.getElementById("directory"),
+            output = document.getElementById("fileOutput");
+            chart = document.getElementById("chart");
+
+        input.addEventListener("change", function(e) {
+            files = e.target.files;
+            output.innerHTML = "";
+
+
+            for (let i = 0, len = files.length; i < len; i++) {
+                file = files[i];
+                file_dic[file.name]=file;
+                extension = file.name.split(".").pop();
+
+                reader_dic[file.name]=new FileReader();
+                reader_dic[file.name].readAsBinaryString(file);
+
+                reader_dic[file.name].onload = function () {
+                    var tsv = $.tsv.toArrays(reader_dic[file.name].result)
+                    //document.getElementById('out').innerHTML = reader.result;
+                    data_dic[file.name] = tsv
+                };
+                // start reading the file. When it is done, calls the onload event defined above.
+                //console.log (fileInput.files[0])
+                //if (file.name==="trna_sample_pileup_matrix.tsv"){
+                   // reader.readAsBinaryString(file);
+                //}
+                //output.innerHTML += "<li class='type-" + extension + "'>" + file.name + "</li>";
+            }
+        }, false);
+        chart.addEventListener("click",function(){
+            if (file_dic["trna_sample_pileup_matrix.tsv"]!==undefined){
+                var reader = new FileReader();
+                reader.readAsBinaryString(file_dic["trna_sample_pileup_matrix.tsv"]);
+                reader.onload = function () {
+                    var tsv = $.tsv.toArrays(reader.result)
+                    document.getElementById('out').innerHTML = reader.result;
+                };
+            }
+            document.getElementById('out').innerHTML = reader.result;
+        })
+
+        var data = [{
+            values: [19, 26, 55],
+            labels: ['Residential', 'Non-Residential', 'Utility'],
+            type: 'pie'
+        }];
+
+        var layout = {
+            height: 400,
+            width: 500
+        };
+
+       // Plotly.newPlot('chart', data, layout);
+
+    })
+
+</script>
+    <div id="main" style="width: 100%; height: 100%;"></div>
+    <div id="chart" style="width: 30px; height: 30px; background: aqua;display: inline-table"></div>
+    <div id="windowHeader"></div>
+        <p>Select local CSV File:</p>
+        <input id="csv" type="file">
+
+        <output id="out">
+            file contents will appear here
+        </output>
+        <input type="file" multiple webkitdirectory id="directory"  />
+        <output id="fileOutput">
+            file contents will appear here
+        </output>
+</html>
