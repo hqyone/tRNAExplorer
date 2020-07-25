@@ -82,8 +82,8 @@ def drawTrfDistForSamples(d, fontsize):
         #axs[0].set_xticks(df["#SampleID"])
         if t in df:
             used_types.append(t)
-            axs[0].bar(df["#SampleID"], df[t].values, width, bottom=buttom1, color=types_colors[index] )
-            axs[1].bar(ratio_df["#SampleID"], ratio_df[t].values, width, bottom=buttom2, color=types_colors[index])
+            axs[0].bar(df["#SampleID"], df[t].values, width, bottom=buttom1, color=types_colors[index], edgecolor='k' )
+            axs[1].bar(ratio_df["#SampleID"], ratio_df[t].values, width, bottom=buttom2, color=types_colors[index], edgecolor='k')
             index+=1
             buttom1 =buttom1+df[t]
             buttom2 =buttom2+ratio_df[t]
@@ -150,9 +150,9 @@ def drawTrfDistForAcceptorsInSamples(d, test=False):
         for t in exist_types:
             #axs[0].set_xticks(df["#SampleID"])
             axs[0].bar(aa_group.index.tolist(),
-                       plot_type_aa_group.loc[(t)].reindex(aa_group.index.tolist()).Value, width, bottom=buttom1, color=types_colors[index])
+                       plot_type_aa_group.loc[(t)].reindex(aa_group.index.tolist()).Value, width, bottom=buttom1, color=types_colors[index],edgecolor='k')
             axs[1].bar(aa_group.index.tolist(),
-                       plot_type_aa_group.loc[(t)].reindex(aa_group.index.tolist()).Value/aa_group['Value'], width, bottom=buttom2, color=types_colors[index])
+                       plot_type_aa_group.loc[(t)].reindex(aa_group.index.tolist()).Value/aa_group['Value'], width, bottom=buttom2, color=types_colors[index],edgecolor='k')
             index+=1
             buttom1 =buttom1+plot_type_aa_group.loc[(t)].reindex(aa_group.index.tolist()).Value
             buttom2 =buttom2+plot_type_aa_group.loc[(t)].reindex(aa_group.index.tolist()).Value/aa_group['Value']

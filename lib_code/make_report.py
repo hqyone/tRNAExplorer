@@ -24,18 +24,14 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
     uniq_trf_sample_dic = {}
     trf_type_dic = {}
     mean_sample_trna_trftype_dic = {}
-    uniq_sample_trna_trftype_dic = {}
     mean_sample_trftype_dic = {}
-    uniq_sample_trftype_dic = {}
     mean_sample_trna_proftype_prof_dic = {}
-    uniq_sample_trna_proftype_prof_dic = {}
 
     statistic_dic = {}
 
     sample_ls = []
     rna_ls = list(tRNA_dic.keys())
     trf_type_ls = []
-
 
     mean_trna_trf_sample_matrix_file = out_dir + "/trf_sample_matrix.tsv"  # trf vs sample matrix
     MEAN_RNA_TRF_SAMPLE_MATRIX = open(mean_trna_trf_sample_matrix_file, 'w')
@@ -70,8 +66,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
         sample_id = os.path.basename(tab).replace("_" + proj_name + "_hit.tab", "")
         if sample_id in sample_dic:
             print("Preparing report for " + tab)
-            if tab== "/Users/hqyone/PycharmProjects/tRNAExplorer/test/output/SRR1836127_test_hit.tab":
-                print(tab)
+
             statistic_dic[sample_id] = {
                 "A": 0,
                 "B": 0,
@@ -109,6 +104,11 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
             # profile_dic
             # For each TRF
             trna_brief_infor_dic = {}
+            if sample_id not in add5_seq_dic:
+                add5_seq_dic[sample_id]={}
+            if sample_id not in add3_seq_dic:
+                add3_seq_dic[sample_id]={}
+
             for tab_line in TAB:
                 if not tab_line.startswith("#"):
                     contents = tab_line.strip().split("\t")
@@ -135,7 +135,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
                     brief_infor = contents[31]
                     sseq = brief_infor.split(",")[5]
 
-                    tRF_id = MINTplates.encode_sequence(sseq.replace("-",""), "")
+                    tRF_id = MINTplates.encode_sequence(sseq.replace("-",""), "tRF")
                     if tRF_id not in trf_type_dic:
                         trf_type_dic[tRF_id] = {'seq': sseq, 'trf_type': trf_type, 'hit_trna_number': hit_trna_number,
                                                 'tRNA_families': [rna_family], 'tRNA_IDs': [rna_id]}

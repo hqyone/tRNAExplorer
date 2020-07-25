@@ -192,7 +192,7 @@ def drawExpBoxPlotForGroup(d, min_exp_cutoff=100, sample_ls=[], groupby="tRF_Fir
     group['CODE'] = exp_df.groupby('tRF_ID').apply(lambda x: ",".join(list(set(x.CODE))).split(",")[0])
     group['AA'] = exp_df.groupby('tRF_ID').apply(lambda x: ",".join(list(set(x.AA))).split(",")[0])
     # Filter with min_exp_cutof, above min_exp_cutof means the Gene expressed
-    group = group.loc[group.max(axis=1) > min_exp_cutoff,]
+    group = group.loc[group.median(axis=1) > min_exp_cutoff,]
     group['exp_samples_num'] = group[sel_s_ls].apply(lambda s: (s > 100).sum(), axis=1)
     # Get the max expressing level across samples
     group['max_exp'] = np.log10(group.max(axis=1)+1)
@@ -371,10 +371,6 @@ def drawTrfLengthDistribution(d,sample_ls=[],type="read_count"):
         if i<len(sel_s_ls)-1:
             axs[i].get_xaxis().set_ticks([])
         i += 1
-
-
-
-
 
 # groupby can be "tRF_First_Type","CODE_AA","AA","CODE","tRNA_Families","CODE_AA","tRNA_ID"
 def drawTrfExpMatrixForSample(d,figure="",

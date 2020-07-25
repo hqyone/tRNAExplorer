@@ -10,7 +10,7 @@ import os, io, re
 def LoadConfig(visual_config, report_dir=""):
     obj = {}
     if os.path.isfile(visual_config):
-        V =  open(visual_config,'r')
+        V =  open(visual_config,'r',encoding='utf-8')
         for line in V:
             contents = line.strip().split("=")
             if len(contents)>1:
@@ -22,6 +22,19 @@ def LoadConfig(visual_config, report_dir=""):
                 d["report_dir"]=report_dir
             return d
     return None
+
+def getSampleIndex(id, df):
+    if len(df.index[df['#SampleID'] == id])>0:
+        return df.index[df['#SampleID'] == id][0]
+    else:
+        return -1
+
+def getSampleLabel(sampleID, s_df):
+    index = getSampleIndex(sampleID, s_df)
+    if index>0:
+        return s_df.at[index, 'Description']
+    else:
+        return sampleID
 
 
 def LoadWDir(wdir, sample_tsv, trna_anno_bed, report_dir=""):
@@ -36,7 +49,7 @@ def LoadWDir(wdir, sample_tsv, trna_anno_bed, report_dir=""):
                 os.makedirs(report_dir)
             except:
                 print("An exception occurred during create pictures dir")
-
+        data['wdir']=wdir
         data["trf_sample_matrix"] = ana_dir+"/trf_sample_matrix.tsv"
         data["trna_trf_type_matrix"]=ana_dir+"/trna_trftype_matrix.tsv"
         data["sample_trf_type_matrix"] = ana_dir+"/sample_trftype_matrix.tsv"
@@ -72,6 +85,10 @@ def LoadWDir(wdir, sample_tsv, trna_anno_bed, report_dir=""):
 
             data["trf_exp_df"] = pd.read_csv(data["trf_sample_matrix"], sep="\t", index_col=False)
 
+            data["sample_dic"] = {}
+            for s in data["sample_ls"]:
+                sample_des = getSampleLabel(s, s_df)
+                data["sample_dic"][s] = sample_des
             # Get structure information
             st_df = pd.read_csv(trna_anno_bed, sep='\t')
             data["st_df"] = st_df
