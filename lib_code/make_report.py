@@ -104,10 +104,6 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
             # profile_dic
             # For each TRF
             trna_brief_infor_dic = {}
-            if sample_id not in add5_seq_dic:
-                add5_seq_dic[sample_id]={}
-            if sample_id not in add3_seq_dic:
-                add3_seq_dic[sample_id]={}
 
             for tab_line in TAB:
                 if not tab_line.startswith("#"):
