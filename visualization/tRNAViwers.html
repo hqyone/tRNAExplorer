@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="css/fornac.css" type="text/css" />
+    <link rel="stylesheet" href="./css/main.css" type="text/css" />
+
     <script type="text/javascript" src="./js/jquery-2.1.3.min.js"></script>
     <script type="text/javascript" src="./js/jquery.tsv-0.96.min.js"></script>
     <script type="text/javascript" src="./js/plotly.js"></script>
     <script type="text/javascript" src="./js/trnaview.js"></script>
-    <link rel="stylesheet" href="./css/main.css" type="text/css" />
+    <script type="text/javascript" src="./js/forna_js/d3_min_3.14.js"></script>
+    <script type="text/javascript" src="./js/forna_js/fornac.js"></script>
     <title>CODE3</title>
 </head>
 
@@ -13,17 +17,119 @@
     let deploy_port = 3000;
     let file_dic = {};
     let data_dic = {};
-    var reader_dic = {}
+    var reader_dic = {};
+    let trf_types = ['full_U_tRNA','full_tRNA','5_U_tRNA_halve','5_tRNA_halve','5_U_tRF', '5_tRF','3_U_tRNA_halve' ,'3_tRNA_halve','3_U_tRF','3_tRF' ,'i-tRF','other' ];
+    let trf_types_colors = ['darkred','red','darkgreen','limegreen', 'lightgreen','greenyellow','navy' ,'blue','dodgerblue','lightblue' ,'gold','grey' ];
+
+    let read_file_num = 1;
+
+    let drawReports =function(reader_dic){
+        let d = (loadData((reader_dic)))
+        drawStackBar(d, 'chart')
+    };
+
+    let loadData = function(reader_dic){
+        let d={};
+        if (reader_dic["static.log"]!==undefined)
+            d['sample_ls'] = getTSVInfor(reader_dic["static.log"].result);
+        if (reader_dic["trf_sample_matrix.tsv"]!==undefined)
+            d['trf_sample'] = getTSVInfor(reader_dic["trf_sample_matrix.tsv"].result);
+        if (reader_dic["trna_trftype_matrix.tsv"]!==undefined)
+            d['trna_trftype_matrix'] = getTSVInfor(reader_dic["trna_trftype_matrix.tsv"].result);
+        if (reader_dic["trna_sample_readcount_matrix.tsv"]!==undefined)
+            d['trna_sample_readcount_matrix'] = getTSVInfor(reader_dic["trna_sample_readcount_matrix.tsv"].result);
+        if (reader_dic["trna_sample_pileup_matrix.tsv"]!==undefined)
+            d['trna_sample_pileup_matrix'] = getTSVInfor(reader_dic["trna_sample_pileup_matrix.tsv"].result);
+        if (reader_dic["profiles.tsv"]!==undefined)
+            d['profiles'] = getTSVInfor(reader_dic["profiles.tsv"].result);
+        if (reader_dic["sample_trftype_matrix.tsv"]!==undefined)
+            d['sample_trftype_matrix'] = getTSVInfor(reader_dic["sample_trftype_matrix.tsv"].result);
+        if (reader_dic["cleavage_sites.tsv"]!==undefined)
+            d['cleavage_sites'] = getTSVInfor(reader_dic["cleavage_sites.tsv"].result);
+        return d
+    };
+
+    let drawStackBar=function(d, div_id){
+        let data =  d['sample_trftype_matrix'];
+        let bar_data = [];
+        for (let i=0; i<trf_types.length; i++){
+            let tt = trf_types[i];
+            let obj = {
+                x:[],
+                y:[],
+                name:tt,
+                marker: {
+                    color: trf_types_colors[i]
+                },
+                type:'bar'
+            };
+            for (let k=0; k<data.length; k++){
+                let cur_d  = data[k]
+                obj['x'].push(cur_d['#SampleID']);
+                if (cur_d[tt]!==undefined){
+                    obj['y'].push(cur_d[tt])
+                }else{
+                    obj['y'].push(0)
+                }
+            }
+            bar_data.push(obj)
+        }
+        let layout = {'barmode': 'stack'};
+        Plotly.newPlot(div_id, bar_data, layout);
+    };
+
+    let getTSVInfor = function(file_contents){
+        let contents = file_contents.split("\n");
+        let raw_obj = {};
+        let obj_ls = [];
+        for (let i=0; i<contents.length; i++){
+            if (contents[i].startsWith("#") || i===0){
+                let labels = contents[i].split("\t");
+                for (let k = 0; k<labels.length; k++){
+                    raw_obj[labels[k]]=k
+                }
+            }else{
+                let values = contents[i].split("\t");
+                let key_ls = Object.keys(raw_obj);
+                if (values.length>=key_ls.length){
+                    let object = {};
+                    object = JSON.parse(JSON.stringify(raw_obj))
+                    for (let k = 0; k<values.length; k++){
+                        for (let ki = 0; ki <key_ls.length; ki++){
+                            let key = key_ls[ki];
+                            let col_index = raw_obj[key];
+                            let value = values[col_index];
+                            let v = parseFloat(value);
+                            if(isNaN(v)) {
+                                object[key] = value
+                            }
+                            else{
+                                object[key] =v
+                            }
+                        }
+                    }
+                    obj_ls.push(object)
+                }
+            }
+        }
+        return obj_ls
+    };
 
     $(function () {
-        var fileInput = document.getElementById("csv"),
+        let container = new FornaContainer("#rna_ss", {'applyForce': false});
+
+        let options = {'structure': '((..((....)).(((....))).))',
+            'sequence':             'CGCUUCAUAUAAUCCUAAUGACCUAU'};
+
+        container.addRNA(options.structure, options);
+        let fileInput = document.getElementById("csv"),
             readFile = function () {
                 var reader = new FileReader();
                 reader.onload = function () {
                     document.getElementById('out').innerHTML = reader.result;
                 };
                 // start reading the file. When it is done, calls the onload event defined above.
-                console.log (fileInput.files[0])
+                console.log (fileInput.files[0]);
                 reader.readAsBinaryString(fileInput.files[0]);
             };
         fileInput.addEventListener('change', readFile);
@@ -33,64 +139,46 @@
             extension,
             input = document.getElementById("directory"),
             output = document.getElementById("fileOutput");
-            chart = document.getElementById("chart");
 
         input.addEventListener("change", function(e) {
             files = e.target.files;
             output.innerHTML = "";
 
-
             for (let i = 0, len = files.length; i < len; i++) {
                 file = files[i];
-                file_dic[file.name]=file;
-                extension = file.name.split(".").pop();
+                if (file.name.endsWith(".tsv") || file.name.endsWith(".log")){
+                    file_dic[file.name]=file;
+                    extension = file.name.split(".").pop();
 
-                reader_dic[file.name]=new FileReader();
-                reader_dic[file.name].readAsBinaryString(file);
+                    reader_dic[file.name]=new FileReader();
+                    reader_dic[file.name].readAsBinaryString(file);
+                    let file_name = file.name;
+                    reader_dic[file.name].onload = function () {
+                        if (read_file_num===Object.keys(reader_dic).length){
+                            //Make sure all files are loaded
+                            drawReports(reader_dic)
+                        }else{
+                            read_file_num+=1
+                        }
 
-                reader_dic[file.name].onload = function () {
-                    var tsv = $.tsv.toArrays(reader_dic[file.name].result)
-                    //document.getElementById('out').innerHTML = reader.result;
-                    data_dic[file.name] = tsv
+                    }
                 };
                 // start reading the file. When it is done, calls the onload event defined above.
-                //console.log (fileInput.files[0])
+                // console.log (fileInput.files[0])
                 //if (file.name==="trna_sample_pileup_matrix.tsv"){
                    // reader.readAsBinaryString(file);
                 //}
                 //output.innerHTML += "<li class='type-" + extension + "'>" + file.name + "</li>";
             }
         }, false);
-        chart.addEventListener("click",function(){
-            if (file_dic["trna_sample_pileup_matrix.tsv"]!==undefined){
-                var reader = new FileReader();
-                reader.readAsBinaryString(file_dic["trna_sample_pileup_matrix.tsv"]);
-                reader.onload = function () {
-                    var tsv = $.tsv.toArrays(reader.result)
-                    document.getElementById('out').innerHTML = reader.result;
-                };
-            }
-            document.getElementById('out').innerHTML = reader.result;
-        })
-
-        var data = [{
-            values: [19, 26, 55],
-            labels: ['Residential', 'Non-Residential', 'Utility'],
-            type: 'pie'
-        }];
-
-        var layout = {
-            height: 400,
-            width: 500
-        };
-
        // Plotly.newPlot('chart', data, layout);
 
     })
 
 </script>
+    <div id='rna_ss'> </div>
     <div id="main" style="width: 100%; height: 100%;"></div>
-    <div id="chart" style="width: 30px; height: 30px; background: aqua;display: inline-table"></div>
+    <div id="chart" style="width: 100%; height: 500px; background: aqua;display: inline-table"></div>
     <div id="windowHeader"></div>
         <p>Select local CSV File:</p>
         <input id="csv" type="file">

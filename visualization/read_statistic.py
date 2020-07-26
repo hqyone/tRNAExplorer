@@ -7,6 +7,7 @@ import matplotlib.patches as patches
 import os
 
 plt.rcParams['axes.facecolor'] = 'black'
+pd.options.plotting.backend = "plotly"
 
 base_color_dic = {
     "A":"r",

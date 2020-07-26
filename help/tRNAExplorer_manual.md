@@ -93,7 +93,7 @@ Notice: All filtering criteria should be meet in the same time.
 | :------------ |:--------------------------------| 
 | tRF_ID      | Sequence based ID of tRF | 
 | tRNA_Families     | tRNA Family  |  
-| tRNA_IDs     | ID list of tRNA which may generated the tRF |  
+| tRNA_IDs     | The list of tRNA hit information including tRF type and matching location. The pattern is: [ tRNA_ID, tRF_type, Read_type, start_index (0 based), end_index (0 based), read_num, read_seq, match_seq]|  
 | seq     | Sequence of tRF  |  
 | sample IDs ....     | List of sample IDs  |  
 

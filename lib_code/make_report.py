@@ -129,18 +129,20 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
                         trf_type_ls.append(trf_type)
 
                     brief_infor = contents[31]
-                    sseq = brief_infor.split(",")[5]
+                    bi_contents = brief_infor.split(",")
+                    sseq = bi_contents[5]
+                    trna_hit_infor = rna_id+","+trf_type+","+brief_infor
 
                     tRF_id = MINTplates.encode_sequence(sseq.replace("-",""), "tRF")
                     if tRF_id not in trf_type_dic:
                         trf_type_dic[tRF_id] = {'seq': sseq, 'trf_type': trf_type, 'hit_trna_number': hit_trna_number,
-                                                'tRNA_families': [rna_family], 'tRNA_IDs': [rna_id]}
-                    else:
-                        obj = trf_type_dic[tRF_id]
-                        if rna_family not in obj['tRNA_families']:
-                            obj['tRNA_families'].append(rna_family)
-                        if rna_id not in obj['tRNA_IDs']:
-                            obj['tRNA_IDs'].append(rna_id)
+                                                'tRNA_families': [], 'tRNA_IDs': []}
+                    obj = trf_type_dic[tRF_id]
+                    if rna_family not in obj['tRNA_families']:
+                        obj['tRNA_families'].append(rna_family)
+                    if trna_hit_infor not in obj['tRNA_IDs']:
+                        obj['tRNA_IDs'].append(trna_hit_infor)
+
 
                     if tRF_id not in mean_trf_sample_dic:
                         mean_trf_sample_dic[tRF_id] = {}
@@ -198,7 +200,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
         c_trf_type = trf_type_dic[trf_id]['trf_type']
         # hit_trna_number = trf_type_dic[trf_id]['hit_trna_number']
         tRNA_Families = ",".join(trf_type_dic[trf_id]['tRNA_families'])
-        tRNA_IDs = ",".join(trf_type_dic[trf_id]['tRNA_IDs'])
+        tRNA_IDs = ";".join(trf_type_dic[trf_id]['tRNA_IDs'])
         line = trf_id + "\t" + tRNA_Families + "\t" + tRNA_IDs + "\t" + seq + "\t" + c_trf_type
         for sample_id in sample_ls:
             value = 0
