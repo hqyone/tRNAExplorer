@@ -21,6 +21,7 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
    * pysam >= 0.8
    * HTSeq>=0.11.0
    * pathlib
+   * plotly
    
     User can install these python libraries using requirement files ([Python3](./lib_code/requirements_3.txt), [Python2.7](./lib_code/requirements.txt)) 
     

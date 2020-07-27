@@ -137,7 +137,7 @@ def normalize(df):
         result[feature_name] = (df[feature_name] - min_value) / (max_value - min_value)
     return result
 
-def boxplot_sorted(df, by, column, rot=0, ascending=True, fontsize=10,fig_w=12, fig_h =12):
+def boxplot_sorted(df, by, column, title="", x_label="", y_label="", rot=0, ascending=True, fontsize=10,fig_w=12, fig_h =12):
     # use dict comprehension to create new dataframe from the iterable groupby object
     # each group name becomes a column in the new dataframe
     df2 = pd.DataFrame({col:vals[column] for col, vals in df.groupby(by)})
@@ -145,11 +145,20 @@ def boxplot_sorted(df, by, column, rot=0, ascending=True, fontsize=10,fig_w=12, 
     meds = df2.median().sort_values(ascending=ascending)
     # use the columns in the dataframe, ordered sorted by median value
     # return axes so changes can be made outside the function
-    return df2[meds.index].boxplot(rot=rot, return_type="axes", fontsize=fontsize,figsize=(fig_w,fig_h))
+    df2.columns.name = x_label
+    df2.index.name = y_label
+    return df2[meds.index].boxplot(
+        rot=rot,
+        return_type="axes",
+        fontsize=fontsize,
+        figsize=(fig_w,fig_h),
+        title = title,
+        labels = dict(index=x_label, value=y_label)
+    )
 
 # groupby can be "tRF_First_Type","exp_samples","tRNA_families","CODE","CODE_AA","AA"
 # value can be "max_exp","exp_samples_num","median_exp"
-def drawExpBoxPlotForGroup(d, min_exp_cutoff=100, sample_ls=[], groupby="tRF_First_Type", value="max_exp", fontsize=14, fig_w=12, fig_h =8):
+def drawExpBoxPlotForGroup(d, min_exp_cutoff=100, sample_ls=[], title="", groupby="tRF_First_Type", value="max_exp", fontsize=14, fig_w=12, fig_h =8):
     '''
     Create a box plot to compare expression level of tRF in multiple levels
     The program will calculate max_exp (max value of expression), exp_samples_num (The number of sample expressed the tRF)
@@ -202,9 +211,20 @@ def drawExpBoxPlotForGroup(d, min_exp_cutoff=100, sample_ls=[], groupby="tRF_Fir
     #print(group.groupby('tRF_First_Type').count())
     #group.boxplot(column=['max_exp'], by=['tRF_First_Type'],rot=45, fontsize=10)
     # boxplot_sorted(group,'tRF_First_Type','max_exp',rot=90, ascending=False, fontsize=16)
-    ax =boxplot_sorted(group,groupby,value,rot=90, ascending=False, fontsize=fontsize, fig_w=fig_w, fig_h=fig_h)
-    ax.set_ylabel(value,fontsize=fontsize+2)
-    ax.set_xlabel(groupby, fontsize=fontsize + 2)
+    plt =boxplot_sorted(group,
+                        groupby,
+                        value,
+                        title=title,
+                        x_label=groupby,
+                        y_label = value,
+                        rot=90,
+                        ascending=False,
+                        fontsize=fontsize,
+                        fig_w=fig_w,
+                        fig_h=fig_h)
+    #ax = figure.axes()
+    #ax.set_ylabel(value,fontsize=fontsize+2)
+    #ax.set_xlabel(groupby, fontsize=fontsize + 2)
     plt.show()
     #group.to_csv('trf.xls', index=False, sep="\t")
 
@@ -315,8 +335,13 @@ def drawTrfLengthDistribution(d,sample_ls=[],type="read_count"):
     df = d["trf_exp_df"]
     lengh_ls=[]
     for i in df["tRF_ID"]:
-        contents = i.split("-")
-        lengh_ls.append(int(contents[0]))
+        if '#' in i:
+            c_ls = i.split("#")
+            length = c_ls[1].split("-")[0]
+            lengh_ls.append(int(length))
+        else:
+            c_ls = i.split("-")
+            lengh_ls.append(int(c_ls[0]))
     df["len"]=lengh_ls
     min_value = df["len"].min()
     max_value = df["len"].max()
