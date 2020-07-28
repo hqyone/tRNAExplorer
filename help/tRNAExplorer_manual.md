@@ -11,7 +11,7 @@
 * There are two ways to config the pipeline: using command options or a config file.
 * When you use both way together, the options in config files will overwrite command options
 ### 2.1 Command options
-* User can use command options to launch pipeline in 
+* User can use command options to launch pipeline
 
 | Option  | Description  |
 | :------------ |:--------------------------------| 

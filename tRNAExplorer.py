@@ -285,7 +285,6 @@ def main(argv):
         "t_threads",
         "min_read_qscore",
         "min_read_length",
-        "min_reads_count",
         "blastn",
         "mkdb",
         "blastn_e_cutoff",
