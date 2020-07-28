@@ -8,7 +8,6 @@
 #
 
 import os
-import gc
 from pyfaidx import Fasta
 
 complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', '-':'-'}
@@ -83,7 +82,7 @@ def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, qcutoff=0, num_cutoff=
                             del dic[seq]
                             del name_dic[seq]
                 #print("dic ("+str(len(dic.keys()))+")")
-                gc.collect()
+                # gc.collect()
             for i in quanlity:
                 if ord(i)<=qcutoff+33:  #Based on Phred 33
                     low_quanlity = True
