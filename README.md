@@ -11,7 +11,7 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
 1. Trimmomatics 0.39  http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
 2. BLASTN (ncbi-blast-2.10.0+) https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
 3. tRNAScan-SE  http://lowelab.ucsc.edu/tRNAscan-SE/
-4. Python (version 2.7 or 3.x) and packages
+4. Python (version 3.x) and packages.
    * jupyter>=1.0.0
    * scipy==1.1.0
    * numpy>=1.16.1
@@ -23,7 +23,7 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
    * pathlib
    * plotly
    
-    User can install these python libraries using requirement files ([Python3](./lib_code/requirements_3.txt), [Python2.7](./lib_code/requirements.txt)) 
+    User can install these python libraries using requirement files ([Python3](./lib_code/requirements_3.txt)) 
     
     Using : `pip3 install -r requirements_3.txt` or `pip install -r requirements.txt`
 ## 3. Installation

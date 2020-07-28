@@ -6,7 +6,7 @@
 * Run with advanced settings using config file: 
     *   Modify config.txt  (taken [config.txt](config.txt) in root directory as template)
     *   Run `python <root path>/tRNAExplorer.py -c config.txt`
-    *   Details about tRNAExploer.py can be found following ...
+    *   Details about tRNAExplorer.py can be found following ...
 ## 2. Settings
 * There are two ways to config the pipeline: using command options or a config file.
 * When you use both way together, the options in config files will overwrite command options
@@ -20,7 +20,7 @@
 | -f     | Absolute path of FASTA file for tRNAs which was created by [tRNA_db_maker.py](./tRNA_db_maker_manual.md) |  
 | -a     | Absolute path of bed file for tRNA annotations which was created by  [tRNA_db_maker.py](./tRNA_db_maker_manual.md)  |  
 | -s     | Absolute path of sample information  |  
-| -i     | The directory storing fastq files (Input Directory)  |  
+| -i     | The directory storing FASTQ files (Input Directory)  |  
 | -h     | Show the help information  |  
 | -o     | The directory of output files (Out Directory)| 
 
