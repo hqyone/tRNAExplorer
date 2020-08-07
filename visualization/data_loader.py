@@ -121,6 +121,22 @@ def add_aa_column(df, trna_id="RNA_ID"):
     df["CODE_AA"] = code_aa_ls
     return df
 
+def add_AA_statistic(df, trna_id="3_read"):
+    AA_len = []
+    AA_tail = []
+    for i in df[trna_id]:
+        g = re.search('^(A+)(\w*)', i)
+        if g:
+            AA_len.append(len(str(g.group(1))))
+            AA_tail.append(str(g.group(2)))
+        else:
+            AA_len.append(0)
+            AA_tail.append("")
+
+    df['AA_length'] = AA_len  # Isoacceptor families
+    df["AA_tail"] = AA_tail  # Isodecoders
+    return df
+
 def getTotalIntensity(exp_df, sample_ls):
     sample_dic = {}
     for s in sample_ls:

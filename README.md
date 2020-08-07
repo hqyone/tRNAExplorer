@@ -36,12 +36,13 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
 ## 4. Running
 * Run test data by      `python tRNAExploer.py`
 * Get help information  `python tRNAExploer.py -h`
-* Create a sample tsv file with two columns ([example](./test/samples))
+* Create a sample tsv file with tree columns (The title line should be keeped) ([example](./test/samples))
 
     | Column  | Description  |
     | :------------ |:--------------------------------| 
     | ID    | ID of sample, match the name of FASTQ file in fastq_dir. For example: `<ID>.fastq` or `<ID>.fq` | 
-    | Description     | Short string describe the sample |  
+    | Description     | Short string describe the sample |
+    | Adapters     | Adapter sequences seperated by "," 5'-adapter, 3'-adapter. For example: "NNNNCG,AAAAAAAAA" OR ",AAAAAAAA" no cutting need be done in 5'-terminal |   
 
 * Run with customized data: `python tRNAExploer.py -n <proj_name> -f <trna_fa> -a <trna_anno_file> -s <sample tsv> -i <fastq_dir> -o <out_dir>`
 * Run with advanced settings using config file: 

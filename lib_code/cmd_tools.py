@@ -153,13 +153,15 @@ class Trimmomatic:
             cmd += " -phred64 "
         cmd += " -threads " + str(threads)
         cmd += " " +input_fastq+" " +out_fastq
-        if adapter_fa=="" or os.path.isfile(adapter_fa):
+        if adapter_fa=="" or not os.path.isfile(adapter_fa):
             trimmomatic_dir = os.path.dirname(os.path.abspath(self.path))
             default_adapter_fa = trimmomatic_dir+"/adapters/TruSeq3-SE.fa"
             if os.path.isfile(default_adapter_fa):
                 cmd += " ILLUMINACLIP:"+default_adapter_fa+":2:30:10 "  # Adapter for illuminate
             else:
                 cmd += " ILLUMINACLIP:TruSeq3-SE:2:30:10 "  # Adapter for illuminate
+        else:
+            cmd += " ILLUMINACLIP:"+adapter_fa+":2:30:10 "  # Adapter for illuminate
         cmd += " LEADING:"+str(LEADING)
         cmd += " TRAILING:" + str(TRAILING)
         cmd += " SLIDINGWINDOW:" + str(SLIDINGWINDOW)

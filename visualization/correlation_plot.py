@@ -39,7 +39,7 @@ def drawCorrMatrixPic(d, type="count", label="des", groupby="tRNA_Families", met
     if type=="count":
         exp_df = d["count_exp_df"]
     elif type == "pileup":
-        exp_df = d["count_exp_df"]
+        exp_df = d["pileup_exp_df"]
 
     sample_df = d["s_df"]
     sample_ls = d["sample_ls"]

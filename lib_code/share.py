@@ -8,6 +8,7 @@
 #
 
 import os
+import re
 from pyfaidx import Fasta
 
 complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', '-':'-'}
@@ -43,7 +44,7 @@ def stringfyNumList(ls):
     return str_ls
 
 # filter out reads with quality lower than 28 at any position
-def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, qcutoff=0, num_cutoff=50):
+def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, f_patterm="", r_patterm="", qcutoff=0, num_cutoff=50):
     big_file = False
     if os.path.getsize(fastq)>3259059200:
         big_file=True
@@ -65,6 +66,21 @@ def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, qcutoff=0, num_cutoff=
         line_index+=1
         if line_index%4==2:
             seq = line
+            if f_patterm!="":
+                p = "^"+f_patterm.replace('N','\w')
+                b = re.search(p, line)
+                if b:
+                    seq =line[b.span()[1]:]
+            if r_patterm!="":
+                p = "CCA"+r_patterm.replace('N','\w')
+                b = re.search(p, line)
+                if b:
+                    seq =line[:b.span()[0]+3]
+                else:
+                    p = r_patterm.replace('N', '\w')+"$"
+                    b = re.search(p, line)
+                    if b:
+                        seq = line[:b.span()[0]]
         elif line_index%4==3:
             continue
             # title2 = line.replace(" ","_")

@@ -1,6 +1,6 @@
-#ID	Description
-SRR1836123	tRNA_control1
-SRR1836124	tRNA_control2
+#ID	Description Adapters
+SRR1836123	tRNA_control1	,AAAAAAAAAAAA
+SRR1836124	tRNA_control2	,AAAAAAAAAAAA
 SRR1836125	tRNA_treated1
 SRR1836126	tRNA_treated2
 SRR1836127	Total_RNA_control_1

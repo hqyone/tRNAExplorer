@@ -75,7 +75,10 @@ def rseq_blastn_pipeline(proj_name,
             if not line.startswith("#"):
                 contents = line.strip().split("\t")
                 if len(contents) > 1:
-                    sample_dic[contents[0]] = contents[1]
+                    sample_dic[contents[0]] = {"des":contents[1], "adapters":""}
+                if len(contents)>2:
+                    sample_dic[contents[0]]['adapters'] = contents[2]
+
         SAMPLES.close()
 
         loginfor = {}
@@ -98,6 +101,8 @@ def rseq_blastn_pipeline(proj_name,
             s_id = os.path.basename(f).replace(".fastq", "").replace(".fq", "")
             fastq_dir = os.path.dirname(os.path.abspath(f))
             if s_id in sample_dic:
+                des = sample_dic[s_id]["des"]
+                adapters = sample_dic[s_id]["adapters"].strip()
                 start_time = time.time()
                 end_time = time.time()
                 processing_time = 0
@@ -110,8 +115,11 @@ def rseq_blastn_pipeline(proj_name,
                 if trim_seq!=0:
                     # Trimed fastq
                     trimmed_fastq = fastq_dir + "/" + s_id + "_trimmed"+ext
+                    adapter_fasta =t_adapter
+                    if not os.path.isfile(adapter_fasta):
+                        adapter_fasta = ""
                     T = Trimmomatic(t_path)
-                    trimmomatics_cmd = T.TrimSE(raw_fastq, trimmed_fastq,adapter_fa=t_adapter,phred=t_phred,LEADING=t_leading, TRAILING=t_tailing, SLIDINGWINDOW=t_slidingwindow,MINLEN=t_minlen,threads=t_threads)
+                    trimmomatics_cmd = T.TrimSE(raw_fastq, trimmed_fastq,adapter_fa=adapter_fasta,phred=t_phred,LEADING=t_leading, TRAILING=t_tailing, SLIDINGWINDOW=t_slidingwindow, MINLEN=t_minlen,threads=t_threads)
 
                     CMD_FILE.write(trimmomatics_cmd + "\n")
                     CMD_FILE.close()
@@ -177,7 +185,7 @@ def rseq_blastn_pipeline(proj_name,
 
             sample_des = s_id
             if s_id in sample_dic:
-                sample_des = sample_dic[s_id]
+                sample_des = sample_dic[s_id]["des"]
             line = s_id+"\t"+sample_des
             for key in key_ls:
                 if key in statis_obj:
@@ -311,7 +319,7 @@ def main(argv):
         #########################################################
         # Trimmomatic
         #########################################################
-        "t_do": 0,
+        "t_do": 1,
         "t_adapter":"",
         "t_path": "/Users/hqyone/Downloads/Trimmomatic-0.39/trimmomatic-0.39.jar",
         "t_phred": 33,
