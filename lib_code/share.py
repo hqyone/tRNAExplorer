@@ -43,6 +43,25 @@ def stringfyNumList(ls):
         str_ls.append(str(int(i)))
     return str_ls
 
+def trimseq(rawseq,  f_patterm="", r_patterm=""):
+    seq = rawseq
+    if f_patterm != "":
+        p = "^" + f_patterm.replace('N', '\w')
+        b = re.search(p, seq)
+        if b:
+            seq = seq[b.span()[1]:]
+    if r_patterm != "":
+        p = "CCA" + r_patterm.replace('N', '\w')
+        b = re.search(p, seq)
+        if b:
+            seq = seq[:b.span()[0] + 3]
+        else:
+            p = r_patterm.replace('N', '\w') + "$"
+            b = re.search(p, seq)
+            if b:
+                seq = seq[:b.span()[0]]
+    return seq
+
 # filter out reads with quality lower than 28 at any position
 def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, f_patterm="", r_patterm="", qcutoff=0, num_cutoff=50):
     big_file = False
@@ -65,22 +84,7 @@ def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, f_patterm="", r_patter
         line  = line.strip()
         line_index+=1
         if line_index%4==2:
-            seq = line
-            if f_patterm!="":
-                p = "^"+f_patterm.replace('N','\w')
-                b = re.search(p, line)
-                if b:
-                    seq =line[b.span()[1]:]
-            if r_patterm!="":
-                p = "CCA"+r_patterm.replace('N','\w')
-                b = re.search(p, line)
-                if b:
-                    seq =line[:b.span()[0]+3]
-                else:
-                    p = r_patterm.replace('N', '\w')+"$"
-                    b = re.search(p, line)
-                    if b:
-                        seq = line[:b.span()[0]]
+            seq = trimseq(line, f_patterm,r_patterm)
         elif line_index%4==3:
             continue
             # title2 = line.replace(" ","_")
