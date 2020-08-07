@@ -105,7 +105,7 @@ def rseq_blastn_pipeline(proj_name,
                 adapters = sample_dic[s_id]["adapters"].strip().split(',')
                 f_adapter = str(adapters[0])
                 r_adapter = ""
-                if len(f_adapter)>1:
+                if len(adapters)>1:
                     r_adapter = adapters[1]
 
                 start_time = time.time()
