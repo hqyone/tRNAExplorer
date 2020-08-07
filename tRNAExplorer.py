@@ -102,7 +102,12 @@ def rseq_blastn_pipeline(proj_name,
             fastq_dir = os.path.dirname(os.path.abspath(f))
             if s_id in sample_dic:
                 des = sample_dic[s_id]["des"]
-                adapters = sample_dic[s_id]["adapters"].strip()
+                adapters = sample_dic[s_id]["adapters"].strip().split(',')
+                f_adapter = str(adapters[0])
+                r_adapter = ""
+                if len(f_adapter)>1:
+                    r_adapter = adapters[1]
+
                 start_time = time.time()
                 end_time = time.time()
                 processing_time = 0
@@ -131,7 +136,8 @@ def rseq_blastn_pipeline(proj_name,
                 #Removed redundant read Filter and get the read number file
                 filtered_fasta = fastq_dir + "/" + s_id + "_filtered.fa"
                 num_dic_txt = fastq_dir + "/" + s_id + "_num_dic.txt"
-                static_infor = share.filterFastQ2FastA(trimmed_fastq, filtered_fasta, num_dic_txt, qcutoff=min_read_qscore, num_cutoff=min_reads_count)
+                static_infor = share.filterFastQ2FastA(trimmed_fastq, filtered_fasta, num_dic_txt,
+                                                       f_adapter=f_adapter, r_adapter=r_adapter, qcutoff=min_read_qscore, num_cutoff=min_reads_count)
                 # delete trmmed fastq to save space
                 if trim_seq!=0 and os.path.exists(trimmed_fastq):
                     os.remove(trimmed_fastq)
