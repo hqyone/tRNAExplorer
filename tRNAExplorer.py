@@ -137,7 +137,7 @@ def rseq_blastn_pipeline(proj_name,
                 filtered_fasta = fastq_dir + "/" + s_id + "_filtered.fa"
                 num_dic_txt = fastq_dir + "/" + s_id + "_num_dic.txt"
                 static_infor = share.filterFastQ2FastA(trimmed_fastq, filtered_fasta, num_dic_txt,
-                                                       f_adapter=f_adapter, r_adapter=r_adapter, qcutoff=min_read_qscore, num_cutoff=min_reads_count)
+                                                       f_patterm=f_adapter, r_patterm=r_adapter, qcutoff=min_read_qscore, num_cutoff=min_reads_count)
                 # delete trmmed fastq to save space
                 if trim_seq!=0 and os.path.exists(trimmed_fastq):
                     os.remove(trimmed_fastq)
