@@ -100,7 +100,12 @@ def drawCorrMatrixPic(d, type="count", label="des", groupby="tRNA_Families", met
         for s in sample_ls:
             sample_des_ls.append(d["sample_dic"][s])
         sample_ls = sample_des_ls
-    #print(sample_ls)
+    # Delete column if sum is zero
+    for colname in df.columns:
+        csum = df[colname].sum()
+        if csum == 0:
+            del df[colname]
+            print("delete the column :" + colname)
     df = df.sort_index(axis=1)
     figure = d["report_dir"]+"/cor_matrix.png"
     cm.drawCorrelationClusterMatrix(df, figure, method=method,annot_font_size=font_size) # Correlation matrix
