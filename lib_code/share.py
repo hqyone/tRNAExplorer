@@ -61,6 +61,7 @@ def trimseq(rawseq,  f_patterm="", r_patterm=""):
             if b:
                 seq = seq[:b.span()[0]]
     return seq
+print(trimseq("TAAACGATCTCGGTGGGACCTCCA","NNNNCG",""))
 
 # filter out reads with quality lower than 28 at any position
 def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, f_patterm="", r_patterm="", qcutoff=0, num_cutoff=50):

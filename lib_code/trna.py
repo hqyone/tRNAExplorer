@@ -216,7 +216,7 @@ class tRNA():
             ptype = "stem_rev"
         return ptype
 
-    def FindCleavageSites(self, start_pos_profile, end_pos_profile, min_intensity=100, min_sn_ratio=10,context_seq_len=8):
+    def FindCleavageSites(self, start_pos_profile, end_pos_profile, min_intensity=100, min_sn_ratio=30,context_seq_len=8):
         cleavageSite_Dic={}
         combined_profile = start_pos_profile[:]
         if len(start_pos_profile)==len(end_pos_profile):
@@ -229,7 +229,7 @@ class tRNA():
         # Find the peak list by combined start and end profiles
         start_peak_ls = list(start_peak_dic.keys())
         end_peak_ls = list(end_peak_dic.keys())
-        combined_peak_id_ls = start_peak_ls + list(set(start_peak_ls) - set(end_peak_ls))
+        combined_peak_id_ls = list(set(start_peak_ls + end_peak_ls))
         for id in combined_peak_id_ls:
             combined_peak={
                 "pos": 0,

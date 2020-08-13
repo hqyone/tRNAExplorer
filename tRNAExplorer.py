@@ -325,7 +325,7 @@ def main(argv):
         #########################################################
         # Trimmomatic
         #########################################################
-        "t_do": 1,
+        "t_do": 0,
         "t_adapter":"",
         "t_path": "/Users/hqyone/Downloads/Trimmomatic-0.39/trimmomatic-0.39.jar",
         "t_phred": 33,
