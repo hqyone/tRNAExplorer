@@ -44,48 +44,49 @@ def getAddModificationStatisitc2(d,proj_name="test",top_num=10,fontsize=14, fig_
         des = sample_dic[s]
         hit_tab = d['wdir'] + "/" + s + "_" + proj_name + "_hit.tab"
         df = pd.read_csv(hit_tab, sep="\t")
-        df = dl.add_aa_column(df, trna_id="tRNA_id")
+        if not df.empty:
+            df = dl.add_aa_column(df, trna_id="tRNA_id")
 
-        df['temp5'] = df['read_5_fragment']
-        group_a = df.groupby('read_5_fragment').sum()
-        print("\n" + s + "_" + des)
-        sorted_df = group_a.sort_values(["mean_number"], ascending=[False]).head(top_num)
-        with pd.option_context('display.max_rows', None, 'display.max_columns',
-                               None):  # more options can be specified also
-            print(sorted_df['mean_number'])
-        group_c = df.groupby('read_3_fragment').sum()
-        sorted_df = group_c.sort_values(["mean_number"], ascending=[False]).head(top_num)
-        with pd.option_context('display.max_rows', None, 'display.max_columns',
-                               None):  # more options can be specified also
-            print(sorted_df['mean_number'])
+            df['temp5'] = df['read_5_fragment']
+            group_a = df.groupby('read_5_fragment').sum()
+            print("\n" + s + "_" + des)
+            sorted_df = group_a.sort_values(["mean_number"], ascending=[False]).head(top_num)
+            with pd.option_context('display.max_rows', None, 'display.max_columns',
+                                   None):  # more options can be specified also
+                print(sorted_df['mean_number'])
+            group_c = df.groupby('read_3_fragment').sum()
+            sorted_df = group_c.sort_values(["mean_number"], ascending=[False]).head(top_num)
+            with pd.option_context('display.max_rows', None, 'display.max_columns',
+                                   None):  # more options can be specified also
+                print(sorted_df['mean_number'])
 
-        s_index += 1
-        for c in range(1, 5):
-            if c == 1:
-                df['temp5'] = df['read_5_fragment']
-                df.loc[df['read_5_fragment'].isna(), 'temp5'] = 'None'
-                df.loc[df['read_5_fragment'].notna(), 'temp5'] = 'Addition'
-                group_b = df.groupby('temp5').sum()
-                fig.add_trace(go.Pie(values=list(group_b["mean_number"]), labels=list(group_b.index),
-                                     insidetextorientation='radial'), row=s_index, col=c)
-            elif c == 2:
-                group_a = df.groupby('read_5_fragment').sum()
-                fig.add_trace(
-                    go.Pie(values=list(group_a["mean_number"]), hovertext=list(group_a.index), textposition='inside'),
-                    row=s_index, col=c)
-            elif c == 3:
-                df['temp2'] = df['read_3_fragment']
-                df.loc[df['read_3_fragment'].isna(), 'temp2'] = 'None'
-                df.loc[df['read_3_fragment'].notna(), 'temp2'] = 'Addition'
-                group_c = df.groupby('temp2').sum()
-                fig.add_trace(
-                    go.Pie(values=list(group_c["mean_number"]), labels=list(group_c.index), textposition='inside'),
-                    row=s_index, col=c)
-            elif c == 4:
-                group_a = df.groupby('read_3_fragment').sum()
-                fig.add_trace(
-                    go.Pie(values=list(group_a["mean_number"]), hovertext=list(group_a.index), textposition='inside'),
-                    row=s_index, col=c)
+            s_index += 1
+            for c in range(1, 5):
+                if c == 1:
+                    df['temp5'] = df['read_5_fragment']
+                    df.loc[df['read_5_fragment'].isna(), 'temp5'] = 'None'
+                    df.loc[df['read_5_fragment'].notna(), 'temp5'] = 'Addition'
+                    group_b = df.groupby('temp5').sum()
+                    fig.add_trace(go.Pie(values=list(group_b["mean_number"]), labels=list(group_b.index),
+                                         insidetextorientation='radial'), row=s_index, col=c)
+                elif c == 2:
+                    group_a = df.groupby('read_5_fragment').sum()
+                    fig.add_trace(
+                        go.Pie(values=list(group_a["mean_number"]), hovertext=list(group_a.index), textposition='inside'),
+                        row=s_index, col=c)
+                elif c == 3:
+                    df['temp2'] = df['read_3_fragment']
+                    df.loc[df['read_3_fragment'].isna(), 'temp2'] = 'None'
+                    df.loc[df['read_3_fragment'].notna(), 'temp2'] = 'Addition'
+                    group_c = df.groupby('temp2').sum()
+                    fig.add_trace(
+                        go.Pie(values=list(group_c["mean_number"]), labels=list(group_c.index), textposition='inside'),
+                        row=s_index, col=c)
+                elif c == 4:
+                    group_a = df.groupby('read_3_fragment').sum()
+                    fig.add_trace(
+                        go.Pie(values=list(group_a["mean_number"]), hovertext=list(group_a.index), textposition='inside'),
+                        row=s_index, col=c)
     fig.update_layout(height=fig_height, width=fig_width, showlegend=False, font=dict(
         family="Times New Roman",
         size=fontsize,
@@ -124,47 +125,47 @@ def getAddModificationStatisitc(d,proj_name="test",top_num=10,radius = 1.2, font
         des = sample_dic[s]
         hit_tab = d['wdir'] + "/" + s + "_" + proj_name + "_hit.tab"
         df = pd.read_csv(hit_tab, sep="\t")
+        if not df.empty:
+            df = dl.add_aa_column(df, trna_id="tRNA_id")
 
-        df = dl.add_aa_column(df, trna_id="tRNA_id")
+            df['temp5'] = df['read_5_fragment']
+            group_a = df.groupby('read_5_fragment').sum()
+            axs[index, 1].pie(group_a["mean_number"], labels=group_a.index, autopct='%1.1f%%', shadow=False, radius=radius,
+                              labeldistance=None)
+            print("\n" + s + "_" + des)
+            sorted_df = group_a.sort_values(["mean_number"], ascending=[False]).head(top_num)
+            with pd.option_context('display.max_rows', None, 'display.max_columns',
+                                   None):  # more options can be specified also
+                print(sorted_df['mean_number'])
+            group_c = df.groupby('read_3_fragment').sum()
+            sorted_df = group_c.sort_values(["mean_number"], ascending=[False]).head(top_num)
+            with pd.option_context('display.max_rows', None, 'display.max_columns',
+                                   None):  # more options can be specified also
+                print(sorted_df['mean_number'])
+            axs[index, 3].pie(group_c["mean_number"], labels=group_c.index, autopct='%1.1f%%', shadow=False, radius=radius,
+                              labeldistance=None)
+            # axs[index,1].text(-0.06, 0.5, des, transform=axs[index,0].transAxes,va='center', fontsize=12, weight='bold', rotation=90)
 
-        df['temp5'] = df['read_5_fragment']
-        group_a = df.groupby('read_5_fragment').sum()
-        axs[index, 1].pie(group_a["mean_number"], labels=group_a.index, autopct='%1.1f%%', shadow=False, radius=radius,
-                          labeldistance=None)
-        print("\n" + s + "_" + des)
-        sorted_df = group_a.sort_values(["mean_number"], ascending=[False]).head(top_num)
-        with pd.option_context('display.max_rows', None, 'display.max_columns',
-                               None):  # more options can be specified also
-            print(sorted_df['mean_number'])
-        group_c = df.groupby('read_3_fragment').sum()
-        sorted_df = group_c.sort_values(["mean_number"], ascending=[False]).head(top_num)
-        with pd.option_context('display.max_rows', None, 'display.max_columns',
-                               None):  # more options can be specified also
-            print(sorted_df['mean_number'])
-        axs[index, 3].pie(group_c["mean_number"], labels=group_c.index, autopct='%1.1f%%', shadow=False, radius=radius,
-                          labeldistance=None)
-        # axs[index,1].text(-0.06, 0.5, des, transform=axs[index,0].transAxes,va='center', fontsize=12, weight='bold', rotation=90)
+            df.loc[df['temp5'].isna(), 'read_5_fragment'] = '-'
+            df.loc[df['temp5'].notna(), 'read_5_fragment'] = 'Addition'
+            group_b = df.groupby('read_5_fragment').sum()
+            axs[index, 0].pie(group_b["mean_number"], labels=group_b.index, autopct='%1.1f%%', shadow=False, radius=radius)
+            axs[index, 0].text(-0.16, 0.5, des, transform=axs[index, 0].transAxes, va='center', fontsize=fontsize,
+                               weight='bold', rotation=90)
 
-        df.loc[df['temp5'].isna(), 'read_5_fragment'] = '-'
-        df.loc[df['temp5'].notna(), 'read_5_fragment'] = 'Addition'
-        group_b = df.groupby('read_5_fragment').sum()
-        axs[index, 0].pie(group_b["mean_number"], labels=group_b.index, autopct='%1.1f%%', shadow=False, radius=radius)
-        axs[index, 0].text(-0.16, 0.5, des, transform=axs[index, 0].transAxes, va='center', fontsize=fontsize,
-                           weight='bold', rotation=90)
-
-        df['temp3'] = df['read_3_fragment']
-        df.loc[df['temp3'].isna(), 'read_3_fragment'] = '-'
-        df.loc[df['temp3'].notna(), 'read_3_fragment'] = 'Addition'
-        group = df.groupby('read_3_fragment').sum()
-        axs[index, 2].pie(group["mean_number"], labels=group.index, autopct='%1.1f%%', shadow=False, radius=radius)
-        if index == 0:
-            axs[index, 0].text(0.2, 1.1, "5'_Addition_Ratio", transform=axs[index, 0].transAxes, va='center',
-                               fontsize=fontsize, weight='bold', rotation=0)
-            axs[index, 1].text(1.4, 1.1, "5'_Addition_Comp", transform=axs[index, 0].transAxes, va='center',
-                               fontsize=fontsize, weight='bold', rotation=0)
-            axs[index, 2].text(2.8, 1.1, "3'_Addition_Ratio", transform=axs[index, 0].transAxes, va='center',
-                               fontsize=fontsize, weight='bold', rotation=0)
-            axs[index, 3].text(4.0, 1.1, "3'_Addition_Comp", transform=axs[index, 0].transAxes, va='center',
-                               fontsize=fontsize, weight='bold', rotation=0)
-        index += 1
+            df['temp3'] = df['read_3_fragment']
+            df.loc[df['temp3'].isna(), 'read_3_fragment'] = '-'
+            df.loc[df['temp3'].notna(), 'read_3_fragment'] = 'Addition'
+            group = df.groupby('read_3_fragment').sum()
+            axs[index, 2].pie(group["mean_number"], labels=group.index, autopct='%1.1f%%', shadow=False, radius=radius)
+            if index == 0:
+                axs[index, 0].text(0.2, 1.1, "5'_Addition_Ratio", transform=axs[index, 0].transAxes, va='center',
+                                   fontsize=fontsize, weight='bold', rotation=0)
+                axs[index, 1].text(1.4, 1.1, "5'_Addition_Comp", transform=axs[index, 0].transAxes, va='center',
+                                   fontsize=fontsize, weight='bold', rotation=0)
+                axs[index, 2].text(2.8, 1.1, "3'_Addition_Ratio", transform=axs[index, 0].transAxes, va='center',
+                                   fontsize=fontsize, weight='bold', rotation=0)
+                axs[index, 3].text(4.0, 1.1, "3'_Addition_Comp", transform=axs[index, 0].transAxes, va='center',
+                                   fontsize=fontsize, weight='bold', rotation=0)
+            index += 1
 
