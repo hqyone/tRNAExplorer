@@ -158,11 +158,7 @@ class tRNA():
         return True
 
     # Calculate the position of reads in the tRNA with intron and UTR regions
-    # read_class : four styles of tRNA:
-    #   I (tRNA with UTRs and Intron) ,
-    #   P (tRNA with UTRs),
-    #   M (mature),
-    #   C (meature tRNA with CCA)
+    # read_class : nine styles of tRNA:
     # start: start position of read in object position
     # end: end position of read in object position
     # I,1,75
@@ -318,11 +314,11 @@ class tRNA():
             profiles["total_reads_num"] += read_num
         profiles["pileup_height"]=max(profiles["total"])
         profiles["cleavage_site_dic"] = self.FindCleavageSites(profiles["start_pos"],profiles["end_pos"])
-        profiles["mutation_dic_str"] = self.CreateMutationDicStr(brief_mapping_infor_ls)
+        profiles["mutation_dic_str"] = self.CreateMutationDicStr(brief_mapping_infor_ls, profiles["total"])
         return profiles
 
 
-    def BriefMappingInfor2MutationDic(self,brief_mapping_infor):
+    def BriefMappingInfor2MutationDic(self,brief_mapping_infor,total_profile):
         # Mutation IDs
         # Mutation: M:B>A:Location->Reads
         # Deletion: D:B:Location->Reads
@@ -343,16 +339,17 @@ class tRNA():
                 A = read_seq[i]
                 B = ref_seq[i]
                 Mutaion_Str=""
-                location = loc[0]+i
+                location = loc[0]+i # 1 based
+                total_intensity = int(total_profile[location-1])
                 if A=="-":
                     #Deletion
-                    Mutaion_Str="D:"+B+":"+str(location)
+                    Mutaion_Str="D:"+B+":"+str(location)+":"+str(total_intensity)
                 elif B=="-":
                     #Insertion
-                    Mutaion_Str = "I:" + A + ":" + str(location)
+                    Mutaion_Str = "I:" + A + ":" + str(location)+":"+str(total_intensity)
                 elif A!=B:
                     #Mutaion
-                    Mutaion_Str = "M:" + B +">"+ A + ":" + str(location)
+                    Mutaion_Str = "M:" + B +">"+ A + ":" + str(location)+":"+str(total_intensity)
                 else:
                     #Unexpect
                     continue
@@ -362,11 +359,11 @@ class tRNA():
                     mut_dic[Mutaion_Str]+=read_num
         return mut_dic
 
-    def CreateMutationDicStr(self, brief_mapping_infor_ls):
+    def CreateMutationDicStr(self, brief_mapping_infor_ls, total_profile):
         # Both "start_pos" and "end_pos" are 1 based
         mut_dic ={}
         for bi in brief_mapping_infor_ls:
-            cur_dic = self.BriefMappingInfor2MutationDic(bi)
+            cur_dic = self.BriefMappingInfor2MutationDic(bi,total_profile)
             for k in cur_dic:
                 if k not in mut_dic:
                     mut_dic[k]=cur_dic[k]

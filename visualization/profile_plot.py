@@ -119,7 +119,7 @@ def getMutRecs(Mutation_Strs):
     for mu in mut_ls:
         c = mu.split("=")
         if len(c)>1:
-            type, infor, loc = c[0].split(":")
+            type, infor, loc, total = c[0].split(":")
             base = ""
             base_pair =  infor.split(">")
             base = base_pair[0]
@@ -210,7 +210,7 @@ def drawProfiles(d, test=False, output_dir ="", min_depth = 20, share_y_lim=True
                     sample_des = getSampleLabel(sample, s_df)
                     profile = np.array(t_df['profile'].values[0].split(",")).astype(np.float)
                     if normalized:
-                        profile = np.divide(profile, sample_total_count/100000.0)
+                        profile = np.divide(profile, sample_total_count/1000.0)
                     profile_max = profile.max()
                     if profile_max >= min_depth:
                         # Draw background
@@ -242,7 +242,10 @@ def drawProfiles(d, test=False, output_dir ="", min_depth = 20, share_y_lim=True
                             print(sample_des+">>"+sample+">>"+tRNA_ID+">>"+mut_str)
                         rects = getMutRecs(mut_str)
                         for re in rects:
-                            rect = patches.Rectangle((re['start'], 0), re['end'] - re['start'], re['rect_height'],
+                            rect_height = re['rect_height']
+                            if normalized:
+                                rect_height =  (rect_height*1000)/sample_total_count
+                            rect = patches.Rectangle((re['start'], 0), re['end'] - re['start'], rect_height,
                                                      linewidth=0, edgecolor=re['color'],
                                                      facecolor=re['color'], ec=re['color'],
                                                      alpha=re['alpha'])
