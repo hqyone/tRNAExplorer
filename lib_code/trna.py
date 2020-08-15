@@ -344,10 +344,10 @@ class tRNA():
                 B = ref_seq[i]
                 Mutaion_Str=""
                 location = loc[0]+i
-                if A=="*":
+                if A=="-":
                     #Deletion
                     Mutaion_Str="D:"+B+":"+str(location)
-                elif B=="*":
+                elif B=="-":
                     #Insertion
                     Mutaion_Str = "I:" + A + ":" + str(location)
                 elif A!=B:
