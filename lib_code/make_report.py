@@ -11,6 +11,33 @@ import os
 import lib_code.share as share
 import ntpath
 import lib_code.MINTplates as MINTplates
+
+def getMutationStr(mutation_str, SampleID, tRNA):
+    c = mutation_str.split("=")
+    mut_str = ""
+    if len(c) > 1:
+        tRNA_ID= tRNA.name
+        tRNA_Family_ID = tRNA.family
+        intensity=float(c[1])
+        type, infor, loc, total = c[0].split(":")
+        loc = tRNA.CalculateMutLocItoM(int(loc))
+        ratio = round(intensity/float(total),3)
+        Ref = ""
+        Mut = ""
+        if type =='M':
+            infor_ls = infor.split('>')
+            if len(infor_ls)==2:
+                Ref = infor_ls[0]
+                Mut = infor_ls[1]
+        elif type == "D":
+            Ref = infor
+            Mut ='-'
+        else:
+            Ref ='-'
+            Mut = infor
+        mut_str = SampleID+"\t"+tRNA_Family_ID+"\t"+tRNA_ID+"\t"+type+"\t"+str(loc)+"\t"+Ref+"\t"+Mut+"\t"+str(intensity)+'\t'+str(total)+'\t'+str(ratio)
+    return mut_str
+
 # getExpMatrixFile(blast_out_dir,out_dir)
 # print("Matrix file created completely")
 
@@ -26,6 +53,7 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
     mean_sample_trna_trftype_dic = {}
     mean_sample_trftype_dic = {}
     mean_sample_trna_proftype_prof_dic = {}
+    mutation_dic={}    #SAMPLE/tRNAFamily/tRNA_ID/Type/Location/G/V/Mutaion_reads/Total_reads
 
     statistic_dic = {}
 
@@ -48,6 +76,10 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
 
     combined_cleavage_sites = out_dir + "/cleavage_sites.tsv"  # Profiles tab files (including starpos, endpos, total)
     MEAN_CLEAVAGE = open(combined_cleavage_sites, 'w')
+
+    combined_variants = out_dir + "/variants.tsv"  # Variant files
+    VARIANTS = open(combined_variants, 'w')
+    VARIANTS.write('#SampleID'+"\t"+"family"+"\t"+"tRNA_ID"+"\t"+"type"+"\tloc\tref\tmut\tmut_reads\ttotal_reads\tratio\n")
 
     trna_sample_readcount_matrix_file = out_dir + "/trna_sample_readcount_matrix.tsv"  # trna vs sample: read_count matrix
     SAMPLE_ReadCount_MATRIX = open(trna_sample_readcount_matrix_file, 'w')
@@ -190,8 +222,16 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
                 if rna_id in tRNA_dic:
                     t = tRNA_dic[rna_id]
                     profile_dic[rna_id] = t.CreateTrfProfiles(trna_brief_infor_dic[rna_id], offset)
+                    mutation_str = profile_dic[rna_id]["mutation_dic_str"]
+                    mut_ls = mutation_str.split(',')
+                    for m in mut_ls:
+                        mod_mut_tab_str = getMutationStr(m,sample_id,t)
+                        if mod_mut_tab_str!="":
+                            VARIANTS.write(mod_mut_tab_str+"\n")
+
             if sample_id not in sample_hit_proifle_dic:
                 sample_hit_proifle_dic[sample_id] = profile_dic
+    VARIANTS.close()
 
     # Print expression matrix of tRFs
     MEAN_RNA_TRF_SAMPLE_MATRIX.write("tRF_ID\ttRNA_Families\tRNA_IDs\tseq\tType\t" + "\t".join(sample_ls) + "\n")

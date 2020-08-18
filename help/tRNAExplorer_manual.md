@@ -141,11 +141,9 @@ Notice: All filtering criteria should be meet in the same time.
 * Cleavage sites information for tRNAs in different samples
 * Theoretically，a cleavage of RNA will create two reads (5' and 3' reads) (A)
 * tRNAExplorer defined eleven types of cleavage sites (B)
-
 ![cleavage](../images/cleavage.png)
 
 * See a [sample](../test/output/cleavage_sites.tsv)
-
 
 | Column  | Description  |
 | :------------ |:--------------------------------| 
@@ -180,7 +178,23 @@ Notice:
 * "mutation_dic_str" contains mutation information such as type and position(1 based).
     *  For example for `M:A>T:117=55.0` means a replacement of A to T at 117 th base (1 based ) with 55 reads to support. 
 
-### 3.9 <SAMPLE_ID>_<project_name>_hit.tab
+### 3.9 variants.tsv
+* Variant sites observed for tRNAs in different samples
+
+| Column  | Description  |
+| :------------ |:--------------------------------| 
+| #SampleID      | Sample ID | 
+| family    | The family of tRNA,   |  
+| tRNA_ID     | The ID of tRNA  | 
+| type     | Mutation type I(insert), M(mutation), D(Deletion)  |
+| loc     | location in mature tRNA  |
+| ref     | The base of ref  |
+| mut     | The base of mutation  |
+| mut_read     | The number of mutated reads covered the site  |
+| total_reads     | The total number of reads covered the site |
+| ratio     | The ratio of mutation  |
+
+### 3.10 <SAMPLE_ID>_<project_name>_hit.tab
 * Details about read mapping to mRNA for each sample
 * The meaning of tRNA transcription type can be found in figure 1 of [README.md](../README.md)
 * See a [sample](../test/output/profiles.tsv)
@@ -226,7 +240,7 @@ Notice:
 | read_fragment | The part of read which mapping to tRNA sequences |
 | read_3_fragment | The 3' part of read which dose not mapping to tRNA sequences |
 
-### 3.10 visual_config.tsv
+### 3.11 visual_config.tsv
 * A tsv file including paths of files required for the visualization module.
 * See a [sample](../test/output/visual_config.tsv)
 

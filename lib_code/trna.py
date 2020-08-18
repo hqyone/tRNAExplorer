@@ -186,6 +186,34 @@ class tRNA():
         else:
             return [start, end]
 
+    # Transform Mutation location (the tRNA with intron and UTR regions) with to the location in mature tRNA
+    # read_class : nine styles of tRNA:
+    # loc: start position of read in object position 1based
+    # I,1,75
+    def CalculateMutLocItoM(self, loc):
+        offset = self.utr_len
+        if loc <= offset or loc > len(self.full_seq) + offset:
+            return -1
+        else:
+            if self.intron_infor != "":
+                s = re.search(r'intron:\s+(\d+)-(\d+)\s+\((\d+)-(\d+)\)', self.intron_infor)
+                s_start = 0
+                s_end = 0
+                if s:
+                    s_start = int(s.group(3))
+                    s_end = int(s.group(4))
+                    if loc>=s_start and loc<=s_end:
+                        return -1
+                    elif loc< s_start:
+                        return loc-offset
+                    elif loc >s_end:
+                        return loc-(s_end-s_start+1)-offset
+                else:
+                    return -1
+            else:
+                return loc-offset
+
+
     # The position should be index of URL_Seq_INTRON
     # pos is 1 basded
     def FindPosType(self, pos):
@@ -328,7 +356,7 @@ class tRNA():
         trna_start = int(i[1])  # 1
         trna_end = int(i[2])  # 75
         loc = self.CalculateAlignmentLocInI(c, trna_start, trna_start)
-        read_num = float(i[3])
+        read_num = round(float(i[3]),3)
         read_seq = i[4]
         ref_seq = i[5]
         mut_dic = {}
@@ -340,7 +368,7 @@ class tRNA():
                 B = ref_seq[i]
                 Mutaion_Str=""
                 location = loc[0]+i # 1 based
-                total_intensity = int(total_profile[location-1])
+                total_intensity = round(float(total_profile[location-1]),3)
                 if A=="-":
                     #Deletion
                     Mutaion_Str="D:"+B+":"+str(location)+":"+str(total_intensity)
