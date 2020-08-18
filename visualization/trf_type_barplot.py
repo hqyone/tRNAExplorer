@@ -19,7 +19,6 @@ def drawTrfDistForSamples(d, fontsize):
     '''
     st_df = d['st_df']
     df = pd.read_csv(d["sample_trf_type_matrix"], sep="\t",index_col=False)
-    s_df = pd.read_csv(d["sample_tsv"], sep='\t',index_col=False)
     st_df = pd.read_csv(d["static_log"], sep='\t', index_col=False)
 
     df["Description"]= df["#SampleID"]
@@ -27,7 +26,7 @@ def drawTrfDistForSamples(d, fontsize):
 
     sample_ls = d["sample_ls"]
     for s_id in sample_ls:
-        description = s_df[s_df["#ID"]==s_id]["Description"].values[0]
+        description = st_df[st_df["#SampleID"]==s_id]["Description"].values[0]
         df.loc[(df['#SampleID']==s_id),"Description"]=description
 
         Total_reads = st_df[st_df["#SampleID"] == s_id]["survived_num"].values[0]/1000
