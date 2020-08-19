@@ -88,12 +88,10 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
     SAMPLE_PileUP_MATRIX = open(trna_sample_pileup_matrix_file, 'w')
 
     hit_tab_ls = share.getExtFileList(dir, "hit.tab")
-
     # breif mapping informations for each hit
     sample_hit_proifle_dic = {}
     # For all sample
     for tab in hit_tab_ls:
-        print(tab)
         filenanme = ntpath.basename(tab)
         sample_id = os.path.basename(tab).replace("_" + proj_name + "_hit.tab", "")
         if sample_id in sample_dic:

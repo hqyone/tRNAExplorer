@@ -118,6 +118,7 @@ def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, f_patterm="", r_patter
                 else:
                     dic[seq]["count"]+=1
             total_num+=1
+    total_num += 1
     FASTQ.close()
     non_redundent_num = 0
     for seq in dic:

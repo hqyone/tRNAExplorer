@@ -136,17 +136,65 @@ class tRNA():
         else:
             return self.seq_utr
 
-    def GetKeySitesInfor(self, type):
-        if type=="I":
-            return [int(self.map_start), int(self.map_start+self.anticodon_start_in_map),int(self.map_start+self.anticodon_end_in_map),int(self.map_end)]
-        elif type =="P":
-            return [int(self.map_start), int(self.map_start+self.anticodon_start_in_map),int(self.map_start+self.anticodon_end_in_map),int(self.map_end)]
-        elif type =="M":
-            return [1, int(self.anticodon_start_in_map),int(self.anticodon_end_in_map),int(self.map_end)-int(self.map_start)+1]
-        elif type =="C":
-            return [1, int(self.anticodon_start_in_map),int(self.anticodon_end_in_map),int(self.map_end)-int(self.map_start)+4]  #Because CCA
+    def GetIntronLocationInI(self):
+        if self.intron_infor!="":
+            s = re.search(r'intron:\s+(\d+)-(\d+)\s+\((\d+)-(\d+)\)', self.intron_infor)
+            s_start = 0
+            s_end = 0
+            if s:
+                s_start = int(s.group(3))
+                s_end = int(s.group(4))
+            return [s_start, s_end]
+        else:
+            return [-1,-1]
+
+    def GetKeySitesInfor(self, trans_type):
+        [intron_start, intron_end] = self.GetIntronLocationInI()
+        intron_len = intron_end-intron_start+1
+        anti_codon_start = int(self.map_start + self.anticodon_start_in_map)
+        anti_codon_end = int(self.map_start + self.anticodon_end_in_map)
+        trna_start_pos = int(self.map_start)
+        trna_end_pos= int(self.map_end)
+        if trans_type == "I":
+            return [int(self.map_start), anti_codon_start,
+                    anti_codon_end, int(self.map_end)]
+        elif trans_type == "P":
+            if intron_start >= 0: # If there are is intron
+                if anti_codon_start > intron_start:
+                    anti_codon_start = anti_codon_start - intron_len
+                if anti_codon_end > intron_start:
+                    anti_codon_end = anti_codon_end - intron_len
+                if trna_end_pos > intron_start:
+                    trna_end_pos -= intron_len
+        elif trans_type == "M":
+            if intron_start >= 0:
+                if anti_codon_start > intron_start:
+                    anti_codon_start = anti_codon_start - intron_len
+                if anti_codon_end > intron_start:
+                    anti_codon_end = anti_codon_end - intron_len
+                if trna_end_pos > intron_start:
+                    trna_end_pos -= intron_len
+            anti_codon_start-=(trna_start_pos-1)
+            anti_codon_end-=(trna_start_pos-1)
+            trna_end_pos-=(trna_start_pos-1)
+            trna_start_pos =1
+        elif trans_type == "C":
+            if intron_start >= 0 :
+                if anti_codon_start > intron_start:
+                    anti_codon_start = anti_codon_start - intron_len
+                if anti_codon_end > intron_start:
+                    anti_codon_end = anti_codon_end - intron_len
+                if trna_end_pos > intron_start:
+                    trna_end_pos -= intron_len
+            anti_codon_start -= (trna_start_pos - 1)
+            anti_codon_end -= (trna_start_pos - 1)
+            trna_end_pos -= (trna_start_pos - 1)
+            trna_end_pos+=3
+            trna_start_pos = 1
         else:
             return []
+        return [trna_start_pos, anti_codon_start, anti_codon_end, trna_end_pos]
+
 
     def IsQualifiedtRNA(self, no_mit_tRNA=True, no_pseudogenes=True, min_qscore=30):
         if no_mit_tRNA and self.name.startswith("nm"):
@@ -164,7 +212,7 @@ class tRNA():
     # I,1,75
     def CalculateAlignmentLocInI(self, read_class, start, end):
         offset = self.utr_len
-        if read_class!="A" or read_class!="B":
+        if not (read_class=="A" or read_class=="B" or read_class=="E" or read_class=="G"):
             start += offset
             end += offset
         # Remove the effect of CCA
@@ -177,7 +225,7 @@ class tRNA():
             if s:
                 s_start = int(s.group(3))
                 s_end = int(s.group(4))
-                if self.intron_infor!="" and (read_class=="E" or read_class=="G" or read_class=="H" or read_class=="I"):
+                if self.intron_infor!="" and (read_class=="G" or read_class=="H" or read_class=="I"):
                     if start>s_start:
                         start+=s_end-s_start+1
                     if end>s_start:
@@ -214,7 +262,7 @@ class tRNA():
                 return loc-offset
 
 
-    # The position should be index of URL_Seq_INTRON
+    # The position should be pos of URL_Seq_INTRON
     # pos is 1 basded
     def FindPosType(self, pos):
         ptype="Other"
@@ -360,7 +408,7 @@ class tRNA():
         read_seq = i[4]
         ref_seq = i[5]
         mut_dic = {}
-        if read_seq==ref_seq:
+        if read_seq == ref_seq:
             return mut_dic
         if len(read_seq) == len(ref_seq):
             for i in range(0,len(read_seq)):
@@ -408,34 +456,37 @@ class tRNA():
 
 
 def getTRFType(tc, s, e, c_offset=2, t_offset=3):
-    t_s = tc[0]+1
-    c_s = tc[1]+1
-    c_e = tc[2]+1
-    t_e = tc[3]+1
-    if (s >= t_s - t_offset and s <= t_s + t_offset) and (e >= t_e - t_offset and e <= t_e + t_offset):
-        return "full_tRNA"
-    elif (s < t_s - t_offset) and (e > t_e + t_offset):
-        return "full_U_tRNA"
-    elif s<t_s-2 and (e<=c_e+c_offset and e>=c_s-c_offset):
-        return "5_U_tRNA_halve"
-    elif s < t_s-t_offset and e < c_s-c_offset-1:
-        return "5_U_tRF"
-    elif (s>=t_s-t_offset and s<=t_s+t_offset) and (e>=c_s-c_offset and e<=c_e+c_offset):
-        return "5_tRNA_halve"
-    elif (s >= t_s-t_offset and s <= t_s+t_offset) and (e<c_s-c_offset or e>c_s+c_offset) and (e<t_e+t_offset):
-        return "5_tRF"
-    elif (s>=c_s-c_offset and s<=c_e+c_offset) and (e >= t_e - t_offset and e <= t_e + t_offset):
-        return "3_tRNA_halve"
-    elif (s > t_s + t_offset) and (s > c_e + c_offset or s < c_s - c_offset) and (
-            e >= t_e - t_offset and e <= t_e + t_offset):
-        return "3_tRF"
-    elif s >c_e+c_offset and e>t_e+t_offset:
-        return "3_U_tRF"
-    elif (s>=c_s-c_offset and s<=c_e+c_offset) and e > t_e + t_offset:
-        return "3_U_tRNA_halve"
-    elif (s >= t_s + t_offset) and e <= t_e - t_offset:
-        return "i-tRF"
+    if len(tc)==4:
+        t_s = tc[0]+1
+        c_s = tc[1]+1
+        c_e = tc[2]+1
+        t_e = tc[3]+1
+        if (s >= t_s - t_offset and s <= t_s + t_offset) and (e >= t_e - t_offset and e <= t_e + t_offset):
+            return "full_tRNA"
+        elif (s < t_s - t_offset) and (e > t_e + t_offset):
+            return "full_U_tRNA"
+        elif s<t_s-2 and (e<=c_e+c_offset and e>=c_s-c_offset):
+            return "5_U_tRNA_halve"
+        elif s < t_s-t_offset and e < c_s-c_offset-1:
+            return "5_U_tRF"
+        elif (s>=t_s-t_offset and s<=t_s+t_offset) and (e>=c_s-c_offset and e<=c_e+c_offset):
+            return "5_tRNA_halve"
+        elif (s >= t_s-t_offset and s <= t_s+t_offset) and (e<c_s-c_offset or e>c_s+c_offset) and (e<t_e+t_offset):
+            return "5_tRF"
+        elif (s>=c_s-c_offset and s<=c_e+c_offset) and (e >= t_e - t_offset and e <= t_e + t_offset):
+            return "3_tRNA_halve"
+        elif (s > t_s + t_offset) and (s > c_e + c_offset or s < c_s - c_offset) and (
+                e >= t_e - t_offset and e <= t_e + t_offset):
+            return "3_tRF"
+        elif s >c_e+c_offset and e>t_e+t_offset:
+            return "3_U_tRF"
+        elif (s>=c_s-c_offset and s<=c_e+c_offset) and e > t_e + t_offset:
+            return "3_U_tRNA_halve"
+        elif (s >= t_s + t_offset) and e <= t_e - t_offset:
+            return "i-tRF"
+        else:
+            return "other"
     else:
-        return "other"
+        return "unknow"
 
 #type = getTRFType([60,93,95,132],98,129)  #3_tRF
