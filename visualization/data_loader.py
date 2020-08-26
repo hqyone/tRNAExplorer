@@ -71,8 +71,20 @@ def LoadWDir(wdir, sample_tsv, trna_anno_bed, report_dir=""):
             data["s_df"] =s_df
             data["sample_ls"] = s_df["#SampleID"].unique()
             data["types"] = ['full_U_tRNA','full_tRNA','5_U_tRNA_halve','5_tRNA_halve','5_U_tRF', '5_tRF','3_U_tRNA_halve' ,'3_tRNA_halve','3_U_tRF','3_tRF' ,'i-tRF','other' ]
-            data["types_colors"] = ['darkred','red','darkgreen','limegreen', 'lightgreen','greenyellow','navy' ,'blue','dodgerblue','lightblue' ,'gold','grey' ]
-
+            data["types_colors"] = {
+                'full_U_tRNA': 'darkred',
+                'full_tRNA': 'red',
+                '5_U_tRNA_halve': 'darkgreen',
+                '5_tRNA_halve': 'limegreen',
+                '5_U_tRF': 'lightgreen',
+                '5_tRF': 'greenyellow',
+                '3_U_tRNA_halve': 'navy',
+                '3_tRNA_halve': 'blue',
+                '3_U_tRF': 'dodgerblue',
+                '3_tRF': 'lightblue',
+                'i-tRF': 'gold',
+                'other': 'grey'
+            }
             # Get Expression dataframe
             exp_df = pd.read_csv(data["trf_sample_matrix"], sep="\t", index_col=False)
             data["exp_df"] = add_aa_column(exp_df,trna_id="RNA_IDs")
