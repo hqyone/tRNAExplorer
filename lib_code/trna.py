@@ -217,7 +217,8 @@ class tRNA():
             end += offset
         # Remove the effect of CCA
         if read_class=="I":
-            end-=3
+            if end>start-3:
+                end-=3
         if self.intron_infor!="":
             s = re.search(r'intron:\s+(\d+)-(\d+)\s+\((\d+)-(\d+)\)', self.intron_infor)
             s_start = 0
@@ -393,7 +394,8 @@ class tRNA():
         profiles["mutation_dic_str"] = self.CreateMutationDicStr(brief_mapping_infor_ls, profiles["total"])
         return profiles
 
-
+    # The brief_mapping_infor can derived from transcript with intron or not
+    # The final position conside intron.
     def BriefMappingInfor2MutationDic(self,brief_mapping_infor,total_profile):
         # Mutation IDs
         # Mutation: M:B>A:Location->Reads
@@ -416,19 +418,22 @@ class tRNA():
                 B = ref_seq[i]
                 Mutaion_Str=""
                 location = loc[0]+i # 1 based
-                total_intensity = round(float(total_profile[location-1]),3)
-                if A=="-":
-                    #Deletion
-                    Mutaion_Str="D:"+B+":"+str(location)+":"+str(total_intensity)
-                elif B=="-":
-                    #Insertion
-                    Mutaion_Str = "I:" + A + ":" + str(location)+":"+str(total_intensity)
-                elif A!=B:
-                    #Mutaion
-                    Mutaion_Str = "M:" + B +">"+ A + ":" + str(location)+":"+str(total_intensity)
+                if (location-1)<len(total_profile):
+                    total_intensity = round(float(total_profile[location-1]),3)
+                    if A=="-":
+                        #Deletion
+                        Mutaion_Str="D:"+B+":"+str(location)+":"+str(total_intensity)
+                    elif B=="-":
+                        #Insertion
+                        Mutaion_Str = "I:" + A + ":" + str(location)+":"+str(total_intensity)
+                    elif A!=B:
+                        #Mutaion
+                        Mutaion_Str = "M:" + B +">"+ A + ":" + str(location)+":"+str(total_intensity)
+                    else:
+                        #Unexpect
+                        continue
                 else:
-                    #Unexpect
-                    continue
+                    print("Some thing unexpected mapping infor:"+brief_mapping_infor)
                 if Mutaion_Str!="":
                     if Mutaion_Str not in mut_dic:
                         mut_dic[Mutaion_Str]=0
