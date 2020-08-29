@@ -115,5 +115,11 @@ The user can also do their own analysis based on these tsv files.
 ## 10. License
 Copyright (c) 2020 Quanyuan He Ph.D, 
 School of Medicine, Hunan Normal University.
+
+Contact: [hqyone@hotmail.com](mailto:hqyone@hotmail.com)
+
 Released under GPLv3. See
 [license](LICENSE.txt) for details.
+
+## 11. Disclaimer
+This software is supplied 'as is' without any warranty or guarantee of support. The developers are not responsible for its use, misuse, or functionality. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability arising from, out of, or in connection with this software.
