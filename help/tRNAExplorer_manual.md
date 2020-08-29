@@ -23,6 +23,9 @@
 | -i     | The directory storing FASTQ files (Input Directory)  |  
 | -h     | Show the help information  |  
 | -o     | The directory of output files (Out Directory)| 
+| --no-indexing     | Skip sequences indexing procedure to save time| 
+| --no-alignment    | Skip indexing and BLASTN alignment procedures and just remake reports | 
+
 
 ### 2.2 Configure file [(see a sample)](config.txt)
 * Configure file is a place to set all options available for the pipeline. 
@@ -39,6 +42,8 @@
 | fastq_dir    | General | NA | The directory storing FASTQ files (Input Directory) |   
 | out_dir    | General | NA | The directory of output files (Out Directory) |
 | url_len    | General | 60 | The length of UTRs, default = 60', it should match utr length in trna_anno bed |
+| no_indexing    | General | False | Skip sequence filtering step which is usually time consuming |
+| no_alignment    | General | False | Skip trimmomatic, filtering and BLASTN alignment steps and only remake reports based alignment results existed |
 | t_do  | Trimmomatic  | 1 | Whether trimming sequences 0 means "no" others means "yes"| 
 | t_adapter    | Trimmomatic | Space | Absolute path for adapter FASTA file, When the file is not available using <trimmomatic_dir>+"/adapters/TruSeq3-SE.fa |   
 | t_phred    | Trimmomatic  | 33 | phred cutoff to trim sequence |

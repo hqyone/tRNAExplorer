@@ -24,6 +24,14 @@ proj_name = "test"
 # The length of UTRs, default = 60', should match utr length in  trna_anno_file
 # url_len = 60
 
+# Skip sequence indexing and filtering step which is usually time consuming
+# You can also use the --no-indexing command option to achieve the same function
+# no_indexing = True
+
+# Skip trimmomatic, sequence indexing, filtering and BLASTN alignment steps which are usually time consuming
+# You can also use the --no-alignment command option to achieve the same function
+# no_alignment = True
+
 #########################################################
 # Trimmomatic
 #########################################################

@@ -28,7 +28,10 @@ def CreateBLASTdb(fasta):
         # os.popen("bash " + blast_cmd_file)
         process = subprocess.Popen("bash " + cmd_file, shell=True, stdout=subprocess.PIPE)
         process.wait()
-        print (process.returncode)
+        if process.returncode==0:
+            print('BLASTN alignment finished for '+ fasta)
+        else:
+            print('BLASTN error with return :'+ process.returncode)
         return 0
     else:
         return -1
