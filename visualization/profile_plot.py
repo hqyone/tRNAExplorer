@@ -636,7 +636,7 @@ def drawProfiles2(d, fig_num=1, output_dir ="", min_depth = 20, share_y_lim=True
                             axs[s_index,0].text(0.38, 1.1, 'D_Loop', transform=axs[s_index,0].transAxes,
                                               va='center', fontsize=10, weight='bold',
                                               bbox=dict(facecolor='b', alpha=0.2))
-                            axs[s_index,0].text(0.5, 1.1, 'Anticode', transform=axs[s_index,0].transAxes,
+                            axs[s_index,0].text(0.5, 1.1, 'Anticodon', transform=axs[s_index,0].transAxes,
                                               va='center', fontsize=10, weight='bold',
                                               bbox=dict(facecolor='red', alpha=0.2))
                             location = 0.67
