@@ -6,6 +6,7 @@
 import numpy as np
 import pandas as pd
 import os, io, re
+from IPython.display import display
 
 def LoadConfig(visual_config, report_dir=""):
     obj = {}
@@ -56,6 +57,7 @@ def LoadWDir(wdir, sample_tsv, trna_anno_bed, report_dir=""):
         data["profiles"] = ana_dir+"/profiles.tsv"
         data["trna_sample_readcount_matrix"] = ana_dir + "/trna_sample_readcount_matrix.tsv"
         data["trna_sample_pileup_matrix"] = ana_dir + "/trna_sample_pileup_matrix.tsv"
+        data["variants"] = ana_dir + "/variants.tsv"
         data["static_log"] = ana_dir + "/static.log"
         data["trna_anno_bed"] = trna_anno_bed
         data["report_dir"] = report_dir
@@ -157,8 +159,16 @@ def getTotalIntensity(exp_df, sample_ls):
             sample_dic[s]=value
     return sample_dic
 
-
-
+def csv_download_link(df, csv_file_name, delete_prompt=True):
+    """Display a download link to load a data frame as csv from within a Jupyter notebook"""
+    df.to_csv(csv_file_name, index=True, sep='\t')
+    from IPython.display import FileLink
+    display(FileLink(csv_file_name))
+    if delete_prompt:
+        a = input('Press enter to delete the file after you have downloaded it.')
+        import os
+        os.remove(csv_file_name)
+        
 #wdir = '/Users/hqyone/OneDrive/国内的工作/学术/科研项目/论文课题/tRNA/data_output/rna_seq'
 #data = LoadRESQDir(wdir)
 #print(data)

@@ -184,7 +184,7 @@ Notice:
     *  For example for `M:A>T:117=55.0` means a replacement of A to T at 117 th base (1 based ) with 55 reads to support. 
 
 ### 3.9 variants.tsv
-* Variant sites observed for tRNAs in different samples
+* Variant/Mismatched sites observed for each RNA in different samples
 
 | Column  | Description  |
 | :------------ |:--------------------------------| 

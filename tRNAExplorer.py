@@ -180,37 +180,39 @@ def rseq_blastn_pipeline(proj_name,
             print("Skip indexing and alignment for FASTQ files")
 
         static_dic = make_report.getTrfReportFile(proj_name, out_dir, tRNA_dic, sample_dic, out_dir)
+        if no_indexing or no_alignment:
+            print("No indexing and alignment so skip update logfile.")
+        else:
+            # Write loginfor into a file
+            for s_id in static_dic:
+                if s_id in loginfor:
+                    for key in static_dic[s_id]:
+                        loginfor[s_id][key]=static_dic[s_id][key]
+            logfile = out_dir + "/static.log"
+            LOG = open(logfile, 'w')
+            #LOG.write("#FASTQ_STATISTICS\n")
+            title =""
+            key_ls = ['total_num','removed_num','survived_num',
+                      'non_redundent_num','start_time','end_time','processing_time',
+                      'trim_time', 'filter_time', 'blastn_time', 'A','B','C','D','E',
+                      'F','G','H','I','total','intro_cl_ratio','u5_cl_ratio','u3_cl_ratio','cca_add_ratio']
+            for s_id in loginfor:
+                statis_obj = loginfor[s_id]
+                if title=="":
+                    title ="#SampleID"+"\tDescription\t"+ "\t".join(key_ls)
+                    LOG.write(title + "\n")
 
-        # Write loginfor into a file
-        for s_id in static_dic:
-            if s_id in loginfor:
-                for key in static_dic[s_id]:
-                    loginfor[s_id][key]=static_dic[s_id][key]
-        logfile = out_dir + "/static.log"
-        LOG = open(logfile, 'w')
-        #LOG.write("#FASTQ_STATISTICS\n")
-        title =""
-        key_ls = ['total_num','removed_num','survived_num',
-                  'non_redundent_num','start_time','end_time','processing_time',
-                  'trim_time', 'filter_time', 'blastn_time', 'A','B','C','D','E',
-                  'F','G','H','I','total','intro_cl_ratio','u5_cl_ratio','u3_cl_ratio','cca_add_ratio']
-        for s_id in loginfor:
-            statis_obj = loginfor[s_id]
-            if title=="":
-                title ="#SampleID"+"\tDescription\t"+ "\t".join(key_ls)
-                LOG.write(title + "\n")
-
-            sample_des = s_id
-            if s_id in sample_dic:
-                sample_des = sample_dic[s_id]["des"]
-            line = s_id+"\t"+sample_des
-            for key in key_ls:
-                if key in statis_obj:
-                    line += "\t"+str(statis_obj[key])
-                else:
-                    line += "\t" + ""
-            LOG.write(line+"\n")
-        LOG.close()
+                sample_des = s_id
+                if s_id in sample_dic:
+                    sample_des = sample_dic[s_id]["des"]
+                line = s_id+"\t"+sample_des
+                for key in key_ls:
+                    if key in statis_obj:
+                        line += "\t"+str(statis_obj[key])
+                    else:
+                        line += "\t" + ""
+                LOG.write(line+"\n")
+            LOG.close()
         return 0
     except Exception as inst:
         print(type(inst))  # the exception instance
@@ -405,7 +407,9 @@ def main(argv):
         print('# Output 7: <out_dir>/cleavage_sites.tsv , Cleavage sites information for tRNAs in different samples')
         print('# Output 8: <out_dir>/profiles.tsv , Pileup information for tRNAs in different samples')
         print(
-            '# Output 9: <out_dir>/visual_config.tsv , A tsv file including paths of files required for the visualization module')
+            '# Output 9: <out_dir>/variants.tsv , A tsv file to summarize mismatched sites in each gene for all samples .')
+        print(
+            '# Output 10: <out_dir>/visual_config.tsv , A tsv file including paths of files required for the visualization module')
         sys.exit(2)
     print('###########################################################################################')
     print('############                      tRNAExplorer ['+str(version)+"]                          #############")
@@ -441,7 +445,9 @@ def main(argv):
             print(
                 '# Output 7: <out_dir>/cleavage_sites.tsv , Cleavage sites information for tRNAs in different samples')
             print('# Output 8: <out_dir>/profile.tsv , Pileup information for tRNAs in different samples')
-            print('# Output 9: <out_dir>/visual_config.tsv , A tsv file including paths of files required for the visualization module')
+            print(
+                '# Output 9: <out_dir>/variants.tsv , A tsv file to summarize mismatched sites in each gene for all samples .')
+            print('# Output 10: <out_dir>/visual_config.tsv , A tsv file including paths of files required for the visualization module')
             sys.exit(0)
         elif opt == '-n':
             config["proj_name"] = arg
