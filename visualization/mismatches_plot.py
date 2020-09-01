@@ -3,7 +3,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import data_loader as dl
 
-def getVariantRatioTabInFamily(d):
+def getSampleDes(ID, d):
+    if ID in d["sample_dic"]:
+        return d["sample_dic"][ID]
+    else:
+        return ID
+
+def drawMutationMatrix(tRNA_family, d):
+    return
+
+def getVariantRatioTabInFamily(d, max_ratio_cutoff=0.1, mean_read_cutoff = 0, draw_fig =False):
     fv = pd.DataFrame(columns=['sample', 'family','loc','RNA_IDs','mem_num','members','ref','muts','mut_reads','total_reads','ratio'])
     v = pd.read_csv(d["variants"], sep="\t")
     # Combine mutations for each tRNA, here we just sum the mutation reads and keep total_reads not change.
@@ -28,16 +37,26 @@ def getVariantRatioTabInFamily(d):
     #Explain for transform https://pbpython.com/pandas_transform.html#:~:text=Understanding%20the%20Transform%20Function%20in%20Pandas%201%20Introduction.,...%204%20Second%20Approach%20-%20Using%20Transform.%20
     fv['ratio_max'] = fv.groupby(['family','loc','ref'])['ratio'].transform('max')
     fv['mut_read_mean'] = fv.groupby(['family','loc','ref'])['mut_reads'].transform('mean')
+
+    
+    # Delete -1 rows
+    fv =fv.loc[fv['loc']>=0]
+    # Filter matrix
+    fv =fv.loc[fv['ratio_max']>=max_ratio_cutoff][fv['mut_read_mean']>=mean_read_cutoff ]
+    # Add sample discription
+    fv['SampleDes'] = fv['#SampleID'].apply(getSampleDes,d=d)
+    # Draw mutation matrix
     
     print("Download tsv here:")
     dl.csv_download_link(fv,'family_mut.tsv', delete_prompt=False) 
-    sns.reset_defaults()
-    g = sns.FacetGrid(fv, row="#SampleID", height=1.7, aspect=4)
-    g.map(sns.distplot, 'ratio',kde=False, bins=10)
-    plt.xlim(0, 1)
-    plt.figure()
-    g = sns.FacetGrid(fv, row="#SampleID", height=1.7, aspect=4)
-    g.map(sns.distplot, 'loc',kde=False, bins=75)
-    plt.xlim(0, 75)
-    plt.show()
+    if draw_fig:
+        sns.reset_defaults()
+        g = sns.FacetGrid(fv, row="#SampleID", height=1.7, aspect=4)
+        g.map(sns.distplot, 'ratio',kde=False, bins=10)
+        plt.xlim(0, 1)
+        plt.figure()
+        g = sns.FacetGrid(fv, row="#SampleID", height=1.7, aspect=4)
+        g.map(sns.distplot, 'loc',kde=False, bins=75)
+        plt.xlim(0, 75)
+        plt.show()
     return fv
