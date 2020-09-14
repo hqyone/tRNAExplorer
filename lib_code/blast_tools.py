@@ -277,10 +277,10 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             direction = tRNA_total_obj_dic[tRNA_id][read_id]["direction"]
 
             # Get mapping location information
-            M_5T = 0
-            M_3T = 0
-            M_5C = 0
-            M_3C = 0
+            M_5T = 0  # End at 5' termimal
+            M_3T = 0  # End at 3' termimal
+            M_5C = 0  # Cover 5 terminal
+            M_3C = 0  # Cover 3 terminal
             I, I_read_start, I_read_end, I_trna_start, I_trna_end, I_qseq, I_sseq = 0, -1, -1, -1, -1,"",""
             P, P_read_start, P_read_end, P_trna_start, P_trna_end, P_qseq, P_sseq  = 0, -1, -1, -1, -1,"",""
             M, M_read_start, M_read_end, M_trna_start, M_trna_end, M_qseq, M_sseq  = 0, -1, -1, -1, -1,"",""

@@ -232,8 +232,8 @@ Notice:
 | C_trna_end | The end position in tRNA  (-1 means not mapping)|
 | 5T     | A marker indicates whether the read begin at 5'-term of tRNA (0 means no, 1 means yes)  |
 | 3T     | A marker indicates whether the read end at 3'-term of tRNA (0 means no, 1 means yes)  |
-| 5C     | A marker indicates whether the read begin at 5'-term of tRNA (0 means no, 1 means yes)  |
-| 3C     | A marker indicates whether the read begin at 5'-term of tRNA (0 means no, 1 means yes)  |
+| 5C     | A marker indicates whether the read cover the 5'-term of tRNA (0 means no, 1 means yes)  |
+| 3C     | A marker indicates whether the read cover the 3'-term of tRNA (0 means no, 1 means yes)  |
 | mean_number  | The number of reads mapping to tRNA|
 | hit_tRNAs_num | The number of tRNA that the read map to|
 | TRF_type | The type of TRF |
