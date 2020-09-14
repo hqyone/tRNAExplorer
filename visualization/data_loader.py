@@ -62,6 +62,7 @@ def LoadWDir(wdir, sample_tsv, trna_anno_bed, report_dir=""):
         data["trna_anno_bed"] = trna_anno_bed
         data["report_dir"] = report_dir
         data["sample_tsv"] = sample_tsv
+        data["output_dir"] = os.path.abspath(__file__)+"/output"
 
         df = pd.read_csv(data["profiles"], sep="\t", index_col=False)
         data["df"] = df
@@ -161,12 +162,13 @@ def getTotalIntensity(exp_df, sample_ls):
 
 def csv_download_link(df, csv_file_name, delete_prompt=True):
     """Display a download link to load a data frame as csv from within a Jupyter notebook"""
-    df.to_csv(csv_file_name, index=True, sep='\t')
+    import os
+    file_path = os.path.dirname(os.path.abspath(__file__))+"/output"+"/"+csv_file_name
+    df.to_csv(file_path, index=True, sep='\t')
     from IPython.display import FileLink
-    display(FileLink(csv_file_name))
+    display(FileLink("./output"+"/"+csv_file_name))
     if delete_prompt:
         a = input('Press enter to delete the file after you have downloaded it.')
-        import os
         os.remove(csv_file_name)
         
 #wdir = '/Users/hqyone/OneDrive/国内的工作/学术/科研项目/论文课题/tRNA/data_output/rna_seq'
