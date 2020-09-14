@@ -107,6 +107,7 @@ def drawCorrMatrixPic(d, type="count", label="des", groupby="tRNA_Families", met
             del df[colname]
             print("delete the column :" + colname)
     df = df.sort_index(axis=1)
+    dl.csv_download_link(df, +'sample_corr.tsv', delete_prompt=False)
     figure = d["report_dir"]+"/cor_matrix.png"
     cm.drawCorrelationClusterMatrix(df, figure, method=method,annot_font_size=font_size) # Correlation matrix
 

@@ -66,26 +66,26 @@ def getRects(RNA_ID, df):
     sel_df = df[df['name'] == RNA_ID]
     if len(sel_df) > 0:
         rect_ls.append({
-            "start": int(sel_df['map_start'].values[0]),
-            "end": int(sel_df['map_end'].values[0]),
+            "start": int(sel_df['map_start'].values[0]-1),
+            "end": int(sel_df['map_end'].values[0]-1),
             "color": "g", "alpha": 0.1
         })
         if sel_df['d_loop_start'].values[0] != -1:
             rect_ls.append({
-                "start": int(sel_df['map_start'].values[0]) + int(sel_df['d_loop_start'].values[0]),
-                "end": int(sel_df['map_start'].values[0]) + int(sel_df['d_loop_end'].values[0]),
+                "start": int(sel_df['map_start'].values[0]) + int(sel_df['d_loop_start'].values[0]-1),
+                "end": int(sel_df['map_start'].values[0]) + int(sel_df['d_loop_end'].values[0]-1),
                 "color": "b", "alpha": 0.1
             })
         if sel_df['a_loop_start'].values[0] != -1:
             rect_ls.append({
-                "start": int(sel_df['map_start'].values[0]) + int(sel_df['a_loop_start'].values[0]),
-                "end": int(sel_df['map_start'].values[0]) + int(sel_df['a_loop_end'].values[0]),
+                "start": int(sel_df['map_start'].values[0]) + int(sel_df['a_loop_start'].values[0]-1),
+                "end": int(sel_df['map_start'].values[0]) + int(sel_df['a_loop_end'].values[0]-1),
                 "color": "r", "alpha": 0.1
             })
         if sel_df['t_loop_start'].values[0] != -1:
             rect_ls.append({
-                "start": int(sel_df['map_start'].values[0]) + int(sel_df['t_loop_start'].values[0]),
-                "end": int(sel_df['map_start'].values[0]) + int(sel_df['t_loop_end'].values[0]),
+                "start": int(sel_df['map_start'].values[0]) + int(sel_df['t_loop_start'].values[0]-1),
+                "end": int(sel_df['map_start'].values[0]) + int(sel_df['t_loop_end'].values[0]-1),
                 "color": "b", "alpha": 0.1
             })
         if sel_df['anticodon_start'].values[0] != -1:
