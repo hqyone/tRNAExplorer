@@ -11,6 +11,7 @@ from scipy.spatial import distance_matrix
 import seaborn as sns; sns.set(color_codes=True)
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
+import data_loader as dl
 plt.rcParams["axes.grid"] = False
 
 def generateDisMatrix(df):
@@ -135,6 +136,7 @@ def drawExpressionClusterMatrix(df, fig_name,
     df = df.iloc[idx1,:]
     df = df.iloc[:,idx2]
 
+    dl.csv_download_link(df, "exp_matrix", delete_prompt=False)
     im = axmatrix.imshow(df, aspect='auto', origin='lower',cmap=cmap)  #pylab.cm.YlGnBu
     plt.grid(None)
     # #im = axmatrix.matshow(D, aspect='auto', origin='lower', cmap=pylab.cm.YlGnBu)
