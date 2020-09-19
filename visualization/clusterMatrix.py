@@ -21,20 +21,20 @@ def generateDisMatrix(df):
 # data = [[5, 7], [7, 3], [8, 1]]
 # ctys = ['Boston', 'Phoenix', 'New York']
 # df = pd.DataFrame(data, columns=['xcord', 'ycord'], index=ctys)
-def drawCorrelationClusterMatrix(df, fig_name, method="pearson", annot=True, annot_font_size=7):
+def drawCorrelationClusterMatrix(df, fig_name, fig_siz=12, method="pearson", annot=True, annot_font_size=7):
     #D = generateDisMatrix(df.transpose())
     D = df.corr(method=method)
     condensedD  = D
     #sns.set(font_scale=0.8)
     sns.set(rc={'figure.figsize': (15, 15)})
-    g =sns.clustermap(D,cmap = pylab.cm.YlOrRd,annot=annot, annot_kws={"size": annot_font_size}, fmt=".1f")
+    g =sns.clustermap(D,figsize=(fig_siz, fig_siz), cmap = pylab.cm.YlOrRd,annot=annot, annot_kws={"size": annot_font_size}, fmt=".1f")
     for a in g.ax_row_dendrogram.collections:
         a.set_linewidth(2)
 
     for a in g.ax_col_dendrogram.collections:
         a.set_linewidth(2)
     fig = g.fig
-    fig.subplots_adjust(bottom=0.3, right=0.7)
+    #fig.subplots_adjust(bottom=0.3, right=0.7)
     fig.show()
     g.savefig(fig_name)
     #condensedD = squareform(D)
