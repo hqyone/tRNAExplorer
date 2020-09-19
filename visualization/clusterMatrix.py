@@ -136,7 +136,7 @@ def drawExpressionClusterMatrix(df, fig_name,
     df = df.iloc[idx1,:]
     df = df.iloc[:,idx2]
 
-    dl.csv_download_link(df, "exp_matrix", delete_prompt=False)
+    dl.csv_download_link(df, "exp_matrix.tsv", delete_prompt=False)
     im = axmatrix.imshow(df, aspect='auto', origin='lower',cmap=cmap)  #pylab.cm.YlGnBu
     plt.grid(None)
     # #im = axmatrix.matshow(D, aspect='auto', origin='lower', cmap=pylab.cm.YlGnBu)
