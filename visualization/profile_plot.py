@@ -66,8 +66,8 @@ def getRects(RNA_ID, df):
     sel_df = df[df['name'] == RNA_ID]
     if len(sel_df) > 0:
         rect_ls.append({
-            "start": int(sel_df['map_start'].values[0]-1),
-            "end": int(sel_df['map_end'].values[0]-1),
+            "start": int(sel_df['map_start'].values[0]),
+            "end": int(sel_df['map_end'].values[0]),
             "color": "g", "alpha": 0.1
         })
         if sel_df['d_loop_start'].values[0] != -1:
@@ -573,32 +573,34 @@ def drawProfiles2(d, fig_num=1, output_dir ="", min_depth = 20, share_y_lim=True
                                                      alpha=re['alpha'])
                             axs[s_index,0].add_patch(rect)
                         # Add the base rects
-                        rects = getBaseRects(seq_df['profile'].values[0])
-                        for re in rects:
-                            rect_height = profile_max
-                            if share_y_lim:
-                                rect_height = g_prof_max
-                            rect = patches.Rectangle((re['start'], 0), re['end'] - re['start'], rect_height/5,
-                                                     linewidth=1, edgecolor=re['color'],
-                                                     facecolor=re['color'], ec=re['color'],
-                                                     alpha=re['alpha'])
-                            axs[s_index,0].add_patch(rect)
+                        if len(seq_df['profile'].values)>0:
+                            rects = getBaseRects(seq_df['profile'].values[0])
+                            for re in rects:
+                                rect_height = profile_max
+                                if share_y_lim:
+                                    rect_height = g_prof_max
+                                rect = patches.Rectangle((re['start'], 0), re['end'] - re['start'], rect_height/5,
+                                                         linewidth=1, edgecolor=re['color'],
+                                                         facecolor=re['color'], ec=re['color'],
+                                                         alpha=re['alpha'])
+                                axs[s_index,0].add_patch(rect)
                         # Add the mutation rects
-                        mut_str = mut_df['profile'].values[0]
-                        if mut_str != "-" and mut_str != "":
-                            print(sample_des + ">>" + sample + ">>" + tRNA_ID + ">>" + mut_str)
-                        rects = getMutRecs(mut_str)
-                        for re in rects:
-                            rect_height = re['rect_height']
-                            rect_y = re['y_loc']
-                            if normalized:
-                                rect_height = (rect_height * 1000) / sample_total_count
-                                rect_y = (rect_y * 1000) / sample_total_count
-                            rect = patches.Rectangle((re['start'], rect_y), re['end'] - re['start'], rect_height,
-                                                     linewidth=0, edgecolor=re['color'],
-                                                     facecolor=re['color'], ec=re['color'],
-                                                     alpha=re['alpha'])
-                            axs[s_index, 0].add_patch(rect)
+                        if len(mut_df['profile'].values)>0:
+                            mut_str = mut_df['profile'].values[0]
+                            if mut_str != "-" and mut_str != "":
+                                print(sample_des + ">>" + sample + ">>" + tRNA_ID + ">>" + mut_str)
+                            rects = getMutRecs(mut_str)
+                            for re in rects:
+                                rect_height = re['rect_height']
+                                rect_y = re['y_loc']
+                                if normalized:
+                                    rect_height = (rect_height * 1000) / sample_total_count
+                                    rect_y = (rect_y * 1000) / sample_total_count
+                                rect = patches.Rectangle((re['start'], rect_y), re['end'] - re['start'], rect_height,
+                                                         linewidth=0, edgecolor=re['color'],
+                                                         facecolor=re['color'], ec=re['color'],
+                                                         alpha=re['alpha'])
+                                axs[s_index, 0].add_patch(rect)
                         p_index = 0
                         for i in profile_types:
                             # print(sample+"_"+i)

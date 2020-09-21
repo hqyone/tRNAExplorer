@@ -59,6 +59,7 @@ def LoadWDir(wdir, sample_tsv, trna_anno_bed, report_dir=""):
         data["trna_sample_pileup_matrix"] = ana_dir + "/trna_sample_pileup_matrix.tsv"
         data["variants"] = ana_dir + "/variants.tsv"
         data["static_log"] = ana_dir + "/static.log"
+        data["cleavage_sites"] = ana_dir + "/cleavage_sites.tsv"
         data["trna_anno_bed"] = trna_anno_bed
         data["report_dir"] = report_dir
         data["sample_tsv"] = sample_tsv
@@ -97,6 +98,9 @@ def LoadWDir(wdir, sample_tsv, trna_anno_bed, report_dir=""):
 
             pileup_exp_df = pd.read_csv(data["trna_sample_pileup_matrix"], sep="\t", index_col=False)
             data["pileup_exp_df"] = add_aa_column(pileup_exp_df, trna_id="tRNA_ID")
+            
+            cleavage_df = pd.read_csv(data["cleavage_sites"], sep="\t", index_col=False)
+            data["cleavage_df"] = add_aa_column(cleavage_df, trna_id="tRNA_ID")
 
             data["trf_exp_df"] = pd.read_csv(data["trf_sample_matrix"], sep="\t", index_col=False)
 

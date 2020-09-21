@@ -17,7 +17,7 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
    * numpy>=1.16.1
    * pandas==0.23.0
    * matplotlib==2.2.5
-   * seaborn>=0.9.0
+   * seaborn>=0.11.0
    * pysam >= 0.8
    * HTSeq>=0.11.0
    * pathlib
