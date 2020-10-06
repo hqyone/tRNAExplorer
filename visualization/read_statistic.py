@@ -116,7 +116,12 @@ def getAddModificationStatisitc2(d,proj_name="test",top_num=10,fontsize=14, fig_
                     fig.add_trace(
                         go.Pie(values=list(group_a["mean_number"]), hovertext=list(group_a.index), textposition='inside'),
                         row=s_index, col=c)
-    dl.csv_download_link(total_5_df, 'addition_5.tsv', False)
+    array = ['-', 'A', 'G', 'T', 'C', 'TG', 'TA']
+    total_5_df['label'] = total_5_df['read_5_fragment'].apply(lambda x: x if x in array else 'Others')
+    a = total_5_df.groupby(['sample_id', 'sample_des', 'label']).sum()
+    a = a.reset_index()
+    dl.csv_download_link(a, 'addition_5.tsv', False)
+
     dl.csv_download_link(total_3_df, 'addition_3.tsv', False)
     fig.update_layout(height=fig_height, width=fig_width, showlegend=False, font=dict(
         family="Times New Roman",
