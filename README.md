@@ -119,8 +119,7 @@ The user can also do their own analysis based on these tsv files.
     2. Clark WC, Evans ME, Dominissini D, Zheng G, Pan T. tRNA base methylation identification and quantification via high-throughput sequencing. RNA (New York, N.Y.). 2016 Nov;22(11):1771-1784. DOI: 10.1261/rna.056531.116.
 
 ## 10. License
-Copyright (c) 2020 Quanyuan He Ph.D, 
-School of Medicine, Hunan Normal University.
+Copyright (c) 2020 Quanyuan He Ph.D.
 
 Contact: [hqyone@hotmail.com](mailto:hqyone@hotmail.com)
 
