@@ -9,6 +9,13 @@ import lib_code.share as share
 import re
 
 class tRNA():
+    __slots__=["name", "chrom","start","end","strand",\
+    "full_seq","seq","intron_infor", "anticodon", "anticodon_start",\
+        "anticodon_end","acceptor","family","seq_utr","utr_len","map_start",\
+        "map_end","map_len","map_structure_str","map_seq","anticodon_start_in_map",\
+            "anticodon_end_in_map","map_scan_score","possible_type","d_loop","a_loop",\
+                "v_loop","t_loop","stem_for","stem_rev"]
+
     def __init__(self):
         self.name = ""
         self.chrom=""
@@ -259,12 +266,12 @@ class tRNA():
                         return loc-(s_end-s_start+1)-offset
                 else:
                     return -1
-            else:
+            else:˝
                 return loc-offset
 
 
     # The position should be pos of URL_Seq_INTRON
-    # pos is 1 basded
+    # pos is 1 based
     def FindPosType(self, pos):
         ptype="Other"
         if pos<-1:  # Upsteam of cleavage

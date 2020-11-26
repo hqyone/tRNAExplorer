@@ -111,174 +111,171 @@ def RuntRNAScan(wdir, tRNAscanSE, trna_fasta, out_file):
 def parsetRNAScanFile(tRNAscan, tRNA_Dir, tabFile, faFile, no_mit_tRNA=True, no_pseudogenes=True, min_qscore=30):
     try:
         tRNA_ls = []
-        FILE = open(tRNAscan, 'r')
-        OUT_TAB = open(tabFile, 'w')
-        OUT_FASTA = open(faFile, 'w')
-        cur_trna = tRNA()
-        rna_name = ""
-        for line in FILE:
-            if line.strip().endswith("bp"):
-                if rna_name != "":
-                    tRNA_ls.append(cur_trna)
-                rna_name = line.strip().split(' ')[0].replace(".trna1", "")
-                if rna_name in tRNA_Dir:
-                    cur_trna = tRNA_Dir[rna_name]
+        with open(tRNAscan, 'r') as FILE, open(tabFile, 'w') as OUT_TAB, open(faFile, 'w') as OUT_FASTA:
+            cur_trna = tRNA()
+            rna_name = ""
+            for line in FILE:
+                if line.strip().endswith("bp"):
+                    if rna_name != "":
+                        tRNA_ls.append(cur_trna)
+                    rna_name = line.strip().split(' ')[0].replace(".trna1", "")
+                    if rna_name in tRNA_Dir:
+                        cur_trna = tRNA_Dir[rna_name]
+                    else:
+                        cur_trna = tRNA()
+                        cur_trna.name = rna_name
+
+                    m = re.search(r'\((\d+)-(\d+)\)', line)
+                    if m:
+                        cur_trna.map_start = int(m.group(1))
+                        cur_trna.map_end = int(m.group(2))
+                        cur_trna.map_len = abs(
+                            int(cur_trna.map_end-cur_trna.map_start)+1)
+
+                    m = re.search(r'(\d+)\s+bp$', line)
+                    if m:
+                        cur_trna.tRNA_length = int(m.group(1))
+
+                    # print(line)
+                elif line.strip().startswith("Type"):
+                    m = re.search(r'Type:\s(\w+)', line)
+                    if m:
+                        cur_trna.acceptor = m.group(1)
+
+                    m = re.search(r'Anticodon:\s(\w+)', line)
+                    if m:
+                        cur_trna.anticodon = m.group(1)
+
+                    m = re.search(r'(\d+)-(\d+)', line)
+                    if m:
+                        cur_trna.anticodon_start_in_map = int(m.group(1))
+                        cur_trna.anticodon_end_in_map = int(m.group(2))
+
+                    m = re.search(r'\((\d+)-(\d+)\)', line)
+                    if m:
+                        cur_trna.anticodon_start = int(m.group(1))
+                        cur_trna.anticodon_end = int(m.group(2))
+
+                    m = re.search(r'Score:\s+([\d\.]+)', line)
+                    if m:
+                        cur_trna.map_scan_score = float(m.group(1))
+                elif line.strip().startswith("Possible"):
+                    poss_str = line.strip().replace("Possible ", "")
+                    if "intron" in poss_str:
+                        cur_trna.intron_infor = poss_str
+                    else:
+                        cur_trna.possible_type = poss_str
+                    cur_trna.seq = cur_trna.GetMatureSeq()
+                elif line.strip().startswith("Seq:"):
+                    cur_trna.map_seq = line.strip().replace("Seq: ", "")
+                elif line.strip().startswith("Str:"):
+                    cur_trna.map_structure_str = line.strip().replace("Str: ", "")
+                    # Analysis structure string.
+                    # m = re.findall(r'([>]{2,}[\.]{3,}[<]{2,})', cur_trna.tRNA_structure_str)
+                    m = re.match(r'^[\.]{0,1}([>]{3,})',
+                                 cur_trna.map_structure_str)
+                    if (m):
+                        cur_trna.stem_for['start'] = m.regs[1][0]
+                        cur_trna.stem_for['end'] = m.regs[1][1]
+                        cur_trna.stem_for['str'] = cur_trna.map_seq[cur_trna.stem_for['start']
+                            :cur_trna.stem_for['end']]
+                    stem_len = len(cur_trna.stem_for['str'])
+                    pattern = "([<]{"+str(stem_len)+"})[\.]{0,1}$"
+                    #pattern = "([<]{7})[\.]{0,1}$"
+                    m1 = re.search(pattern, cur_trna.map_structure_str)
+                    if (m1):
+                        cur_trna.stem_rev['start'] = m1.regs[1][0]
+                        cur_trna.stem_rev['end'] = m1.regs[1][1]
+                        cur_trna.stem_rev['str'] = cur_trna.map_seq[cur_trna.stem_rev['start']
+                            :cur_trna.stem_rev['end']]
+                    for m in re.finditer(r'([>]{2,}[\.]{4,}[<]{2,})', cur_trna.map_structure_str):
+                        s = m.start()
+                        e = m.end()
+                        struct_str = m.group(0)
+
+                        sm = re.match(
+                            r'([>]{2,})([\.]{4,})([<]{2,})', struct_str)
+                        for_struct_str = sm.group(1)
+                        loop_struct_str = sm.group(2)
+                        rev_struct_str = sm.group(3)
+                        segment = cur_trna.map_seq[s:e]
+                        l_s = s+sm.regs[2][0]
+                        l_e = s+sm.regs[2][1]
+                        for_str = segment[sm.regs[1][0]:sm.regs[1][1]]
+                        loop_str = segment[sm.regs[2][0]: sm.regs[2][1]]
+                        rev_str = segment[sm.regs[3][0]: sm.regs[3][1]]
+                        for_str_regs = sm.regs[1]
+                        loop_str_regs = sm.regs[2]
+                        rev_str_regs = sm.regs[3]
+                        if s < 12:
+                            cur_trna.d_loop['start'] = s
+                            cur_trna.d_loop['end'] = e
+                            cur_trna.d_loop['l_start'] = l_s
+                            cur_trna.d_loop['l_end'] = l_e
+                            cur_trna.d_loop['for_str'] = for_str
+                            cur_trna.d_loop['rev_str'] = rev_str
+                            cur_trna.d_loop['loop_str'] = loop_str
+                            cur_trna.d_loop['struct_str'] = struct_str
+                        elif cur_trna.anticodon in loop_str and len(for_str) == len(rev_str):
+                            cur_trna.a_loop['start'] = s
+                            cur_trna.a_loop['end'] = e
+                            cur_trna.a_loop['l_start'] = l_s
+                            cur_trna.a_loop['l_end'] = l_e
+                            cur_trna.a_loop['for_str'] = for_str
+                            cur_trna.a_loop['rev_str'] = rev_str
+                            cur_trna.a_loop['loop_str'] = loop_str
+                            cur_trna.a_loop['struct_str'] = struct_str
+                        elif len(rev_str) > len(for_str) or s > 45:
+                            e = s+loop_str_regs[1]+len(for_str)
+                            struct_str = for_struct_str + \
+                                loop_struct_str+'<'*len(for_str)
+                            cur_trna.t_loop['start'] = s
+                            cur_trna.t_loop['end'] = e
+                            cur_trna.t_loop['l_start'] = l_s
+                            cur_trna.t_loop['l_end'] = l_e
+                            cur_trna.t_loop['for_str'] = for_str
+                            cur_trna.t_loop['rev_str'] = rev_str[0:len(
+                                for_str)]
+                            cur_trna.t_loop['struct_str'] = struct_str[0:len(
+                                for_str)]
+
+            # OUT_TAB.write(tRNA_ls[0].GetTabTitle()+"\n")
+            # Sort list
+            sorted_RNA_ls = sorted(
+                tRNA_ls, key=lambda x: x.seq+"_"+x.name, reverse=False)
+            # Get family id
+            seq = ""
+            cur_family = ""
+            OUT_TAB.write(tRNA().GetTabTitle() + "\n")
+            for t in sorted_RNA_ls:
+                if seq == "":
+                    t.family = "TF_"+t.name
+                    cur_family = t.family
+                    seq = t.seq
+                elif seq != t.seq:
+                    t.family = "TF_"+t.name
+                    cur_family = t.family
+                    seq = t.seq
                 else:
-                    cur_trna = tRNA()
-                    cur_trna.name = rna_name
-
-                m = re.search(r'\((\d+)-(\d+)\)', line)
-                if m:
-                    cur_trna.map_start = int(m.group(1))
-                    cur_trna.map_end = int(m.group(2))
-                    cur_trna.map_len = abs(
-                        int(cur_trna.map_end-cur_trna.map_start)+1)
-
-                m = re.search(r'(\d+)\s+bp$', line)
-                if m:
-                    cur_trna.tRNA_length = int(m.group(1))
-
-                # print(line)
-            elif line.strip().startswith("Type"):
-                m = re.search(r'Type:\s(\w+)', line)
-                if m:
-                    cur_trna.acceptor = m.group(1)
-
-                m = re.search(r'Anticodon:\s(\w+)', line)
-                if m:
-                    cur_trna.anticodon = m.group(1)
-
-                m = re.search(r'(\d+)-(\d+)', line)
-                if m:
-                    cur_trna.anticodon_start_in_map = int(m.group(1))
-                    cur_trna.anticodon_end_in_map = int(m.group(2))
-
-                m = re.search(r'\((\d+)-(\d+)\)', line)
-                if m:
-                    cur_trna.anticodon_start = int(m.group(1))
-                    cur_trna.anticodon_end = int(m.group(2))
-
-                m = re.search(r'Score:\s+([\d\.]+)', line)
-                if m:
-                    cur_trna.map_scan_score = float(m.group(1))
-            elif line.strip().startswith("Possible"):
-                poss_str = line.strip().replace("Possible ", "")
-                if "intron" in poss_str:
-                    cur_trna.intron_infor = poss_str
-                else:
-                    cur_trna.possible_type = poss_str
-                cur_trna.seq = cur_trna.GetMatureSeq()
-            elif line.strip().startswith("Seq:"):
-                cur_trna.map_seq = line.strip().replace("Seq: ", "")
-            elif line.strip().startswith("Str:"):
-                cur_trna.map_structure_str = line.strip().replace("Str: ", "")
-                # Analysis structure string.
-                # m = re.findall(r'([>]{2,}[\.]{3,}[<]{2,})', cur_trna.tRNA_structure_str)
-                m = re.match(r'^[\.]{0,1}([>]{3,})',
-                             cur_trna.map_structure_str)
-                if (m):
-                    cur_trna.stem_for['start'] = m.regs[1][0]
-                    cur_trna.stem_for['end'] = m.regs[1][1]
-                    cur_trna.stem_for['str'] = cur_trna.map_seq[cur_trna.stem_for['start']
-                        :cur_trna.stem_for['end']]
-                stem_len = len(cur_trna.stem_for['str'])
-                pattern = "([<]{"+str(stem_len)+"})[\.]{0,1}$"
-                #pattern = "([<]{7})[\.]{0,1}$"
-                m1 = re.search(pattern, cur_trna.map_structure_str)
-                if (m1):
-                    cur_trna.stem_rev['start'] = m1.regs[1][0]
-                    cur_trna.stem_rev['end'] = m1.regs[1][1]
-                    cur_trna.stem_rev['str'] = cur_trna.map_seq[cur_trna.stem_rev['start']
-                        :cur_trna.stem_rev['end']]
-                for m in re.finditer(r'([>]{2,}[\.]{4,}[<]{2,})', cur_trna.map_structure_str):
-                    s = m.start()
-                    e = m.end()
-                    struct_str = m.group(0)
-
-                    sm = re.match(r'([>]{2,})([\.]{4,})([<]{2,})', struct_str)
-                    for_struct_str = sm.group(1)
-                    loop_struct_str = sm.group(2)
-                    rev_struct_str = sm.group(3)
-                    segment = cur_trna.map_seq[s:e]
-                    l_s = s+sm.regs[2][0]
-                    l_e = s+sm.regs[2][1]
-                    for_str = segment[sm.regs[1][0]:sm.regs[1][1]]
-                    loop_str = segment[sm.regs[2][0]: sm.regs[2][1]]
-                    rev_str = segment[sm.regs[3][0]: sm.regs[3][1]]
-                    for_str_regs = sm.regs[1]
-                    loop_str_regs = sm.regs[2]
-                    rev_str_regs = sm.regs[3]
-                    if s < 12:
-                        cur_trna.d_loop['start'] = s
-                        cur_trna.d_loop['end'] = e
-                        cur_trna.d_loop['l_start'] = l_s
-                        cur_trna.d_loop['l_end'] = l_e
-                        cur_trna.d_loop['for_str'] = for_str
-                        cur_trna.d_loop['rev_str'] = rev_str
-                        cur_trna.d_loop['loop_str'] = loop_str
-                        cur_trna.d_loop['struct_str'] = struct_str
-                    elif cur_trna.anticodon in loop_str and len(for_str) == len(rev_str):
-                        cur_trna.a_loop['start'] = s
-                        cur_trna.a_loop['end'] = e
-                        cur_trna.a_loop['l_start'] = l_s
-                        cur_trna.a_loop['l_end'] = l_e
-                        cur_trna.a_loop['for_str'] = for_str
-                        cur_trna.a_loop['rev_str'] = rev_str
-                        cur_trna.a_loop['loop_str'] = loop_str
-                        cur_trna.a_loop['struct_str'] = struct_str
-                    elif len(rev_str) > len(for_str) or s > 45:
-                        e = s+loop_str_regs[1]+len(for_str)
-                        struct_str = for_struct_str + \
-                            loop_struct_str+'<'*len(for_str)
-                        cur_trna.t_loop['start'] = s
-                        cur_trna.t_loop['end'] = e
-                        cur_trna.t_loop['l_start'] = l_s
-                        cur_trna.t_loop['l_end'] = l_e
-                        cur_trna.t_loop['for_str'] = for_str
-                        cur_trna.t_loop['rev_str'] = rev_str[0:len(for_str)]
-                        cur_trna.t_loop['struct_str'] = struct_str[0:len(
-                            for_str)]
-
-        # OUT_TAB.write(tRNA_ls[0].GetTabTitle()+"\n")
-        # Sort list
-        sorted_RNA_ls = sorted(
-            tRNA_ls, key=lambda x: x.seq+"_"+x.name, reverse=False)
-        # Get family id
-        seq = ""
-        cur_family = ""
-        OUT_TAB.write(tRNA().GetTabTitle() + "\n")
-        for t in sorted_RNA_ls:
-            if seq == "":
-                t.family = "TF_"+t.name
-                cur_family = t.family
-                seq = t.seq
-            elif seq != t.seq:
-                t.family = "TF_"+t.name
-                cur_family = t.family
-                seq = t.seq
-            else:
-                t.family = cur_family
-            OUT_TAB.write(t.GetTabStr() + "\n")
-            if t.IsQualifiedtRNA(no_mit_tRNA=no_mit_tRNA, no_pseudogenes=no_pseudogenes, min_qscore=min_qscore):
-                if t.intron_infor == "":
-                    # Because the is no intron in tRNA
-                    # Pre tRNA and Pre Intron tRNA
-                    OUT_FASTA.write(">PI::" + t.name + "\n")
-                    OUT_FASTA.write(t.seq_utr + "\n")
-                else:
-                    # Pre tRNA and Pre Intron tRNA
-                    OUT_FASTA.write(">I::" + t.name + "\n")
-                    OUT_FASTA.write(t.seq_utr + "\n")
-                    # Pre tRNA and Pre Intron tRNA
-                    OUT_FASTA.write(">P::" + t.name + "\n")
-                    OUT_FASTA.write(t.GetPreMatureNoIntronSeq() + "\n")
-                OUT_FASTA.write(">C::"+t.name + "\n")  # Mature CCA tRNA
-                OUT_FASTA.write(t.GetMatureSeq() + "CCA\n")
-                OUT_FASTA.write(">M::" + t.name + "\n")  # Mature tRNA
-                OUT_FASTA.write(t.GetMatureSeq() + "\n")
-        OUT_TAB.close()
-        OUT_FASTA.close()
-        FILE.close()
+                    t.family = cur_family
+                OUT_TAB.write(t.GetTabStr() + "\n")
+                if t.IsQualifiedtRNA(no_mit_tRNA=no_mit_tRNA, no_pseudogenes=no_pseudogenes, min_qscore=min_qscore):
+                    if t.intron_infor == "":
+                        # Because the is no intron in tRNA
+                        # Pre tRNA and Pre Intron tRNA
+                        OUT_FASTA.write(">PI::" + t.name + "\n")
+                        OUT_FASTA.write(t.seq_utr + "\n")
+                    else:
+                        # Pre tRNA and Pre Intron tRNA
+                        OUT_FASTA.write(">I::" + t.name + "\n")
+                        OUT_FASTA.write(t.seq_utr + "\n")
+                        # Pre tRNA and Pre Intron tRNA
+                        OUT_FASTA.write(">P::" + t.name + "\n")
+                        OUT_FASTA.write(t.GetPreMatureNoIntronSeq() + "\n")
+                    OUT_FASTA.write(">C::"+t.name + "\n")  # Mature CCA tRNA
+                    OUT_FASTA.write(t.GetMatureSeq() + "CCA\n")
+                    OUT_FASTA.write(">M::" + t.name + "\n")  # Mature tRNA
+                    OUT_FASTA.write(t.GetMatureSeq() + "\n")
         return 0
     except:
         print("An exception occurred")
