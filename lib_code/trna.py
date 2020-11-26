@@ -266,7 +266,7 @@ class tRNA():
                         return loc-(s_end-s_start+1)-offset
                 else:
                     return -1
-            else:˝
+            else:
                 return loc-offset
 
 
