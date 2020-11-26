@@ -311,8 +311,9 @@ class tRNA():
         cleavageSite_Dic = {}
         combined_profile = start_pos_profile[:]
         if len(start_pos_profile) == len(end_pos_profile):
-            for i in range(len(end_pos_profile)):
-                combined_profile[i] += end_pos_profile[i]
+            #for i in range(len(end_pos_profile)):
+            for i, v in enumerate(end_pos_profile):
+                combined_profile[i] += v
         newList = sorted(combined_profile)
         median = newList[int(len(newList)/2)]
         start_peak_dic = self.DetectPeak(
@@ -443,8 +444,8 @@ class tRNA():
         if read_seq == ref_seq:
             return mut_dic
         if len(read_seq) == len(ref_seq):
-            for i in range(0, len(read_seq)):
-                A = read_seq[i]
+            #for i in range(0, len(read_seq)):
+            for i, A in enumerate(read_seq):
                 B = ref_seq[i]
                 Mutaion_Str = ""
                 location = loc[0]+i  # 1 based
