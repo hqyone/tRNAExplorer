@@ -249,11 +249,11 @@ def parsetRNAScanFile(tRNAscan, tRNA_Dir, tabFile, faFile, no_mit_tRNA=True, no_
             OUT_TAB.write(tRNA().GetTabTitle() + "\n")
             for t in sorted_RNA_ls:
                 if seq == "":
-                    t.family = "TF_"+t.name
+                    t.family = "tRFM#"+t.name
                     cur_family = t.family
                     seq = t.seq
                 elif seq != t.seq:
-                    t.family = "TF_"+t.name
+                    t.family = "tRFM#"+t.name
                     cur_family = t.family
                     seq = t.seq
                 else:
