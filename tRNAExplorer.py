@@ -249,7 +249,7 @@ class Config:
 
     def loadConfig(self, config_file):
         if os.path.isfile(config_file):
-            with open(config_file, 'r') as FILE
+            with open(config_file, 'r') as FILE:
                 for line in FILE:
                     if line.startswith("#"):
                         continue
