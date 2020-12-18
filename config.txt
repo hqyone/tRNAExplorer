@@ -90,7 +90,7 @@ blastn_max_mismatch = 2
 # TRF analyiss settings
 #########################################################
 # The minimum of tRF length
-# min_trf_len = 20
+# min_trf_len = 18
 
 # The max mismatch allow for valid matches
 # blastn_max_mismatch = 2

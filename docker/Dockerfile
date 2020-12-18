@@ -14,27 +14,46 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies including python, wget, x11, R, etc
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install apt-utils build-essential dialog gfortran zlib1g-dev libbz2-dev liblzma-dev libpcre3-dev libcurl4-gnutls-dev libssl-dev libxml2-dev xorg-dev wget less openjdk-8-jre-headless python3.7 unzip
+    apt-get -y --no-install-recommends install apt-utils build-essential dialog gfortran zlib1g-dev libbz2-dev liblzma-dev libpcre3-dev libcurl4-gnutls-dev libssl-dev libxml2-dev xorg-dev wget less ca-certificates openjdk-8-jre-headless python3.7 unzip
 
-RUN apt-get -y  --no-install-recommends install r-base
+RUN apt-get -y  --no-install-recommends install r-base 
 RUN apt-get -y install texinfo texlive-latex-base texlive-fonts-recommended texlive-fonts-extra
+RUN apt-get -y --no-install-recommends install python-pip samtools trnascan-se ncbi-blast+
 #RUN ln -s /usr/bin/python3.7 /usr/bin/python3
+RUN pip install --update pip && \
+    pip install --no-cache-dir jupyter scipy numpy pandas matplotlib pyfaidx && \
+    pip install --no-cache-dir seaborn pysam HTSeq pathlib plotyly scipy &&
 
 #####################################################################################
 #################### Install software and download database #########################
 #####################################################################################
 
 RUN mkdir /src/
+RUN mkdir /src/data/
+RUN mkdir /src/data/hg38
+RUN mkdir /src/data/mm10
+RUN mkdir /src/tools/
 WORKDIR /src/
+## Downloads human and mouse genome files
+RUN wget http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz -P /src/data/hg38/
+RUN unzip /src/data/hg38/hg38.fa.gz
+RUN samtools faidx /src/data/hg38/hg38.fa
+RUN makeblastdb -in /src/data/hg38/hg38.fa -dbtype nucl -title hg38
+
+# WORKDIR /src/data/mm10
+RUN wget https://hgdownload.soe.ucsc.edu/goldenPath/mm10/bigZips/mm10.fa.gz -P /src/data/mm10/
+RUN unzip /src/data/mm10/mm10.fa.gz
+RUN samtools faidx /src/data/mm10/mm10.fa
+RUN makeblastdb -in /src/data/mm10/mm10.fa -dbtype nucl -title mm10
 
 ## Install BLASTN
 # RNN wget https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.11.0+-x64-linux.tar.gz
 # RUN tar -xf ncbi-blast-2.11.0+-x64-linux.tar.gz
 # RUN ln -s /src/ncbi-blast-2.11.0+/bin/blastn /usr/bin/blastn
 
-RUN sudo apt -y install ncbi-blast+
+## Install Trimmomatic
+RUN  wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip -P /src/data/tools/
+RUN unzip /src/data/tools/Trimmomatic-0.39.zip
 
-## Install BLASTN
-RNN wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
-RUN unzip Trimmomatic-0.39.zip
-RUN ln -s /src/Trimmomatic-0.39/trimmomatic-0.39.jar /usr/bin/trimmomatic-0.39.jar
+## Install tRNAExplorer
+

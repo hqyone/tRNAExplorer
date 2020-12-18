@@ -15,6 +15,19 @@ import getopt
 
 
 def CreatetRNAFastas(bed, name, ref_fasta, trna_db_dir, offset=60):
+    """Generate Custermized tRNA database including pre_tRNA_intron, 
+    pre_tRNA, full_tRNA, full_tRNA_CAA
+
+    Args:
+        bed (String): bed file of tRNA genes (Can be download from UCSC server)
+        name (String): The prefix of the database
+        ref_fasta (String): FASTA file of genome of species (Can be download form UCSC server)
+        trna_db_dir (String): The directory of tRNA database (Output directory)
+        offset (int, optional): The length of UTR region on 5' and 3' end. Defaults to 60.
+
+    Returns:
+        A dictionary: {"fastafile": fasta_file, "dic": tRNA_Dic}
+    """
     fasta_file = f"{trna_db_dir}/{name}_{offset}.fasta"
     print("Create tRNA FASTA file: " + fasta_file)
     f1 = open(fasta_file, 'w')  # fasta without introns but UTR
