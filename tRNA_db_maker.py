@@ -30,65 +30,60 @@ def CreatetRNAFastas(bed, name, ref_fasta, trna_db_dir, offset=60):
     """
     fasta_file = f"{trna_db_dir}/{name}_{offset}.fasta"
     print("Create tRNA FASTA file: " + fasta_file)
-    f1 = open(fasta_file, 'w')  # fasta without introns but UTR
-
     tRNA_Dic = {}
-    Tab = open(bed, 'r')
-    for line in Tab:
-        if (not line.startswith("#")):
-            contents = line.strip().split("\t")
-            chr = str(contents[0])
-            start = int(contents[1])
-            end = int(contents[2])
-            name = contents[3]
-            strand = contents[5].strip()
-            intron = ""
-            if len(contents) >= 10:
-                intron = contents[9]
-            u_start = start - offset
-            u_end = end + offset
+    with open(fasta_file,'w') as f1, open(bed,'r') as Tab:
+        for line in Tab:
+            if (not line.startswith("#")):
+                contents = line.strip().split("\t")
+                chr = str(contents[0])
+                start = int(contents[1])
+                end = int(contents[2])
+                name = contents[3]
+                strand = contents[5].strip()
+                intron = ""
+                if len(contents) >= 10:
+                    intron = contents[9]
+                u_start = start - offset
+                u_end = end + offset
 
-            # f0.write(chr+"\t"+str(u_start)+"\t"+str(u_end)+"\t"+name+"\t0\t"+strand+"\n")
-            #full_seq= share.getFasta(ref_fasta, chr, start, end)
-            seq_utr = share.getFasta(ref_fasta, chr, u_start, u_end).strip()
-            #seq_sel = seq[offset:offset+end-start]
-            if strand == "-":
-                seq_utr = share.reverse_complement(seq_utr)
+                # f0.write(chr+"\t"+str(u_start)+"\t"+str(u_end)+"\t"+name+"\t0\t"+strand+"\n")
+                #full_seq= share.getFasta(ref_fasta, chr, start, end)
+                seq_utr = share.getFasta(ref_fasta, chr, u_start, u_end).strip()
+                #seq_sel = seq[offset:offset+end-start]
+                if strand == "-":
+                    seq_utr = share.reverse_complement(seq_utr)
 
-            # <BLOCKQUOTE>tRNA intron at pos 38-49<BR>GAGGCTGAAGGC(12 bp)</BLOCKQUOTE>
-            s = re.search(r'pos\s(\d+)-(\d+)<BR>(\w+)\(', intron)
+                # <BLOCKQUOTE>tRNA intron at pos 38-49<BR>GAGGCTGAAGGC(12 bp)</BLOCKQUOTE>
+                s = re.search(r'pos\s(\d+)-(\d+)<BR>(\w+)\(', intron)
 
-            s_start = 0
-            s_end = 0
-            s_seq = ""
-            if s:
-                s_start = int(s.group(1))
-                s_end = int(s.group(2))
-                s_seq = s.group(3)
+                s_start = 0
+                s_end = 0
+                s_seq = ""
+                if s:
+                    s_start = int(s.group(1))
+                    s_end = int(s.group(2))
+                    s_seq = s.group(3)
 
-            full_seq = seq_utr[offset:offset+end-start]
-            seq = full_seq.replace(s_seq, "")
-            t = tRNA()
-            t.name = name
-            t.chrom = chr
-            t.start = start
-            t.end = end
-            t.strand = strand
-            t.seq = seq
-            t.full_seq = seq
-            t.seq_utr = seq_utr
-            t.utr_len = offset
-            t.intron_infor = intron
+                full_seq = seq_utr[offset:offset+end-start]
+                seq = full_seq.replace(s_seq, "")
+                t = tRNA()
+                t.name = name
+                t.chrom = chr
+                t.start = start
+                t.end = end
+                t.strand = strand
+                t.seq = seq
+                t.full_seq = seq
+                t.seq_utr = seq_utr
+                t.utr_len = offset
+                t.intron_infor = intron
 
-            tRNA_Dic[t.name] = t
+                tRNA_Dic[t.name] = t
 
-            f1.write(">"+name+"\n"+seq_utr.upper()+'\n')
-            #f2.write(">" + name + "\n" + seq2.upper() + '\n')
-            #f3.write(">" + name + "\n" + seq3.upper() + '\n')
-            #f4.write(">" + name + "\n" + seq4.upper() + '\n')
-
-    f1.close()
-    Tab.close()
+                f1.write(">"+name+"\n"+seq_utr.upper()+'\n')
+                #f2.write(">" + name + "\n" + seq2.upper() + '\n')
+                #f3.write(">" + name + "\n" + seq3.upper() + '\n')
+                #f4.write(">" + name + "\n" + seq4.upper() + '\n')
     return {"fastafile": fasta_file, "dic": tRNA_Dic}
 
 # Run tRNAScan-SE
