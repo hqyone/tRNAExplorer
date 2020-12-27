@@ -1,8 +1,5 @@
 # coding=utf-8
 
-#
-#
-
 import numpy as np
 import pandas as pd
 import os, io, re
@@ -175,8 +172,7 @@ def csv_download_link(df, csv_file_name, delete_prompt=True):
         a = input('Press enter to delete the file after you have downloaded it.')
         os.remove(file_path)
 
-#df = d["exp_df"]
-#target_cols = list(df.columns[df.columns.str.contains('ENC')])
+
 
 def filterDF(df, num=1, value=100, col_names=[]):
     if num>len(col_names):
@@ -186,13 +182,13 @@ def filterDF(df, num=1, value=100, col_names=[]):
         df['exp_sample_num'] = df[df[col_names]>=value].count(axis=1)  #Count Specific Values in rows
         f_df = df[df['exp_sample_num']>=num]
         return f_df
-
+    
+#df = d["exp_df"]
+#target_cols = list(df.columns[df.columns.str.contains('ENC')])
+#regular_confid_df = filterDF(df, num=1, value=500, col_names=target_cols)
+#dl.csv_download_link(high_confid_df, 'regular_trfs.tsv', delete_prompt=False)
 #high_confid_df = filterDF(df, num=2, value=1000, col_names=target_cols)
 #dl.csv_download_link(high_confid_df, 'high_confid_trfs.tsv', delete_prompt=False)
-        
-#wdir = '/Users/hqyone/OneDrive/国内的工作/学术/科研项目/论文课题/tRNA/data_output/rna_seq'
-#data = LoadRESQDir(wdir)
-#print(data)
 
 def getSampleLabel(s_id,sample_df):
     label = "None"
