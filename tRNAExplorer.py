@@ -75,6 +75,14 @@ def rseq_blastn_pipeline(proj_name,
             print("The sample file :"+sample_tsv+" is not exist. Abort!")
             return -1
         # Copy sample tsv for visualization
+        if not os.path.isdir(out_dir):
+            try:
+                print(f"Output dir {out_dir} is not a directory. Try to create it ...append() ")
+                os.mkdir(out_dir)
+            except Exception as inst:
+                print("Create output directory :"+out_dir+" fail. Abort!")
+                print(inst)
+                return -1
         cp_sample_tsv = out_dir+"/samples"
         shutil.copy(sample_tsv, cp_sample_tsv)
         SAMPLES = open(sample_tsv, 'r')
