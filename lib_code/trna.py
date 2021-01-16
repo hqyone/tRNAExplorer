@@ -110,6 +110,8 @@ class tRNA(Seq):
         self.a_loop = tRNA_Loop(type="a")
         self.v_loop = tRNA_Loop(type="v")
         self.t_loop = tRNA_Loop(type="t")
+        self.stem_for={"start":-1, "end":-1}
+        self.stem_rev={"start":-1, "end":-1}
         for k, v in kwargs.items():
             setattr(self, k, v)
 

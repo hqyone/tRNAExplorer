@@ -201,7 +201,6 @@ def CombineProfilesWithIntron(sample, cur_profile, tRNA1_ID,tRNA2_ID, d, profile
     t2_df = p_df[(p_df['tRNA_ID'] == tRNA2_ID) & (p_df['#SampleID'] == sample) & (p_df['type'] == profile_type)]
     profile_1 = cur_profile
     profile_2 = np.array(t2_df['profile'].values[0].split(",")).astype(np.float)
-
     intron_1_str = st_df[st_df['name'] == tRNA1_ID]['intron_infor'].values[0]
     #print(intron_1_str)
     intron_1_obj = {}
@@ -245,7 +244,7 @@ def CombineProfilesByFamily(d, profile_types):
                 for index, row in t_df.iterrows():
                     new_row['#SampleID'] = s
                     new_row['tRNA_family'] = f
-                    new_row['tRNA_ID'] = f.replace('TF_',"")
+                    new_row['tRNA_ID'] = f.replace('tRFM#',"")
                     new_row['type'] = p_type
                     cur_profile = np.array(row['profile'].split(',')).astype(np.float)
                     cur_RNA_ID = row['tRNA_ID']
@@ -253,7 +252,7 @@ def CombineProfilesByFamily(d, profile_types):
                         profile = cur_profile
                     else:
                         if (len(profile)!=len(cur_profile)):
-                            f_tRNA_ID= f.replace('TF_',"")
+                            f_tRNA_ID= f.replace('tRFM#',"")
                             profile = CombineProfilesWithIntron(s, cur_profile, f_tRNA_ID, cur_RNA_ID, d, p_type)
                         else:
                             profile = np.add(profile, cur_profile)

@@ -126,34 +126,20 @@ def RuntRNAScan(wdir, tRNAscanSE, trna_fasta, out_file):
 
 # Generate annotation tab file and FASTA file for BLASTN
 
-
-def parsetRNAScanFile(tRNAscan, tRNA_Dir, tabFile, faFile, no_mit_tRNA=True, no_pseudogenes=True, min_qscore=30):
-    """Run and parse the output file from tRNAScan program
-
-    Args:
-        tRNAscan (String): The absolute path of tRNAscan program
-        tRNA_Dir (String ): The path of tRNA data
-        tabFile (String): output tabFile
-        faFile (String): output of FASTA file
-        no_mit_tRNA (bool, optional): Whether omit the mitchromdria tRNA or not. Defaults to True.
-        no_pseudogenes (bool, optional): Whether omit the pseudogenes. Defaults to True.
-        min_qscore (int, optional): Minimum of qscore (tRNAscan score) Defaults to 30.
-
-    Returns:
-        int: if 0 means no error happen or -1.
-    """
+def ParseScanFile(tRNAscan, tRNA_Dic):
     try:
         tRNA_ls = []
-        with open(tRNAscan, 'r') as FILE, open(tabFile, 'w') as OUT_TAB, open(faFile, 'w') as OUT_FASTA:
+        with open(tRNAscan, 'r') as FILE:
             cur_trna = tRNA()
             rna_name = ""
+            tRNA_Dir={}
             for line in FILE:
                 if line.strip().endswith("bp"):
                     if rna_name != "":
                         tRNA_ls.append(cur_trna)
                     rna_name = line.strip().split(' ')[0].replace(".trna1", "")
-                    if rna_name in tRNA_Dir:
-                        cur_trna = tRNA_Dir[rna_name]
+                    if rna_name in tRNA_Dic:
+                        cur_trna = tRNA_Dic[rna_name]
                     else:
                         cur_trna = tRNA()
                         cur_trna.name = rna_name
@@ -213,15 +199,15 @@ def parsetRNAScanFile(tRNAscan, tRNA_Dir, tabFile, faFile, no_mit_tRNA=True, no_
                         cur_trna.stem_for['end'] = m.regs[1][1]
                         cur_trna.stem_for['str'] = cur_trna.map_seq[cur_trna.stem_for['start']
                             :cur_trna.stem_for['end']]
-                    stem_len = len(cur_trna.stem_for['str'])
-                    pattern = "([<]{"+str(stem_len)+"})[\.]{0,1}$"
-                    #pattern = "([<]{7})[\.]{0,1}$"
-                    m1 = re.search(pattern, cur_trna.map_structure_str)
-                    if (m1):
-                        cur_trna.stem_rev['start'] = m1.regs[1][0]
-                        cur_trna.stem_rev['end'] = m1.regs[1][1]
-                        cur_trna.stem_rev['str'] = cur_trna.map_seq[cur_trna.stem_rev['start']
-                            :cur_trna.stem_rev['end']]
+                        stem_len = len(cur_trna.stem_for['str'])
+                        pattern = "([<]{"+str(stem_len)+"})[\.]{0,1}$"
+                        #pattern = "([<]{7})[\.]{0,1}$"
+                        m1 = re.search(pattern, cur_trna.map_structure_str)
+                        if (m1):
+                            cur_trna.stem_rev['start'] = m1.regs[1][0]
+                            cur_trna.stem_rev['end'] = m1.regs[1][1]
+                            cur_trna.stem_rev['str'] = cur_trna.map_seq[cur_trna.stem_rev['start']
+                                :cur_trna.stem_rev['end']]
                     for m in re.finditer(r'([>]{2,}[\.]{4,}[<]{2,})', cur_trna.map_structure_str):
                         s = m.start()
                         e = m.end()
@@ -274,45 +260,69 @@ def parsetRNAScanFile(tRNAscan, tRNA_Dir, tabFile, faFile, no_mit_tRNA=True, no_
                             cur_trna.t_loop.struct_str = struct_str[0:len(for_str)]
                             cur_trna.t_loop.loop_str = loop_str
                             cur_trna.t_loop.type="t"
+            tRNA_ls.append(cur_trna)
+            return tRNA_ls
+    except:
+        print("An exception occurred during parsing scan file. ")
+        return -1
 
-            # OUT_TAB.write(tRNA_ls[0].GetTabTitle()+"\n")
-            # Sort list
-            sorted_RNA_ls = sorted(
-                tRNA_ls, key=lambda x: x.seq+"_"+x.name, reverse=False)
-            # Get family id
-            seq = ""
-            cur_family = ""
-            OUT_TAB.write(tRNA().GetTabTitle() + "\n")
-            for t in sorted_RNA_ls:
-                if seq == "":
-                    t.family = "tRFM#"+t.name
-                    cur_family = t.family
-                    seq = t.seq
-                elif seq != t.seq:
-                    t.family = "tRFM#"+t.name
-                    cur_family = t.family
-                    seq = t.seq
-                else:
-                    t.family = cur_family
-                OUT_TAB.write(t.GetTabStr() + "\n")
-                if t.IsQualifiedtRNA(no_mit_tRNA=no_mit_tRNA, no_pseudogenes=no_pseudogenes, min_qscore=min_qscore):
-                    if t.intron_infor == "":
-                        # Because the is no intron in tRNA
-                        # Pre tRNA and Pre Intron tRNA
-                        OUT_FASTA.write(">PI::" + t.name + "\n")
-                        OUT_FASTA.write(t.seq_utr + "\n")
+def parsetRNAScanFile(tRNAscan, tRNA_Dic, tabFile, faFile, no_mit_tRNA=True, no_pseudogenes=True, min_qscore=30):
+    """Run and parse the output file from tRNAScan program
+
+    Args:
+        tRNAscan (String): The absolute path of tRNAscan program
+        tRNA_Dic (Dictrory ): The dictory of tRNAs parsed from bed file
+        tabFile (String): output tabFile
+        faFile (String): output of FASTA file
+        no_mit_tRNA (bool, optional): Whether omit the mitchromdria tRNA or not. Defaults to True.
+        no_pseudogenes (bool, optional): Whether omit the pseudogenes. Defaults to True.
+        min_qscore (int, optional): Minimum of qscore (tRNAscan score) Defaults to 30.
+
+    Returns:
+        int: if 0 means no error happen or -1.
+    """
+    try:
+        tRNA_ls = ParseScanFile(tRNAscan, tRNA_Dic)
+        if len(tRNA_ls)>0:
+            with open(tabFile, 'w') as OUT_TAB, open(faFile, 'w') as OUT_FASTA:
+                # Sort list
+                sorted_RNA_ls = sorted(
+                    tRNA_ls, key=lambda x: x.seq+"_"+x.name, reverse=False)
+                
+                # Get family id
+                seq = ""
+                cur_family = ""
+                OUT_TAB.write(tRNA().GetTabTitle() + "\n")
+                for t in sorted_RNA_ls:
+                    if seq == "":
+                        t.family = "tRFM#"+t.name
+                        cur_family = t.family
+                        seq = t.seq
+                    elif seq != t.seq:
+                        t.family = "tRFM#"+t.name
+                        cur_family = t.family
+                        seq = t.seq
                     else:
-                        # Pre tRNA and Pre Intron tRNA
-                        OUT_FASTA.write(">I::" + t.name + "\n")
-                        OUT_FASTA.write(t.seq_utr + "\n")
-                        # Pre tRNA and Pre Intron tRNA
-                        OUT_FASTA.write(">P::" + t.name + "\n")
-                        OUT_FASTA.write(t.GetPreMatureNoIntronSeq() + "\n")
-                    OUT_FASTA.write(">C::"+t.name + "\n")  # Mature CCA tRNA
-                    OUT_FASTA.write(t.GetMatureSeq() + "CCA\n")
-                    OUT_FASTA.write(">M::" + t.name + "\n")  # Mature tRNA
-                    OUT_FASTA.write(t.GetMatureSeq() + "\n")
-        return 0
+                        t.family = cur_family
+                    OUT_TAB.write(t.GetTabStr() + "\n")
+                    if t.IsQualifiedtRNA(no_mit_tRNA=no_mit_tRNA, no_pseudogenes=no_pseudogenes, min_qscore=min_qscore):
+                        if t.intron_infor == "":
+                            # Because the is no intron in tRNA
+                            # Pre tRNA and Pre Intron tRNA
+                            OUT_FASTA.write(">PI::" + t.name + "\n")
+                            OUT_FASTA.write(t.seq_utr + "\n")
+                        else:
+                            # Pre tRNA and Pre Intron tRNA
+                            OUT_FASTA.write(">I::" + t.name + "\n")
+                            OUT_FASTA.write(t.seq_utr + "\n")
+                            # Pre tRNA and Pre Intron tRNA
+                            OUT_FASTA.write(">P::" + t.name + "\n")
+                            OUT_FASTA.write(t.GetPreMatureNoIntronSeq() + "\n")
+                        OUT_FASTA.write(">C::"+t.name + "\n")  # Mature CCA tRNA
+                        OUT_FASTA.write(t.GetMatureSeq() + "CCA\n")
+                        OUT_FASTA.write(">M::" + t.name + "\n")  # Mature tRNA
+                        OUT_FASTA.write(t.GetMatureSeq() + "\n")
+            return 0
     except:
         print("An exception occurred")
         return -1
@@ -464,4 +474,10 @@ name = "hg38_tRNA"
 ref_fasta="/home/hqyone/mnt/sdc/databases/genome/hg38/hg38.fa"
 tRNAscanSE="/usr/bin/tRNAscan-SE"
 print(tRNA_DB_Preparing(name, bed, ref_fasta, tRNAscanSE))
+
+# outbed = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db/hg38_tRNA_60.bed"
+# outfa = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db/hg38_tRNA_60.fa"
+# scan = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db/hg38_tRNA_scan_60.out"
+# rnadir = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db"
+# parsetRNAScanFile(scan, rnadir, outbed, outfa)
 exit(0)
