@@ -9,7 +9,7 @@ import re
 import os
 import subprocess
 from lib_code import share
-from lib_code.trna import tRNA
+from lib_code.trna import tRNA, tRNA_Loop
 import sys
 import getopt
 
@@ -167,7 +167,8 @@ def parsetRNAScanFile(tRNAscan, tRNA_Dir, tabFile, faFile, no_mit_tRNA=True, no_
 
                     m = re.search(r'(\d+)\s+bp$', line)
                     if m:
-                        cur_trna.tRNA_length = int(m.group(1))
+                        #cur_trna.tRNA_length = int(m.group(1))
+                        trna_len = int(m.group(1))
 
                     # print(line)
                 elif line.strip().startswith("Type"):
@@ -241,36 +242,38 @@ def parsetRNAScanFile(tRNAscan, tRNA_Dir, tabFile, faFile, no_mit_tRNA=True, no_
                         loop_str_regs = sm.regs[2]
                         rev_str_regs = sm.regs[3]
                         if s < 12:
-                            cur_trna.d_loop['start'] = s
-                            cur_trna.d_loop['end'] = e
-                            cur_trna.d_loop['l_start'] = l_s
-                            cur_trna.d_loop['l_end'] = l_e
-                            cur_trna.d_loop['for_str'] = for_str
-                            cur_trna.d_loop['rev_str'] = rev_str
-                            cur_trna.d_loop['loop_str'] = loop_str
-                            cur_trna.d_loop['struct_str'] = struct_str
+                            cur_trna.d_loop.start = s
+                            cur_trna.d_loop.end = e
+                            cur_trna.d_loop.l_start = l_s
+                            cur_trna.d_loop.l_end = l_e
+                            cur_trna.d_loop.for_str= for_str
+                            cur_trna.d_loop.rev_str = rev_str
+                            cur_trna.d_loop.loop_str = loop_str
+                            cur_trna.d_loop.struct_str = struct_str
+                            cur_trna.d_loop.type="d"
                         elif cur_trna.anticodon in loop_str and len(for_str) == len(rev_str):
-                            cur_trna.a_loop['start'] = s
-                            cur_trna.a_loop['end'] = e
-                            cur_trna.a_loop['l_start'] = l_s
-                            cur_trna.a_loop['l_end'] = l_e
-                            cur_trna.a_loop['for_str'] = for_str
-                            cur_trna.a_loop['rev_str'] = rev_str
-                            cur_trna.a_loop['loop_str'] = loop_str
-                            cur_trna.a_loop['struct_str'] = struct_str
+                            cur_trna.a_loop.start = s
+                            cur_trna.a_loop.end= e
+                            cur_trna.a_loop.l_start = l_s
+                            cur_trna.a_loop.l_end = l_e
+                            cur_trna.a_loop.for_str = for_str
+                            cur_trna.a_loop.rev_str = rev_str
+                            cur_trna.a_loop.loop_str = loop_str
+                            cur_trna.a_loop.struct_str = struct_str
+                            cur_trna.a_loop.type="a"
                         elif len(rev_str) > len(for_str) or s > 45:
                             e = s+loop_str_regs[1]+len(for_str)
                             struct_str = for_struct_str + \
                                 loop_struct_str+'<'*len(for_str)
-                            cur_trna.t_loop['start'] = s
-                            cur_trna.t_loop['end'] = e
-                            cur_trna.t_loop['l_start'] = l_s
-                            cur_trna.t_loop['l_end'] = l_e
-                            cur_trna.t_loop['for_str'] = for_str
-                            cur_trna.t_loop['rev_str'] = rev_str[0:len(
-                                for_str)]
-                            cur_trna.t_loop['struct_str'] = struct_str[0:len(
-                                for_str)]
+                            cur_trna.t_loop.start = s
+                            cur_trna.t_loop.end = e
+                            cur_trna.t_loop.l_start = l_s
+                            cur_trna.t_loop.l_end = l_e
+                            cur_trna.t_loop.for_str = for_str
+                            cur_trna.t_loop.rev_str = rev_str[0:len(for_str)]
+                            cur_trna.t_loop.struct_str = struct_str[0:len(for_str)]
+                            cur_trna.t_loop.loop_str = loop_str
+                            cur_trna.t_loop.type="t"
 
             # OUT_TAB.write(tRNA_ls[0].GetTabTitle()+"\n")
             # Sort list
@@ -444,7 +447,8 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    pass
+    #main(sys.argv[1:])
 
 # Local Test
 # bed = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/ucsc_hg38_tRNA.bed"
@@ -454,10 +458,10 @@ if __name__ == "__main__":
 # tRNAscanSE="/usr/local/bin/tRNAscan-SE"
 # print(tRNA_DB_Preparing(name, bed, ref_fasta, tRNAscanSE))
 
-# Server Test
-# bed = "/home/hqyone/python_code/testrepo/szf/ucsc_hg38_tRNA.bed"
-# name = "hg38_tRNA"
-# ref_fasta="/home/hqyone/python_code/testrepo/szf/hg38.fa"
-# tRNAscanSE="/usr/local/bin/tRNAscan-SE"
-# print(tRNA_DB_Preparing(bed, name, ref_fasta, tRNAscanSE))
-# exit(0)
+#Server Test
+bed = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db/ucsc_hg38_tRNA.bed"
+name = "hg38_tRNA"
+ref_fasta="/home/hqyone/mnt/sdc/databases/genome/hg38/hg38.fa"
+tRNAscanSE="/usr/bin/tRNAscan-SE"
+print(tRNA_DB_Preparing(name, bed, ref_fasta, tRNAscanSE))
+exit(0)

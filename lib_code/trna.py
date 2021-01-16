@@ -8,8 +8,70 @@
 import lib_code.share as share
 import re
 
+def CheckTabStr(func):
+    def check(obj,tabstr):
+        contents = tabstr.strip().split("\t")
+        min_len = len(obj.GetTabTitle().split("\t"))
+        if len(contents)>=min_len:
+            func(obj, tabstr)
+        else:
+            print (f"{tabstr} doesn't contain enough {minlen} fields")   
+    return check
 
-class tRNA():
+class Seq():
+    __slots__=["name","seq"]
+    def __init__(self, **kwargs):
+        self.name=""
+        self.seq=""
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    def GetTabTitle(self):
+        return "name\tseq"
+
+    def GetTabStr(self):
+        return f"{self.name}\t{self.seq}"
+    
+    @CheckTabStr
+    def LoadStr(self, tabstr):
+        contents = tabstr.strip().split("\t")
+        self.name = contents[0]
+        self.seq = contents[1]        
+
+a = Seq()
+a.LoadStr("name\tseq")
+
+class tRNA_Loop(Seq):
+    __slots__ = ["start", "l_start", "l_end", "end", "struct_str","for_str","rev_str","loop_str","type"]
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.start=-1
+        self.l_start=-1
+        self.l_end=-1
+        self.end=-1
+        self.struct_str=""
+        self.for_str=""
+        self.rev_str=""
+        self.loop_str=""
+        self.type=""
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+                    
+    def GetTabTitle(self):
+        return f"{self.type}_loop_start\t{self.type}_loop_lstart\t{self.type}_loop_lend\t{self.type}_loop_end"
+    
+    def GetTabStr(self):
+        return f"{self.start}\t{self.l_start}\t{self.l_end}\t{self.end}"
+
+    @CheckTabStr
+    def LoadStr(self, tabstr):
+        contents = tabstr.strip().split("\t")
+        self.start = int(contents[0])
+        self.l_start = int(contents[1])
+        self.l_end = int(contents[2])
+        self.end = contents[3] 
+
+class tRNA(Seq):
     __slots__ = ["name", "chrom", "start", "end", "strand",
                  "full_seq", "seq", "intron_infor", "anticodon", "anticodon_start",
                  "anticodon_end", "acceptor", "family", "seq_utr", "utr_len", "map_start",
@@ -17,7 +79,7 @@ class tRNA():
                  "anticodon_end_in_map", "map_scan_score", "possible_type", "d_loop", "a_loop",
                  "v_loop", "t_loop", "stem_for", "stem_rev"]
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.name = ""
         self.chrom = ""
         self.start = ""
@@ -44,26 +106,22 @@ class tRNA():
         self.anticodon_end_in_map = 0
         self.map_scan_score = 0
         self.possible_type = ""
-        self.d_loop = {'start': -1, 'l_start': -1, 'l_end': -1, 'end': -1,
-                       'struct_str': "", 'for_str': "", 'rev_str': "", 'loop_str': ""}
-        self.a_loop = {'start': -1, 'l_start': -1, 'l_end': -1, 'end': -1,
-                       'struct_str': "", 'for_str': "", 'rev_str': "", 'loop_str': ""}
-        self.v_loop = {'start': -1, 'l_start': -1, 'l_end': -1, 'end': -1,
-                       'struct_str': "", 'for_str': "", 'rev_str': "", 'loop_str': ""}
-        self.t_loop = {'start': -1, 'l_start': -1, 'l_end': -1, 'end': -1,
-                       'struct_str': "", 'for_str': "", 'rev_str': "", 'loop_str': ""}
-        self.stem_for = {'start': -1, 'end': -1, 'str': ""}
-        self.stem_rev = {'start': -1, 'end': -1, 'str': ""}
+        self.d_loop = tRNA_Loop(type="d")
+        self.a_loop = tRNA_Loop(type="a")
+        self.v_loop = tRNA_Loop(type="v")
+        self.t_loop = tRNA_Loop(type="t")
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     def GetTabTitle(self):
         return "#chrom\tstart\tend\tname\tscore\tstrand\tfull_seq\tseq\tintron_infor\tanticodon\tanticodon_start" + \
                "\tanticodon_end\tacceptor" + \
                "\tfamily\tseq_utr\tutr_len\tmap_start\tmap_end\tmap_len\tmap_structure_str\tmap_seq" +\
                "\tanticodon_start_in_map\tanticodon_end_in_map\tmap_scan_score\tpossible_type" +\
-               "\td_loop_start\td_loop_lstart\td_loop_lend\td_loop_end" + \
-               "\ta_loop_start\ta_loop_lstart\ta_loop_lend\ta_loop_end" + \
-               "\tv_loop_start\tv_loop_lstart\tv_loop_lend\tv_loop_end" + \
-               "\tt_loop_start\tt_loop_lstart\tt_loop_lend\tt_loop_end" + \
+               "\t"+self.d_loop.GetTabTitle() + \
+               "\t"+self.a_loop.GetTabTitle() + \
+               "\t"+self.v_loop.GetTabTitle() + \
+               "\t"+self.t_loop.GetTabTitle() + \
                "\tstem_for_start\tstem_for_end\tstem_rev_start\tstem_rev_end"
 
     # Print a bed like file
@@ -73,58 +131,49 @@ class tRNA():
             str(self.acceptor)+"\t"+str(self.family) + "\t" + str(self.seq_utr) + "\t" + str(self.utr_len) + "\t" +\
             str(self.map_start)+"\t"+str(self.map_end) + "\t"+str(self.map_len) + "\t"+self.map_structure_str + "\t"+self.map_seq + "\t" + \
             str(self.anticodon_start_in_map)+"\t"+str(self.anticodon_end_in_map)+"\t"+str(self.map_scan_score)+"\t"+str(self.possible_type)+"\t" + \
-            str(self.d_loop["start"])+"\t"+str(self.d_loop["l_start"])+"\t"+str(self.d_loop["l_end"])+"\t"+str(self.d_loop["end"])+"\t" + \
-            str(self.a_loop["start"]) + "\t" + str(self.a_loop["l_start"]) + "\t" + str(self.a_loop["l_end"]) + "\t" + str(self.a_loop["end"]) + "\t" + \
-            str(self.v_loop["start"]) + "\t" + str(self.v_loop["l_start"]) + "\t" + str(self.v_loop["l_end"]) + "\t" + str(self.v_loop["end"]) + "\t" + \
-            str(self.t_loop["start"]) + "\t" + str(self.t_loop["l_start"]) + "\t" + str(self.t_loop["l_end"]) + "\t" + str(self.t_loop["end"]) + "\t" + \
+            self.d_loop.GetTabStr() +"\t"+\
+            self.a_loop.GetTabStr() +"\t"+\
+            self.v_loop.GetTabStr() +"\t"+\
+            self.t_loop.GetTabStr() +"\t"+\
             str(self.stem_for["start"]) + "\t" + str(self.stem_for["end"]) + "\t" + \
             str(self.stem_rev["start"]) + "\t" + str(self.stem_rev["end"])
         return a
 
+    @CheckTabStr
     def LoadStr(self, str):
         contents = str.strip().split("\t")
-        if len(contents) > 42:
-            self.chrom = contents[0]
-            self.start = int(contents[1])
-            self.end = int(contents[2])
-            self.name = contents[3]
-            self.strand = contents[5]
-            self.full_seq = contents[6]
-            self.seq = contents[7]
-            self.intron_infor = contents[8]
-            self.anticodon = contents[9]
-            self.anticodon_start = int(contents[10])
-            self.anticodon_end = int(contents[11])
-            self.acceptor = contents[12]
-            self.family = contents[13]
-            # Fasta file
-            self.seq_utr = contents[14]
-            self.utr_len = int(contents[15])
-            # tRNAScan SE results
-            self.map_start = int(contents[16])
-            self.map_end = int(contents[17])
-            self.map_len = int(contents[18])
-            self.map_structure_str = contents[19]
-            self.map_seq = contents[20]
-            self.anticodon_start_in_map = int(contents[21])
-            self.anticodon_end_in_map = int(contents[22])
-            self.map_scan_score = float(contents[23])
-            self.possible_type = contents[24]
-            self.d_loop = {'start': int(contents[25]), 'l_start': int(contents[26]), 'l_end': int(contents[27]),
-                           'end': int(contents[28]), 'struct_str': "", 'for_str': "",
-                           'rev_str': "", 'loop_str': ""}
-            self.a_loop = {'start': int(contents[29]), 'l_start': int(contents[30]), 'l_end': int(contents[31]), 'end': int(contents[32]), 'struct_str': "", 'for_str': "",
-                           'rev_str': "", 'loop_str': ""}
-            self.v_loop = {'start': int(contents[33]), 'l_start': int(contents[34]), 'l_end': int(contents[35]),
-                           'end': int(contents[36]), 'struct_str': "", 'for_str': "",
-                           'rev_str': "", 'loop_str': ""}
-            self.t_loop = {'start': int(contents[37]), 'l_start': int(contents[38]), 'l_end': int(contents[39]),
-                           'end': int(contents[40]), 'struct_str': "", 'for_str': "",
-                           'rev_str': "", 'loop_str': ""}
-            self.stem_for = {'start': int(
-                contents[41]), 'end': int(contents[42]), 'str': ""}
-            self.stem_rev = {'start': int(
-                contents[43]), 'end': int(contents[44]), 'str': ""}
+        self.chrom = contents[0]
+        self.start = int(contents[1])
+        self.end = int(contents[2])
+        self.name = contents[3]
+        self.strand = contents[5]
+        self.full_seq = contents[6]
+        self.seq = contents[7]
+        self.intron_infor = contents[8]
+        self.anticodon = contents[9]
+        self.anticodon_start = int(contents[10])
+        self.anticodon_end = int(contents[11])
+        self.acceptor = contents[12]
+        self.family = contents[13]
+        # Fasta file
+        self.seq_utr = contents[14]
+        self.utr_len = int(contents[15])
+        # tRNAScan SE results
+        self.map_start = int(contents[16])
+        self.map_end = int(contents[17])
+        self.map_len = int(contents[18])
+        self.map_structure_str = contents[19]
+        self.map_seq = contents[20]
+        self.anticodon_start_in_map = int(contents[21])
+        self.anticodon_end_in_map = int(contents[22])
+        self.map_scan_score = float(contents[23])
+        self.possible_type = contents[24]
+        self.d_loop = tRNA_Loop(type="d", start=int(contents[25]), l_start=int(contents[26]), l_end=int(contents[27]), end=int(contents[28]))
+        self.a_loop = tRNA_Loop(type="d", start=int(contents[29]), l_start=int(contents[30]), l_end=int(contents[31]), end=int(contents[32]))
+        self.v_loop = tRNA_Loop(type="d", start=int(contents[33]), l_start=int(contents[34]), l_end=int(contents[35]), end=int(contents[36]))
+        self.t_loop = tRNA_Loop(type="d", start=int(contents[37]), l_start=int(contents[38]), l_end=int(contents[39]), end=int(contents[40]))
+        self.stem_for = {'start': int(contents[41]), 'end': int(contents[42]), 'str': ""}
+        self.stem_rev = {'start': int(contents[43]), 'end': int(contents[44]), 'str': ""}
 
     def GetMatureSeq(self):
         if self.intron_infor != "":
@@ -295,11 +344,13 @@ class tRNA():
             ptype = "End"
         elif pos >= self.anticodon_start-self.utr_len and pos <= self.anticodon_end-self.utr_len:
             ptype = "Anticodon"
-        elif self.d_loop["start"] != -1 and pos >= self.d_loop["start"] and pos <= self.d_loop["end"]:
+        elif self.d_loop.start != -1 and pos >= self.d_loop.start and pos <= self.d_loop.end:
             ptype = "D-loop"
-        elif self.a_loop["start"] != -1 and pos >= self.a_loop["start"] and pos <= self.a_loop["end"]:
+        elif self.a_loop.start != -1 and pos >= self.a_loop.start and pos <= self.a_loop.end:
             ptype = "A-loop"
-        elif self.t_loop["start"] != -1 and pos >= self.t_loop["start"] and pos <= self.t_loop["end"]:
+        elif self.v_loop.start != -1 and pos >= self.v_loop.start and pos <= self.v_loop.end:
+            ptype = "V-loop"
+        elif self.t_loop.start != -1 and pos >= self.t_loop.start and pos <= self.t_loop.end:
             ptype = "T-loop"
         elif self.stem_for["start"] != -1 and pos >= self.stem_for["start"] and pos <= self.stem_for["end"]:
             ptype = "stem_for"
@@ -454,16 +505,13 @@ class tRNA():
                         float(total_profile[location-1]), 3)
                     if A == "-":
                         # Deletion
-                        Mutaion_Str = "D:"+B+":" + \
-                            str(location)+":"+str(total_intensity)
+                        Mutaion_Str = f"D:{B}:{location}:{total_intensity}"
                     elif B == "-":
                         # Insertion
-                        Mutaion_Str = "I:" + A + ":" + \
-                            str(location)+":"+str(total_intensity)
+                        Mutaion_Str = f"I:{A}:{location}:{total_intensity}"
                     elif A != B:
                         # Mutaion
-                        Mutaion_Str = "M:" + B + ">" + A + ":" + \
-                            str(location)+":"+str(total_intensity)
+                        Mutaion_Str = f"M:{B}>{A}:{location}:{total_intensity}"
                     else:
                         # Unexpect
                         continue
