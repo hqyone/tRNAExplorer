@@ -27,75 +27,11 @@ def singleton(class_):
         return instances[class_]
     return getinstance
 
-@singleton
 class Config():
-    def __init__(self, wdir):
-        # Default configuration list
-        self.config_key_ls = [
-            "proj_name","trna_fa","trna_anno_bed",
-            "sample_tsv","fastq_dir","out_dir",
-            "url_len","no_indexing","no_alignment",
-            "t_do","t_path","t_adapter","t_phred",
-            "t_leading","t_tailing","t_slidingwindow",
-            "t_minlen","t_threads","min_read_qscore",
-            "min_read_length","blastn",
-            "mkdb","blastn_e_cutoff","blastn_pident",
-            "blastn_max_mismatch","blastn_max_hit_num",
-            "min_trf_len"
-        ]
-        # Default configuration
-        self.config = {
-            # Default settings
-            #########################################################
-            # Project Settings
-            #########################################################
-            "proj_name": "test",
-            "trna_fa": str(wdir)+"/test/trna_db/hg38_tRNA_60.fa",
-            "trna_anno_bed": str(wdir)+"/test/trna_db/hg38_tRNA_60.bed",
-            "sample_tsv": str(wdir)+"/test/samples",
-            "fastq_dir": str(wdir)+"/test/fastq",
-            "out_dir": str(wdir)+"/test/output",
-            "url_len": 60,
-            "no_indexing": False,
-            "no_alignment": False,
-
-            #########################################################
-            # Trimmomatic
-            #########################################################
-            "t_do": 0,
-            "t_adapter": "",
-            "t_path": "/Users/hqyone/Downloads/Trimmomatic-0.39/trimmomatic-0.39.jar",
-            "t_phred": 33,
-            "t_leading": 3,
-            "t_tailing": 3,
-            "t_slidingwindow": "4:15",
-            "t_minlen": 18,
-            "t_threads": 2,
-
-            #########################################################
-            # Read Filtering
-            #########################################################
-            "min_read_qscore": 5,
-            "min_read_length": 18,
-            "min_reads_count": 10,
-
-            #########################################################
-            # BLASTN settings
-            #########################################################
-            "blastn": "/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/blastn",
-            "mkdb": "/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/makeblastdb",
-            "blastn_e_cutoff": 0.001,
-            "blastn_max_mismatch": 2,
-            "blastn_max_hit_num": 40,
-            "blastn_pident": 98,
-
-            #########################################################
-            # TRF analyiss settinss
-            #########################################################
-            "min_trf_len": 18
-        }
-
-    # Load The Config File  
+    def __init__(self, *keys, **kwags):
+        self.config_key_ls= keys
+        self.config= kwags
+    
     def loadConfigFile(self, config_file):
         if os.path.isfile(config_file):
             with open(config_file, 'r') as FILE:
@@ -126,8 +62,7 @@ class Config():
                                 return False
                         self.config[KEY] = VAL
         return True
-    
-    # Print configure settings
+
     def printConfig(self):
         print('##  ------------------ The configs are as following ....  -----------------')
         for key in self.config_key_ls:
@@ -136,15 +71,29 @@ class Config():
         print('##  ------------------            End Settings             ----------------')
         print('###########################################################################################')
         print('## Setting testing .... ')
+
+    def validation(self):
+        pass  
+
+@singleton
+class tRNAExplorerConfig(Config):
+    def __init__(self, *keys, **kwags):
+        # Default configuration list
+        super().__init__(*keys, **kwags)
+
+    # validate the configration
+    def validate(self):
+        result = True
         if not os.path.isfile(self.config["blastn"]):
             print("The BLASTN path "+self.config["blastn"]+" is not valid. Abort!!!\n")
             print("Please modify the file <wdir>/init \n")
-            exit(-1)
+            result = False
         if not os.path.isfile(self.config["mkdb"]):
             print("The BLASTN mkdb path " +
                 self.config["mkdb"]+" is not valid. Abort!!!\n")
             print("Please modify the file <wdir>/init \n")
-            exit(-1)
+            result = False
+        return result
     
     # Create the visual setting file
     def createVisualSettingFile(self):
@@ -455,7 +404,71 @@ def printHelpInfor():
 def main(argv):
     currentDirectory = os.getcwd()
     wdir = pathlib.Path(__file__).parent.absolute()
-    c = Config(wdir)
+
+    default_config_keys = [
+        "proj_name","trna_fa","trna_anno_bed",
+        "sample_tsv","fastq_dir","out_dir",
+        "url_len","no_indexing","no_alignment",
+        "t_do","t_path","t_adapter","t_phred",
+        "t_leading","t_tailing","t_slidingwindow",
+        "t_minlen","t_threads","min_read_qscore",
+        "min_read_length","blastn",
+        "mkdb","blastn_e_cutoff","blastn_pident",
+        "blastn_max_mismatch","blastn_max_hit_num",
+        "min_trf_len"
+    ]
+    # Default configuration
+    default_configs = {
+        # Default settings
+        #########################################################
+        # Project Settings
+        #########################################################
+        "proj_name": "test",
+        "trna_fa": str(wdir)+"/test/trna_db/hg38_tRNA_60.fa",
+        "trna_anno_bed": str(wdir)+"/test/trna_db/hg38_tRNA_60.bed",
+        "sample_tsv": str(wdir)+"/test/samples",
+        "fastq_dir": str(wdir)+"/test/fastq",
+        "out_dir": str(wdir)+"/test/output",
+        "url_len": 60,
+        "no_indexing": False,
+        "no_alignment": False,
+
+        #########################################################
+        # Trimmomatic
+        #########################################################
+        "t_do": 0,
+        "t_adapter": "",
+        "t_path": "/Users/hqyone/Downloads/Trimmomatic-0.39/trimmomatic-0.39.jar",
+        "t_phred": 33,
+        "t_leading": 3,
+        "t_tailing": 3,
+        "t_slidingwindow": "4:15",
+        "t_minlen": 18,
+        "t_threads": 2,
+
+        #########################################################
+        # Read Filtering
+        #########################################################
+        "min_read_qscore": 5,
+        "min_read_length": 18,
+        "min_reads_count": 10,
+
+        #########################################################
+        # BLASTN settings
+        #########################################################
+        "blastn": "/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/blastn",
+        "mkdb": "/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/makeblastdb",
+        "blastn_e_cutoff": 0.001,
+        "blastn_max_mismatch": 2,
+        "blastn_max_hit_num": 40,
+        "blastn_pident": 98,
+
+        #########################################################
+        # TRF analyiss settinss
+        #########################################################
+        "min_trf_len": 18
+    }  
+    c = tRNAExplorerConfig(*default_config_keys, **default_configs)
     config_file = ""
     try:
         opts, args = getopt.getopt(sys.argv[1:], "c:n:f:a:s:i:o:h:v", [
@@ -505,28 +518,32 @@ def main(argv):
         print("Loading init file successfully! ")
     else:
         print("No 'init' file was given, Using differnt!")
-    print('##  ------------------ The loading config ....  -----------------')
+    print('##  ------------------ Loading config ....  -----------------')
     if config_file != "":
         if not os.path.isfile(config_file):
             config_file = currentDirectory+"/"+config_file
         if os.path.isfile(config_file):
             c.loadConfigFile(config_file)
             print("Loaded config file: " + config_file)
-            c.printConfig()
         else:
             print("Can't find config file: " + config_file)
             print("Use default settings")
     else:
         print("No Config file was given, run for test data!")
     
-    print('## Run tRNAExplorer pipeline ..... ')
-    if rseqBlastnPipeline(c.config).run()==0:
-        c.createVisualSettingFile()
-        print('## The Pipeline processing done successfully ... ')
-        exit(0)
+    c.printConfig()
+    if c.validate():
+        print('## Run tRNAExplorer pipeline ..... ')
+        if rseqBlastnPipeline(c.config).run()==0:
+            c.createVisualSettingFile()
+            print('## The Pipeline processing done successfully ... ')
+            exit(0)
+        else:
+            print('## Errors ocurr during processing  ... ')
+            exit(-1)
     else:
-        print('## Errors ocurr during processing  ... ')
-        exit(-1)
+        print("Configuration can be validated. Please check it.")
+        exit(-2)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
