@@ -507,14 +507,14 @@ def main(argv):
         print("No 'init' file was given, Using differnt!")
     print('##  ------------------ The loading config ....  -----------------')
     if config_file != "":
-        input_cfile = config_file
         if not os.path.isfile(config_file):
             config_file = currentDirectory+"/"+config_file
         if os.path.isfile(config_file):
             c.loadConfigFile(config_file)
-            print("Load config file: " + config_file)
+            print("Loaded config file: " + config_file)
+            c.printConfig()
         else:
-            print("Can't find config file: " + input_cfile)
+            print("Can't find config file: " + config_file)
             print("Use default settings")
     else:
         print("No Config file was given, run for test data!")
