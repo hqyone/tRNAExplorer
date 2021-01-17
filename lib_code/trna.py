@@ -15,7 +15,7 @@ def CheckTabStr(func):
         if len(contents)>=min_len:
             func(obj, tabstr)
         else:
-            print (f"{tabstr} doesn't contain enough {minlen} fields")   
+            print (f"{tabstr} doesn't contain enough {min_len} fields")   
     return check
 
 class Seq():

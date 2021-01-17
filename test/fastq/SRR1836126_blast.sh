@@ -1,0 +1,1 @@
+java -jar /media/hqyone/mnt/sdc/trna/software/Trimmomatic-0.39/trimmomatic-0.39.jar SE  -phred33  -threads 2 /home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/fastq/SRR1836126.fastq /home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/fastq/SRR1836126_trimmed.fastq ILLUMINACLIP:TruSeq3-SE:2:30:10  LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:18

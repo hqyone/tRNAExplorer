@@ -10,7 +10,7 @@ proj_name = "test"
 # trna_fa = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/hg38_tRNA_60.fa"
 
 # Absolute path of bed file for tRNA annotations which was created by tRNA_db_maker
-# trna_anno_file = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/hg38_tRNA_60.bed"
+# trna_anno_bed = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/hg38_tRNA_60.bed"
 
 # Absolute path of sample information
 # sample_tsv = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/RNASeq/sample.tsv"

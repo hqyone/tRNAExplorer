@@ -66,9 +66,6 @@ def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, f_patterm="", r_patter
     big_file = False
     if os.path.getsize(fastq)>3259059200:
         big_file=True
-    FASTQ  = open(fastq,'r')
-    Filterecd_FASTA = open(filtered_fasta, 'w')
-    NumDicFile = open(num_dic_txt,"w")
     dic = {}
     name_dic = {}
     total_num = 0
@@ -79,61 +76,59 @@ def filterFastQ2FastA(fastq, filtered_fasta, num_dic_txt, f_patterm="", r_patter
     title=""
     title2=""
     quanlity=""
-    for line in FASTQ:
-        line  = line.strip()
-        line_index+=1
-        if line_index%4==2:
-            seq = trimseq(line, f_patterm,r_patterm)
-        elif line_index%4==3:
-            continue
-            # title2 = line.replace(" ","_")
-        elif line_index%4==0:
-            quanlity = line
-        elif line.startswith('@') and line_index%4==1 and seq!="":
-            low_quanlity = False
-            title=line.replace(" ","_")
-            if total_num % 1000000==0:
-                print("reads ("+str(total_num)+")")
-                seq_ls= list(dic.keys())
-                if big_file:
-                    for seq in seq_ls:
-                        if (dic[seq]["count"]==1):
-                            del dic[seq]
-                            del name_dic[seq]
-                #print("dic ("+str(len(dic.keys()))+")")
-                # gc.collect()
-            for i in quanlity:
-                if ord(i)<=qcutoff+33:  #Based on Phred 33
-                    low_quanlity = True
-                    break
-            if not low_quanlity :
-                high_quality_num+=1
-                if seq not in dic:
-                    dic[seq] = {
-                        "title":title,
-                        #"seq":seq,
-                        "count":1
-                    }
-                    name_dic[seq] = title
-                else:
-                    dic[seq]["count"]+=1
-            total_num+=1
-    total_num += 1
-    FASTQ.close()
-    non_redundent_num = 0
-    for seq in dic:
-        title = name_dic[seq]
-        if dic[seq]["count"]>=num_cutoff:
-            Filterecd_FASTA.write(">" + dic[seq]["title"] + "\n")
-            Filterecd_FASTA.write(seq + "\n")
-            non_redundent_num += 1
-            NumDicFile.write(title+"\t"+str(dic[seq]["count"])+"\t"+seq+"\n")
-    NumDicFile.close()
-    Filterecd_FASTA.close()
+    with open(fastq,'r') as FASTQ, open(filtered_fasta, 'w') as Filterecd_FASTA, open(num_dic_txt,"w") as NumDicFile:
+        for line in FASTQ:
+            line  = line.strip()
+            line_index+=1
+            if line_index%4==2:
+                seq = trimseq(line, f_patterm,r_patterm)
+            elif line_index%4==3:
+                continue
+                # title2 = line.replace(" ","_")
+            elif line_index%4==0:
+                quanlity = line
+            elif line.startswith('@') and line_index%4==1 and seq!="":
+                low_quanlity = False
+                title=line.replace(" ","_")
+                if total_num % 1000000==0:
+                    print("reads ("+str(total_num)+")")
+                    seq_ls= list(dic.keys())
+                    if big_file:
+                        for seq in seq_ls:
+                            if (dic[seq]["count"]==1):
+                                del dic[seq]
+                                del name_dic[seq]
+                    #print("dic ("+str(len(dic.keys()))+")")
+                    # gc.collect()
+                for i in quanlity:
+                    if ord(i)<=qcutoff+33:  #Based on Phred 33
+                        low_quanlity = True
+                        break
+                if not low_quanlity :
+                    high_quality_num+=1
+                    if seq not in dic:
+                        dic[seq] = {
+                            "title":title,
+                            #"seq":seq,
+                            "count":1
+                        }
+                        name_dic[seq] = title
+                    else:
+                        dic[seq]["count"]+=1
+                total_num+=1
+        total_num += 1
+        non_redundent_num = 0
+        for seq in dic:
+            title = name_dic[seq]
+            if dic[seq]["count"]>=num_cutoff:
+                Filterecd_FASTA.write(">" + dic[seq]["title"] + "\n")
+                Filterecd_FASTA.write(seq + "\n")
+                non_redundent_num += 1
+                NumDicFile.write(title+"\t"+str(dic[seq]["count"])+"\t"+seq+"\n")
     return({"total_num":int(total_num),
-          "removed_num":int(total_num-high_quality_num),
-          "survived_num":int(high_quality_num),
-          "non_redundent_num":int(non_redundent_num)})
+        "removed_num":int(total_num-high_quality_num),
+        "survived_num":int(high_quality_num),
+        "non_redundent_num":int(non_redundent_num)})
 
 
 # filter out reads with quality lower than 28 at any position and have small numbers

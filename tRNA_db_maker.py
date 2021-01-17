@@ -107,14 +107,13 @@ def RuntRNAScan(wdir, tRNAscanSE, trna_fasta, out_file):
             os.remove(out_file)
         cmd_file = wdir+"/cmd.sh"
         if os.path.isfile(tRNAscanSE):
-            CMD_FILE = open(cmd_file, "w")
-            print(
-                "Begin to run tRNAScan-SE, which may take 10-20 minutes. Be patient ....")
-            print("tRNAscanSE command : "+tRNAscanSE +
-                  " -E -f " + out_file + " " + trna_fasta + "\n")
-            CMD_FILE.write(tRNAscanSE+" -E -f " +
-                           out_file + " " + trna_fasta + "\n")
-        CMD_FILE.close()
+            with open(cmd_file, "w") as CMD_FILE:
+                print(
+                    "Begin to run tRNAScan-SE, which may take 10-20 minutes. Be patient ....")
+                print("tRNAscanSE command : "+tRNAscanSE +
+                    " -E -f " + out_file + " " + trna_fasta + "\n")
+                CMD_FILE.write(tRNAscanSE+" -E -f " +
+                            out_file + " " + trna_fasta + "\n")
         process = subprocess.Popen(
             "bash " + cmd_file, shell=True, stdout=subprocess.PIPE)
         process.wait()
@@ -341,8 +340,6 @@ def parsetRNAScanFile(tRNAscan, tRNA_Dic, tabFile, faFile, no_mit_tRNA=True, no_
 # Output: (these files will be created at the same folder of the tRNA_bed file):
 #   1) A FASTA file of tRNAs : trna_db_dir+"/"+db_name+"_" + offset +".fa"
 #   2) A bed file with all tRNA annotations: trna_db_dir + "/" + db_name + "_" + offset + ".bed"
-
-
 def tRNA_DB_Preparing(db_name, tRNA_bed, ref_fasta, tRNAscanSE, offset=60, no_mit_tRNA=True, no_pseudogenes=True, min_qscore=30):
     print("######---------- tRNA Explorer : tRNA database preparing  -----------------#")
     print("###### Begining tRNA database preparing ... ")
@@ -469,15 +466,15 @@ if __name__ == "__main__":
 # print(tRNA_DB_Preparing(name, bed, ref_fasta, tRNAscanSE))
 
 #Server Test
-bed = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db/ucsc_hg38_tRNA.bed"
-name = "hg38_tRNA"
-ref_fasta="/home/hqyone/mnt/sdc/databases/genome/hg38/hg38.fa"
-tRNAscanSE="/usr/bin/tRNAscan-SE"
-print(tRNA_DB_Preparing(name, bed, ref_fasta, tRNAscanSE))
+# bed = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db/ucsc_hg38_tRNA.bed"
+# name = "hg38_tRNA"
+# ref_fasta="/home/hqyone/mnt/sdc/databases/genome/hg38/hg38.fa"
+# tRNAscanSE="/usr/bin/tRNAscan-SE"
+# print(tRNA_DB_Preparing(name, bed, ref_fasta, tRNAscanSE))
 
 # outbed = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db/hg38_tRNA_60.bed"
 # outfa = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db/hg38_tRNA_60.fa"
 # scan = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db/hg38_tRNA_scan_60.out"
 # rnadir = "/home/hqyone/mnt/sdc/trna/software/tRNAExplorer/test/trna_db"
 # parsetRNAScanFile(scan, rnadir, outbed, outfa)
-exit(0)
+# exit(0)
