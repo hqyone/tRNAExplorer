@@ -338,24 +338,24 @@ def getTrfReportFile(proj_name, dir, tRNA_dic, sample_dic, out_dir, offset=60):
                     mean_line = sample + "\t" + family + "\t" + rna_id + "\t" + prof_type + "\t" + profile_str
                     MEAN_PROFILE.write(mean_line + "\n")
 
-            if sample in sample_hit_proifle_dic \
-                and rna_id in sample_hit_proifle_dic[sample] \
-                and prof_type in sample_hit_proifle_dic[sample][rna_id]:
-                site_dic = sample_hit_proifle_dic[sample][rna_id]["cleavage_site_dic"]
-                for site_id in site_dic:
-                    site_obj = site_dic[site_id]
-                    cleavage_site_str = sample + "\t" + family + "\t" + rna_id + \
-                                        "\t" + str(site_id) + \
-                                        "\t" + str(site_obj["pos"]) + \
-                                        "\t" + str(site_obj["ptype"]) + \
-                                        "\t" + str(int(site_obj["int"])) + \
-                                        "\t" + str(int(site_obj["int5"])) + \
-                                        "\t" + str(int(site_obj["int3"])) + \
-                                        "\t" + str(round(float(site_obj["sn_ratio"]), 3)) + \
-                                        "\t" + site_obj["c_5_seq"] + \
-                                        "\t" + site_obj["c_3_seq"] + \
-                                        "\t" + site_obj["c_5_seq"] + site_obj["c_3_seq"]
-                    MEAN_CLEAVAGE.write(cleavage_site_str + "\n")
+                if sample in sample_hit_proifle_dic \
+                    and rna_id in sample_hit_proifle_dic[sample] \
+                    and prof_type in sample_hit_proifle_dic[sample][rna_id]:
+                    site_dic = sample_hit_proifle_dic[sample][rna_id]["cleavage_site_dic"]
+                    for site_id in site_dic:
+                        site_obj = site_dic[site_id]
+                        cleavage_site_str = sample + "\t" + family + "\t" + rna_id + \
+                                            "\t" + str(site_id) + \
+                                            "\t" + str(site_obj["pos"]) + \
+                                            "\t" + str(site_obj["ptype"]) + \
+                                            "\t" + str(int(site_obj["int"])) + \
+                                            "\t" + str(int(site_obj["int5"])) + \
+                                            "\t" + str(int(site_obj["int3"])) + \
+                                            "\t" + str(round(float(site_obj["sn_ratio"]), 3)) + \
+                                            "\t" + site_obj["c_5_seq"] + \
+                                            "\t" + site_obj["c_3_seq"] + \
+                                            "\t" + site_obj["c_5_seq"] + site_obj["c_3_seq"]
+                        MEAN_CLEAVAGE.write(cleavage_site_str + "\n")
     print("Output 1: " + mean_trna_trf_sample_matrix_file)
     print("Output 2: " + mean_trna_trf_matrix_file)
     print("Output 3: " + mean_sample_trf_matrix_file)

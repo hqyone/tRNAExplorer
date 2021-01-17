@@ -187,18 +187,18 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                         obj = read_trna_dic[cur_read_id]["tRNAs"]
                         if not trna_id in obj:
                             obj[trna_id] = {}
-                    for trans_type in trna_seq_classes:
-                        obj[trna_id][trans_type] = {
-                            "read_start": read_start,
-                            "read_end": read_end,
-                            "trna_start": trna_start,
-                            "trna_end": trna_end,
-                            "qseq": qseq,
-                            "sseq": sseq,
-                            "qlen": qlen,
-                            "slen": slen,
-                            "evalue": evalue
-                        }
+                        for trans_type in trna_seq_classes:
+                            obj[trna_id][trans_type] = {
+                                "read_start": read_start,
+                                "read_end": read_end,
+                                "trna_start": trna_start,
+                                "trna_end": trna_end,
+                                "qseq": qseq,
+                                "sseq": sseq,
+                                "qlen": qlen,
+                                "slen": slen,
+                                "evalue": evalue
+                            }
 
     # Create mean reads number for every tRNA
     tRNA_mean_read_dic = {} #Seperate
@@ -292,6 +292,7 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             trna_end = 0
             qseq = ""
             sseq = ""
+            overhand_3=0
             for trans_type in class_obj:
                 obj = class_obj[trans_type]
                 read_start = obj["read_start"]
@@ -322,6 +323,8 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                         M_5T = 1
                     if obj["trna_end"]>=obj["slen"]-1:
                         M_3T = 1
+                    else:
+                        overhand_3 =obj["slen"]-obj["trna_end"]
             Read_type = ""
             # Get read type based on (I, P, M, C) and location information
             # Detailed can be found figure 1 in manuscript
@@ -329,22 +332,40 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                 Read_type += "A"
             if I==1 and P==1 and M==0 and C==0 and M_5C==1:
                 Read_type += "B"
-            if I==1 and P==1 and M==1 and C==1 and M_5T==1:
+            if M==1 and M_5T==1:
                 Read_type += "C"
             if I==1 and P==1 and M==1 and C==1 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
                 Read_type += "D"
             if I==1 and P==0 and M==0 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
                 Read_type += "E"
-            if I==0 and P==1 and M==1 and C==1 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
+            if I==0 and P==1 and M==1 and C==1 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:             
                 Read_type += "F"
             if I==1 and P==1 and M==0 and C==0 and M_3C==1:
                 Read_type += "G"
-            if I==1 and P==1 and M==1 and C==1 and M_3T==1:
+            if I==1 and P==1 and M==1 and M_3T==1:
                 Read_type += "H"
+            elif C + M_3T>=1:
+                # Some time a read have an additional C to match to C type transcript
+                # reads : XXXXXXC
+                # trans : XXXXXXCCA
+                # We conside the read as type H and remove the last matched base
+                Read_type += "H"
+                trna_end-=overhand_3
+                qseq = qseq[:-1*overhand_3]
+                sseq = sseq[:-1*overhand_3]
             if I==0 and P==0 and M==0 and C==1 and M_3T==1:
-                Read_type += "I"
+                Read_type += "I"    
             if Read_type=="":
-                Read_type = "U"
+                if I==1 and P==1 and M==1 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
+                    Read_type += "D"
+                elif I==0 and P==0 and M==1 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
+                    Read_type += "F"
+                elif I==0 and P==1 and M==0 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
+                    #print(f"keys={class_obj.keys()}:P_trna_start={P_trna_start}, P_trna_end={P_trna_end}:I={I}:P={P}:M={M}:C={C}:M_3T={M_3T}:M_5T={M_5T}::M_3C={M_3C}:M_5C={M_5C}")
+                    Read_type += "B"
+                else:
+                    #print(f"keys={class_obj.keys()}:M_trna_start={M_trna_start}, M_trna_end={M_trna_end}:I={I}:P={P}:M={M}:C={C}:M_3T={M_3T}:M_5T={M_5T}")
+                    Read_type = "U"
 
             if brief_mapping_infor == "":
                 brief_mapping_infor = Read_type + "," + str(trna_start) + "," + str(trna_end) + "," + str(

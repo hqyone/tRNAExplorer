@@ -38,9 +38,6 @@ class Seq():
         self.name = contents[0]
         self.seq = contents[1]        
 
-a = Seq()
-a.LoadStr("name\tseq")
-
 class tRNA_Loop(Seq):
     __slots__ = ["start", "l_start", "l_end", "end", "struct_str","for_str","rev_str","loop_str","type"]
     def __init__(self, **kwargs):
@@ -498,10 +495,10 @@ class tRNA(Seq):
             return mut_dic
         if len(read_seq) == len(ref_seq):
             #for i in range(0, len(read_seq)):
-            for i, A in enumerate(read_seq):
-                B = ref_seq[i]
+            for index, A in enumerate(read_seq):
+                B = ref_seq[index]
                 Mutaion_Str = ""
-                location = loc[0]+i  # 1 based
+                location = loc[0]+index  # 1 based
                 if (location-1) < len(total_profile):
                     total_intensity = round(
                         float(total_profile[location-1]), 3)
@@ -520,6 +517,7 @@ class tRNA(Seq):
                 else:
                     print("Some thing unexpected mapping infor:" +
                           brief_mapping_infor)
+                    print(f"{location-1}:{len(total_profile)-1}: {self.name}: {self.full_seq}")
                 if Mutaion_Str != "":
                     if Mutaion_Str not in mut_dic:
                         mut_dic[Mutaion_Str] = 0
