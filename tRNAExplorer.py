@@ -61,7 +61,10 @@ class Config():
                                     "Please check the config file. The String options should be enbraced by \"")
                                 return False
                         self.config[KEY] = VAL
-        return True
+            return True
+        else:
+            print(f"The configure file: {config_file} doen't exist.")
+            return False
 
     def printConfig(self):
         print('##  ------------------ The configs are as following ....  -----------------')
