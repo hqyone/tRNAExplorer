@@ -200,8 +200,8 @@ class rseqBlastnPipeline(pipeline):
             return -1
             # sys.exit(2)
     
-    @staticmethod
-    def load_tRNA_database(trna_anno_bed):
+    @classmethod
+    def load_tRNA_database(cls, trna_anno_bed):
         # Load information about tRNAs if
         if not os.path.isfile(trna_anno_bed):
             print("The tRNA annotation bed file :" +
@@ -216,8 +216,8 @@ class rseqBlastnPipeline(pipeline):
                     tRNA_dic[t.name] = t
         return tRNA_dic
     
-    @staticmethod
-    def loadSampleInfor(sample_tsv, out_dir):
+    @classmethod
+    def loadSampleInfor(cls, sample_tsv, out_dir):
         # Load sample information
         sample_dic = {}
         if not os.path.isfile(sample_tsv):
@@ -245,8 +245,8 @@ class rseqBlastnPipeline(pipeline):
                         sample_dic[contents[0]]['adapters'] = contents[2]
         return sample_dic
     
-    @staticmethod
-    def getFastqList(fastq_dir):
+    @classmethod
+    def getFastqList(cls,fastq_dir):
         ext = ".fastq"
         fastq_files = share.getExtFileList(fastq_dir, ".fastq")
         if len(fastq_files) == 0:
@@ -356,12 +356,10 @@ class rseqBlastnPipeline(pipeline):
     @timethis
     def runTrimmomatics(self, s_id, ext):
         cfg= self.config
-        trim_time =0
         out_file = ""
         fastq_dir = cfg["fastq_dir"]
         raw_fastq = fastq_dir + "/" + s_id + ext
-        if cfg["t_do"] != 0:
-            trim_start_time = time.time()           
+        if cfg["t_do"] != 0:    
             t_adapter = cfg["t_adapter"]
             t_path = cfg["t_path"]
             t_phred = cfg["t_phred"]
