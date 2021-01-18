@@ -23,6 +23,7 @@ version = 1.0
 # A singleton decorator
 def singleton(class_):
     instances = {}
+    @wraps(class_)
     def getinstance(*args, **kwargs):
         if class_ not in instances:
             instances[class_] = class_(*args, **kwargs)
