@@ -330,9 +330,9 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             # Detailed can be found figure 1 in manuscript
             if I==1 and P==1 and M==0 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
                 Read_type += "A"
-            if I==1 and P==1 and M==0 and C==0 and M_5C==1:
+            if I==1 and P==1 and M==0 and C==0 and M_5T==0 and M_3T==0 and M_5C==1 and M_3C==0:
                 Read_type += "B"
-            if M==1 and M_5T==1:
+            if I==1 and P==1 and M==1 and C==1 and M_5T==1 and M_3T==0 and M_5C==0 and M_3C==0:
                 Read_type += "C"
             if I==1 and P==1 and M==1 and C==1 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
                 Read_type += "D"
@@ -342,19 +342,11 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                 Read_type += "F"
             if I==1 and P==1 and M==0 and C==0 and M_3C==1:
                 Read_type += "G"
-            if I==1 and P==1 and M==1 and M_3T==1:
+            if I==1 and P==1 and M==1 and C==1 and M_5T==0 and M_3T==1 and M_5C==0 and M_3C==0:   
                 Read_type += "H"
-            elif C + M_3T>=1:
-                # Some time a read have an additional C to match to C type transcript
-                # reads : XXXXXXC
-                # trans : XXXXXXCCA
-                # We conside the read as type H and remove the last matched base
-                Read_type += "H"
-                trna_end-=overhand_3
-                qseq = qseq[:-1*overhand_3]
-                sseq = sseq[:-1*overhand_3]
             if I==0 and P==0 and M==0 and C==1 and M_3T==1:
                 Read_type += "I"    
+            # Few unexpected situations
             if Read_type=="":
                 if I==1 and P==1 and M==1 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
                     Read_type += "D"
@@ -363,6 +355,15 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                 elif I==0 and P==1 and M==0 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
                     #print(f"keys={class_obj.keys()}:P_trna_start={P_trna_start}, P_trna_end={P_trna_end}:I={I}:P={P}:M={M}:C={C}:M_3T={M_3T}:M_5T={M_5T}::M_3C={M_3C}:M_5C={M_5C}")
                     Read_type += "B"
+                elif C + M_3T>=1:
+                # Some time a read have an additional C to match to C type transcript
+                # reads : XXXXXXC
+                # trans : XXXXXXCCA
+                # We conside the read as type H and remove the last matched base
+                    Read_type += "H"
+                    trna_end-=overhand_3
+                    qseq = qseq[:-1*overhand_3]
+                    sseq = sseq[:-1*overhand_3]
                 else:
                     #print(f"keys={class_obj.keys()}:M_trna_start={M_trna_start}, M_trna_end={M_trna_end}:I={I}:P={P}:M={M}:C={C}:M_3T={M_3T}:M_5T={M_5T}")
                     Read_type = "U"

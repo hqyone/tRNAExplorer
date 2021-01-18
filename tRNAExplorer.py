@@ -11,6 +11,7 @@ import os
 from lib_code.trna import tRNA
 from lib_code import blast_tools, make_report, share
 from lib_code.cmd_tools import Trimmomatic
+from functools import wraps
 import subprocess
 import sys
 import getopt
@@ -19,6 +20,7 @@ import pathlib
 import shutil
 
 version = 1.0
+# A singleton decorator
 def singleton(class_):
     instances = {}
     def getinstance(*args, **kwargs):
@@ -26,6 +28,16 @@ def singleton(class_):
             instances[class_] = class_(*args, **kwargs)
         return instances[class_]
     return getinstance
+
+# A time decorator
+def timethis(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        r = func(*args, **kwargs)
+        end = time.time()
+        return [end-start,r]
+    return wrapper
 
 class Config():
     def __init__(self, *keys, **kwags):
@@ -129,13 +141,13 @@ class rseqBlastnPipeline(pipeline):
             print("Begin the tRNA processing pipeline with fastq....")
             # Read sample_tsv
             trna_anno_bed = cfg["trna_anno_bed"]
-            tRNA_dic = self.load_tRNA_database(trna_anno_bed)
+            tRNA_dic = rseqBlastnPipeline.load_tRNA_database(trna_anno_bed)
 
             # Load sample information
-            sample_dic = self.loadSampleInfor(cfg["sample_tsv"], cfg["out_dir"])
+            sample_dic = rseqBlastnPipeline.loadSampleInfor(cfg["sample_tsv"], cfg["out_dir"])
 
             # Get list of fastq files
-            ext,fastq_files =  self.getFastqList(cfg["fastq_dir"])
+            ext,fastq_files = rseqBlastnPipeline.getFastqList(cfg["fastq_dir"])
 
             # Process FASTQ file one by one
             if not cfg["no_alignment"]:
@@ -147,14 +159,14 @@ class rseqBlastnPipeline(pipeline):
                         start_time = time.time()
                         
                         # Trimed fastq
-                        trim_time, trimmed_fastq = self.runTrimmomatics(s_id, ext)
+                        trim_time, [trimmed_fastq] = self.runTrimmomatics(s_id, ext)
 
                         # Transform FASTQ to FASTQ file and filtering
-                        filter_time, static_infor, filtered_fasta, num_dic_txt = \
+                        filter_time, [static_infor, filtered_fasta, num_dic_txt] = \
                             self.fastq2Fasta(sample_dic, s_id, fastq_dir, trimmed_fastq)
                         
                         # Mapping with BLASTN
-                        blast_time, tRNA_reads_count_file, tRNA_reads_hit_file = \
+                        blast_time, [tRNA_reads_count_file, tRNA_reads_hit_file] = \
                             self.doMapping(s_id, num_dic_txt, tRNA_dic, filtered_fasta)
 
                         end_time = time.time()
@@ -187,8 +199,9 @@ class rseqBlastnPipeline(pipeline):
             print('Some things wrong during pipeline running!')
             return -1
             # sys.exit(2)
-
-    def load_tRNA_database(self,trna_anno_bed):
+    
+    @staticmethod
+    def load_tRNA_database(trna_anno_bed):
         # Load information about tRNAs if
         if not os.path.isfile(trna_anno_bed):
             print("The tRNA annotation bed file :" +
@@ -202,8 +215,9 @@ class rseqBlastnPipeline(pipeline):
                     t.LoadStr(line.strip())
                     tRNA_dic[t.name] = t
         return tRNA_dic
-
-    def loadSampleInfor(self, sample_tsv, out_dir):
+    
+    @staticmethod
+    def loadSampleInfor(sample_tsv, out_dir):
         # Load sample information
         sample_dic = {}
         if not os.path.isfile(sample_tsv):
@@ -230,8 +244,9 @@ class rseqBlastnPipeline(pipeline):
                     if len(contents) > 2:
                         sample_dic[contents[0]]['adapters'] = contents[2]
         return sample_dic
-
-    def getFastqList(self, fastq_dir):
+    
+    @staticmethod
+    def getFastqList(fastq_dir):
         ext = ".fastq"
         fastq_files = share.getExtFileList(fastq_dir, ".fastq")
         if len(fastq_files) == 0:
@@ -239,8 +254,8 @@ class rseqBlastnPipeline(pipeline):
             ext = ".fq"
         
         return [ext, fastq_files]
-
-    def writeLogFile(self, static_dic, loginfor, sample_dic):
+    
+    def writeLogFile(self,static_dic, loginfor, sample_dic):
         cfg = self.config
         out_dir = cfg["out_dir"]
         # Write login information
@@ -276,7 +291,7 @@ class rseqBlastnPipeline(pipeline):
                         else:
                             line += "\t" + ""
                     LOG.write(line+"\n")
-
+    @timethis
     def fastq2Fasta(self, sample_dic, s_id, fastq_dir, trimmed_fastq):
         # Process adapter information
         cfg = self.config
@@ -287,7 +302,6 @@ class rseqBlastnPipeline(pipeline):
         if len(adapters) > 1:
             r_adapter = adapters[1]
 
-        filter_start_time = time.time()
         # Removed redundant read Filter and get the read number file
         filtered_fasta = fastq_dir + "/" + s_id + "_filtered.fa"
         num_dic_txt = fastq_dir + "/" + s_id + "_num_dic.txt"
@@ -303,10 +317,9 @@ class rseqBlastnPipeline(pipeline):
             # delete trmmed fastq to save space
         if cfg["t_do"] != 0 and os.path.exists(trimmed_fastq):
             os.remove(trimmed_fastq)
-        filter_end_time = time.time()
-        filter_time = int(filter_end_time-filter_start_time)
-        return [filter_time, static_infor, filtered_fasta, num_dic_txt]
+        return [static_infor, filtered_fasta, num_dic_txt]
     
+    @timethis
     def doMapping(self, s_id, num_dic_txt, tRNA_dic, fasta):
         cfg = self.config
         blastn = cfg["blastn"]
@@ -338,9 +351,9 @@ class rseqBlastnPipeline(pipeline):
             print("Something wrong while blastn " + s_id)
         blastn_end_time = time.time()
         blast_time = int(blastn_end_time-lastn_start_time)
-        return [blast_time, tRNA_reads_count_file, tRNA_reads_hit_file]
+        return [tRNA_reads_count_file, tRNA_reads_hit_file]
 
-
+    @timethis
     def runTrimmomatics(self, s_id, ext):
         cfg= self.config
         trim_time =0
@@ -372,11 +385,9 @@ class rseqBlastnPipeline(pipeline):
                 process = subprocess.Popen("bash " + cmd_bash, shell=True, stdout=subprocess.PIPE)
                 process.wait()
             out_file = trimmed_fastq
-            trim_end_time = time.time()
-            trim_time = int(trim_end_time-trim_start_time)
         else:
             out_file = raw_fastq
-        return [trim_time, out_file] 
+        return [out_file] 
 
 def printHelpInfor():
     print('# Usage: python tRNAExplorer.py -c <configfile> ')
