@@ -41,6 +41,8 @@ def timethis(func):
     return wrapper
 
 class Config():
+    """ Config base class
+    """
     def __init__(self, *keys, **kwags):
         self.config_key_ls= keys
         self.config= kwags
@@ -129,6 +131,11 @@ class pipeline():
 # Function for running BLASTN and classify/quantify tRFs for samples
 # Create multiple matrix and tab file to summarize the results
 class rseqBlastnPipeline(pipeline):
+    """ The class of RNA-Seq BLAST pipeline for tRNAs
+
+    Args:
+        pipeline (base object): the general class of pipeline.
+    """
     def __init__(self, config):
       self.config = config
     
