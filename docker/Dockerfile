@@ -51,6 +51,7 @@ RUN makeblastdb -in /src/data/hg38/hg38.fa -dbtype nucl -title hg38
 
 
 ## Usage the file
+#
 # use 'docker build -t ucla .' to build the image
 # use 'docker run --name ucla_cont -it ucla /bin/bash' to run the container in an interactive way 
 
