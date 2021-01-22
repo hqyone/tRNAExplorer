@@ -41,6 +41,8 @@ RUN unzip /src/data/hg38/hg38.fa.gz
 RUN samtools faidx /src/data/hg38/hg38.fa
 RUN makeblastdb -in /src/data/hg38/hg38.fa -dbtype nucl -title hg38
 
+#S  FSDFS
+
 
 
 # WORKDIR /src/data/mm10
