@@ -1,5 +1,6 @@
-# coding=utf-8
+#!/usr/bin/python3
 
+# coding=utf-8
 #  tRNAExplorer v.1.0 - tRNA profiles and regulation networks
 #  Copyright (C) 2020  Dr. Quanyuan He
 #  School of Medicine, Hunan Normal University
