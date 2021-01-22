@@ -33,7 +33,7 @@ Docker or Followings
         Run `docker build -t <trna>` in the folder contaning the Dockerfile
     * Method 2: Download docker image from [dockerhub](https://hub.docker.com/repository/docker/hqyone/trna_explorer)
         Run `docker push hqyone/trna_explorer:v1_0` to get the image
-    Details about launch tRNAExplorer using the image can be found in the [Dockerfile](./docker/Dockerfile)
+    * Details about launch tRNAExplorer using the image can be found in the [Dockerfile](./docker/Dockerfile)
 2. Regular installation
     * Step 1: Download and unzip the pipeline  https://github.com/hqyone/tRNAExplorer/archive/master.zip
     * Step 2: Install software in requirements ... 
