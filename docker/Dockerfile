@@ -42,9 +42,13 @@ RUN wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmoma
 RUN unzip /tools/Trimmomatic-0.39.zip -d /tools
 
 ## Install tRNAExplorer
-RUN git clone https://github.com/hqyone/tRNAExplorer.git /tools/tRNAExplorer
-RUN printf 't_path="/tools/Trimmomatic-0.39/trimmomatic-0.39.jar"\nblastn="/usr/bin/blastn"\nmkdb="/usr/bin/makeblastdb"'>/tools/tRNAExplorer/init
+RUN git clone https://github.com/hqyone/tRNAExplorer.git /tools/tRNAExplorer && \
+    printf 't_path="/tools/Trimmomatic-0.39/trimmomatic-0.39.jar"\nblastn="/usr/bin/blastn"\nmkdb="/usr/bin/makeblastdb"'>/tools/tRNAExplorer/init && \
+    chmod +x /tools/tRNAExplorer/tRNAExplorer.py && \
+    chmod +x /tools/tRNAExplorer/tRNA_db_maker.py
+
 ENV PATH="/tools/tRNAExplorer:${PATH}"
+
 
 ## Downloads human and mouse genome files
 
