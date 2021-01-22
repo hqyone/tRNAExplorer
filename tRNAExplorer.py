@@ -425,7 +425,7 @@ def printHelpInfor():
 
 # Main function
 def main(argv):
-    currentDirectory = os.getcwd()
+    currentDirectory = pathlib.Path(__file__).parent.absolute()
     wdir = pathlib.Path(__file__).parent.absolute()
 
     default_config_keys = [
