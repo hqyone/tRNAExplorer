@@ -8,6 +8,7 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
     * Comparison and visualization of tRF profile across multiple samples
 
 ## 2. Requirements
+Docker or Followings
 1. Trimmomatics 0.39  http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
 2. BLASTN (ncbi-blast-2.10.0+) https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
 3. tRNAScan-SE  http://lowelab.ucsc.edu/tRNAscan-SE/
@@ -27,11 +28,18 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
     
     Using : `pip3 install -r requirements_3.txt` or `pip install -r requirements.txt`
 ## 3. Installation
-* Step 1: Download and unzip the pipeline  https://github.com/hqyone/tRNAExplorer/archive/master.zip
-* Step 2: Install software in requirements ...
-* Step 3: Initialization settings:
-    * Find and modify the file named [init](init) at the root directory of tRNAExplorer (Important !!!)
-    * Change the absolute path for Trimmomatics, BLASTN and makeblastdb in the file.
+1. Docker (Recommended)
+    * Method 1: Using the [Dockerfile](./docker/Dockerfile) to generate image  
+        Run `docker build -t <trna>` in the folder contaning the Dockerfile
+    * Method 2: Download docker image from [dockerhub](https://hub.docker.com/repository/docker/hqyone/trna_explorer)
+        Run `docker push hqyone/trna_explorer:v1_0` to get the image
+    Details about launch tRNAExplorer using the image can be found in the [Dockerfile](./docker/Dockerfile)
+2. Regular installation
+    * Step 1: Download and unzip the pipeline  https://github.com/hqyone/tRNAExplorer/archive/master.zip
+    * Step 2: Install software in requirements ... 
+    * Step 3: Initialization settings:
+        * Find and modify the file named [init](init) at the root directory of tRNAExplorer (Important !!!)
+        * Change the absolute path for Trimmomatics, BLASTN and makeblastdb in the file.
 
 ## 4. Running
 * Run testing data by      `python tRNAExploer.py`
