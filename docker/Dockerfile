@@ -46,9 +46,12 @@ RUN git clone https://github.com/hqyone/tRNAExplorer.git
 RUN printf 't_path="/src/tools/Trimmomatic-0.39/trimmomatic-0.39.jar"\nblastn="/usr/bin/blastn"\nmkdb="/usr/bin/makeblastdb"'>/src/tRNAExplorer/init
 ENV PATH="/src/tRNAExplorer:${PATH}"
 ## Downloads human and mouse genome files
+<<<<<<< HEAD
 # RUN wget http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz -P /src/data/hg38/
 # RUN unzip /src/data/hg38/hg38.fa.gz -d /src/data/hg38
 # RUN samtools faidx /src/data/hg38/hg38.fa
+
+>>>>>>> master
 
 # WORKDIR /src/data/mm10
 # RUN wget https://hgdownload.soe.ucsc.edu/goldenPath/mm10/bigZips/mm10.fa.gz -P /src/data/mm10/
