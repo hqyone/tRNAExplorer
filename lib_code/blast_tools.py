@@ -9,30 +9,18 @@
 import os, subprocess
 import lib_code.share as share
 import lib_code.trna as trna
-from lib_code.cmd_tools import BLASTN
+from lib_code.cmd_tools import BLASTN, CMDTool
+
+
+
 
 # Indexing the tRNA FASTA file
-def CreateBLASTdb(fasta):
+def CreateBLASTdb(mkdb, fasta):
     if os.path.isfile(fasta):
-        trna_db_dir= os.path.dirname(os.path.abspath(fasta))
         base = os.path.basename(fasta)
         out_name = os.path.splitext(base)[0]
-        cmd_file = trna_db_dir+"/cmd.sh"
-        CMD_FILE = open(cmd_file, "w")
-        b = BLASTN()
-        # The second step do blast
-        # The manual of BLAST+ is https://www.ncbi.nlm.nih.gov/books/NBK279690/
-        BLAST_CMD = b.getCreateBLASTdbCMD(fasta,out_name)+"\n"
-        CMD_FILE.write(BLAST_CMD)
-        CMD_FILE.close()
-        # os.popen("bash " + blast_cmd_file)
-        process = subprocess.Popen("bash " + cmd_file, shell=True, stdout=subprocess.PIPE)
-        process.wait()
-        if process.returncode==0:
-            print('BLASTN alignment finished for '+ fasta)
-        else:
-            print('BLASTN error with return :'+ process.returncode)
-        return 0
+        db_maker = BLASTDBMaker(mkdb)
+        return db_maker.formatDB(fasta,out_name)
     else:
         return -1
 
@@ -40,26 +28,16 @@ def CreateBLASTdb(fasta):
 def RunBLASTN(blastn, mkdb, id, db_fasta, query_fasta, blast_out_dir, eval=0.01, hit_number=30):
     try:
         print("Begin process "+id+" ...")
-        cmd_bash = blast_out_dir+"/"+id+"_blast.sh"
-        CMD_FILE = open(cmd_bash, "w")
-
         blast_out_file = blast_out_dir + "/"+id+"_tRNA_blast_out.tab"
         #qseqid sseqid nident sstart send
-        blastn = BLASTN(blastn,mkdb)
+        blastn = BLASTN(blastn)
         if not os.path.isfile(db_fasta+".nhr"):
-            CMD_FILE.write(blastn.getCreateBLASTdbCMD(db_fasta, id)+"\n")
-        blastn_cmd = blastn.getAlignmentCMD(db_fasta,query_fasta,eval,blast_out_file,hit_number)
-        print(blastn_cmd)
-        CMD_FILE.write(blastn_cmd)
-        CMD_FILE.close()
-        #os.popen("bash " + cmd_bash)
-        process = subprocess.Popen("bash " + cmd_bash, shell=True, stdout=subprocess.PIPE)
-        process.wait()
-        print (process.returncode)
-        os.remove(cmd_bash)
-        print("Finish processing " + id)
-        return blast_out_file
-    except():
+            CreateBLASTdb(mkdb, db_fasta)
+        if blastn.alignment(db_fasta,query_fasta,eval,blast_out_file,hit_number)==0:
+            return blast_out_file
+        else:
+            return ""
+    except:
         return ""
 
 # Run BLAST for a bam file

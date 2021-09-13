@@ -1,1 +1,6 @@
+$ cat .gitignore
+# ignore all test data chagnes
 test/
+images
+# ignore all pyc files
+*.pyc

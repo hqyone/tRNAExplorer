@@ -382,18 +382,10 @@ class rseqBlastnPipeline(pipeline):
             t_threads = cfg["t_threads"]
             # Trimed fastq
             raw_fastq = fastq_dir + "/" + s_id + ext
-            cmd_bash = fastq_dir + "/" + s_id + "_blast.sh"
             trimmed_fastq = fastq_dir + "/" + s_id + "_trimmed"+ext
-            with open(cmd_bash, "w") as CMD_FILE:
-                adapter_fasta = t_adapter
-                if not os.path.isfile(adapter_fasta):
-                    adapter_fasta = ""
-                    T = Trimmomatic(t_path)
-                    trimmomatics_cmd = T.TrimSE(raw_fastq, trimmed_fastq, adapter_fa=adapter_fasta, phred=t_phred, LEADING=t_leading,
+            T = Trimmomatic(t_path)
+            T.trimSE(raw_fastq, trimmed_fastq, adapter_fa=t_adapter, phred=t_phred, LEADING=t_leading,
                                     TRAILING=t_tailing, SLIDINGWINDOW=t_slidingwindow, MINLEN=t_minlen, threads=t_threads)
-                    CMD_FILE.write(trimmomatics_cmd + "\n")
-                process = subprocess.Popen("bash " + cmd_bash, shell=True, stdout=subprocess.PIPE)
-                process.wait()
             out_file = trimmed_fastq
         else:
             out_file = raw_fastq

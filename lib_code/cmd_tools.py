@@ -8,25 +8,133 @@
 #
 
 import io, os
+import subprocess
 
-class BWA:
-    def __init__(self, path=""):
-        self.path = "/Users/hqyone/Downloads/bwa-0.7.17/bwa"
-        if path != "":
-            self.path = path
-        self.p = 2
-    def getIndexingCMD(self, ref_fasta):
-        return self.path+ ' index ' +ref_fasta
+# An abstract class for commands tools
+class CMDTool():
+    def __init__(self, exe_path):
+        self.exe_path = exe_path
 
-    def getAlignmentCMD(self, fastq1, fastq2, genome_fa, sam):
-        cmd = ""
-        if os.path.isfile(fastq1) and os.path.isfile(genome_fa):
-            cmd = self.path + " mem -t " + str(self.p)+" "+genome_fa+" "+fastq1
-            if os.path.isfile(fastq2):
-                cmd += " "+fastq2
-            cmd += ">"+sam
-        print(cmd)
-        return cmd
+    def getCMD(self, *argv, **kwargs):
+        kwargs_ls= []
+        for key, value  in kwargs.items():
+            kwargs_ls.append("{}{}{}".format(key," ",value))
+        return "{} {} {}".format(self.exe_path, " ".join(argv), " ".join(kwargs_ls))
+
+    def executeCMD(self, cmd):
+        try:
+            print(cmd)
+            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            process.wait()
+            if process.returncode==0:
+                print('The command executes sucessfully!')
+                return 0
+            else:
+                print('Command excutation failed with return {}'.format(process.returncode))
+                return -1
+        except:
+            print("Errors happened druing execute the cmd:{}".format(cmd))
+            return -1
+
+# The details about output format can be found at
+# https://sites.google.com/site/wiki4metagenomics/tools/blast/blastn-output-format-6
+class BLASTN(CMDTool):
+    def __init__(self, exe_path, output_format_str='-outfmt "6 qseqid sseqid pident length mismatch gaps qstart qend sstart send qseq sseq qlen slen evalue"'):
+        super().__init__(exe_path)
+        self.output_format_str = output_format_str
+
+    def alignment(self, db_fasta, query_fasta, eval, blast_out_file, hit_number=30, num_threads = 4, *argv, **kwrgs):
+        if os.path.isfile(db_fasta) and os.path.isfile(query_fasta):
+            cmd = self.getCMD('-task blastn -db {} -query {} -evalue {} -num_threads {} {} -num_alignments {} > {}'.format(db_fasta,query_fasta,eval,num_threads, self.output_format_str,hit_number,blast_out_file),  *argv, **kwrgs)
+            #print(cmd)
+            return self.executeCMD(cmd)
+        else:
+            print('BLASTN error: Some files can not be found.')
+            return -1
+
+class BLASTDBMaker(CMDTool):
+    def __init__(self, exe_path="/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/makeblastdb"):
+        super().__init__(exe_path)
+    
+    def formatDB(self,fasta,out_name, dbtype='nucl', *argv, **kwrgs):
+        if os.path.isfile(fasta):
+            cmd = self.getCMD(" -in {} -dbtype {} -title {}".format(fasta,dbtype,out_name))
+            return self.executeCMD(cmd)
+        else:
+            print("The referece fasta file ({}) is not exist!".format(fasta))
+            return -1
+
+class BWA(CMDTool):
+    def __init__(self, exe_path):
+        super().__init__(exe_path)
+    
+    def indexRefDB(self,genome_fa):
+        if os.path.isfile(genome_fa):
+            return self.executCMD(self.getCMD( index= genome_fa))
+        else:
+            print("The referece fasta file ({}) is not exist!".format(genome_fa))
+            return -1
+    
+    def alignment(self, algorithm, fastq1, fastq2, genome_fa, out_sam,*argv, **kwrgs):
+        cmd = self.getCMD(algorithm, fastq1, fastq2, genome_fa, *argv, **kwrgs)+" > "+out_sam
+        self.executeCMD(cmd)
+
+class SAMTOOLS(CMDTool):
+    def __init__(self, exe_path):
+        super().__init__(exe_path)
+
+    def sort(self, bam, sorted_bam, process_num):
+        if os.path.isfile(bam):
+            return self.executeCMD(self.getCMD("sort",bam,"-@",process_num,'-o',sorted_bam))
+        else:
+            print("SAMTools(BAMSort Error): The bam file ({}) is not exist!".format(bam))
+            return -1
+
+    def indexBAM(self, sorted_bam):
+        if os.path.isfile(sorted_bam):
+            return self.executeCMD(self.getCMD("index",sorted_bam))
+        else:
+            print("SAMTools(Indexing BAM Error): The bam file ({}) is not exist!".format(sorted_bam))
+            return -1
+
+    def indexRefFASTA(self, ref_fasta):
+        if os.path.isfile(ref_fasta):
+            return self.executeCMD(self.getCMD("faidx",ref_fasta))
+        else:
+            print("SAMTools(Index Ref Error): The FASTA file ({}) is not exist!".format(ref_fasta))
+            return -1
+
+    def filterBAM(self,bam,bed,sam):
+        if os.path.isfile(bam) and os.path.isfile(bed):
+            return self.executeCMD(self.getCMD("view -L",bed,bam)+">"+sam)
+        else:
+            print("SAMTools(Filter Ref Error): BAM {} or BED {} file are missing!".format(bam, bed))
+            return -1
+
+class Trimmomatic(CMDTool):
+    def __init__(self, exe_path):
+        super().__init__(exe_path)
+
+
+    def trimSE(self, input_fastq, out_fastq, adapter_fa="", phred="-phred33", LEADING=3,
+               TRAILING=3, SLIDINGWINDOW="4:15", MINLEN=18, threads=2):
+        ILLUMINACLIP = ""
+        if os.path.isfile(adapter_fa):
+            ILLUMINACLIP = "ILLUMINACLIP:{}:2:30:10".format(adapter_fa)
+        else:
+            ILLUMINACLIP = "ILLUMINACLIP:TruSeq3-SE:2:30:10"
+            
+        if os.path.isfile(input_fastq):
+            return self.executeCMD("java -jar "+self.getCMD("SE",phred,'-threads',threads,input_fastq, out_fastq,\
+                                                ILLUMINACLIP,\
+                                                'LEADING:{}'.format(LEADING),\
+                                                'TRAILING:{}'.format(TRAILING),\
+                                                'SLIDINGWINDOW:{}'.format(SLIDINGWINDOW),\
+                                                'MINLEN:{}'.format(MINLEN)
+                                                ))
+        else:
+            print("Trimmomatic (trimSE Error): input_fastq {} does't exist!".format(input_fastq))
+            return -1
 
 class BWA_SAMTOOLS:
     def __init__(self, bwa_path="", samtools_path=""):
@@ -46,57 +154,6 @@ class BWA_SAMTOOLS:
                 cmd += " " + fastq2
             cmd += " | "
             cmd += self.samtools_path+ " sort -@ "+str(self.p)+" -o " + sorted_bam+ " - "
-        print(cmd)
-        return cmd
-
-# The details about output format can be found at
-# https://sites.google.com/site/wiki4metagenomics/tools/blast/blastn-output-format-6
-class BLASTN:
-    def __init__(self, cmdpath = "", mkdbpath=""):
-        self.cmdpath = "/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/blastn"
-        if cmdpath!="":
-            self.cmdpath = cmdpath
-        self.mkdbpath = "/Users/hqyone/Downloads/ncbi-blast-2.10.0+/bin/makeblastdb"
-        if mkdbpath!="":
-            self.mkdbpath = mkdbpath
-    def getCreateBLASTdbCMD(self,fasta,out_name):
-        cmd = self.mkdbpath+" -in " + fasta + " -dbtype nucl -title "+out_name+"\n"
-        return cmd
-
-    def getAlignmentCMD(self, db_fasta, query_fasta, eval, blast_out_file, hit_number=30):
-        cmd = ""
-        output_format_str = '-outfmt "6 qseqid sseqid pident length mismatch gaps qstart qend sstart send qseq sseq qlen slen evalue"'
-        if os.path.isfile(db_fasta) and os.path.isfile(query_fasta):
-            cmd = self.cmdpath + " -task blastn -db " + db_fasta + " -query " + \
-                query_fasta + " -evalue " + str(eval) + " -num_threads 8 " + output_format_str + \
-                "  -num_alignments " + \
-                str(hit_number) + " > " + blast_out_file
-        return cmd
-
-class SAMTOOLS:
-    def __init__(self, path=""):
-        self.path = "/Users/hqyone/Downloads/samtools-1.10/samtools"
-        if path!="":
-            self.path = path
-        self.p = 1
-
-    def getSortCMD(self, bam, sorted_bam):
-        cmd =  self.path+ ' sort '+bam+' -@ '+str(self.p)+' -o '+ sorted_bam
-        print(cmd)
-        return cmd
-
-    def getIndexingCMD(self, sorted_bam):
-        cmd = self.path+ ' index ' + sorted_bam
-        print(cmd)
-        return cmd
-
-    def getIndexingGenomeCMD(self, ref_fasta):
-        cmd = self.path+ ' faidx ' + ref_fasta
-        print(cmd)
-        return cmd
-
-    def FilterBAMCMD(self,bam,bed,sam):
-        cmd = self.path+" view -L " + bed + " " + bam + " > " + sam + "\n"
         print(cmd)
         return cmd
 
@@ -135,37 +192,6 @@ class MACS2:
             cmd+=" -q "+str(self.q_value)
         cmd += " -g "+genome
         cmd += " --outdir "+ out_dir
-        print(cmd)
-        return cmd
-
-class Trimmomatic:
-    def __init__(self, path=""):
-        self.path = "/Users/hqyone/Downloads/Trimmomatic-0.39/trimmomatic-0.39.jar"
-        if path !="":
-            self.path = path
-
-    def TrimSE(self, input_fastq, out_fastq, adapter_fa="", phred=33, LEADING=3,
-               TRAILING=3, SLIDINGWINDOW="4:15", MINLEN=18, threads=2):
-        cmd = "java -jar "+ self.path+" SE "
-        if phred==33:
-            cmd += " -phred33 "
-        else:
-            cmd += " -phred64 "
-        cmd += " -threads " + str(threads)
-        cmd += " " +input_fastq+" " +out_fastq
-        if adapter_fa=="" or not os.path.isfile(adapter_fa):
-            trimmomatic_dir = os.path.dirname(os.path.abspath(self.path))
-            default_adapter_fa = trimmomatic_dir+"/adapters/TruSeq3-SE.fa"
-            if os.path.isfile(default_adapter_fa):
-                cmd += " ILLUMINACLIP:"+default_adapter_fa+":2:30:10 "  # Adapter for illuminate
-            else:
-                cmd += " ILLUMINACLIP:TruSeq3-SE:2:30:10 "  # Adapter for illuminate
-        else:
-            cmd += " ILLUMINACLIP:"+adapter_fa+":2:30:10 "  # Adapter for illuminate
-        cmd += " LEADING:"+str(LEADING)
-        cmd += " TRAILING:" + str(TRAILING)
-        cmd += " SLIDINGWINDOW:" + str(SLIDINGWINDOW)
-        cmd += " MINLEN:" + str(MINLEN)
         print(cmd)
         return cmd
 

@@ -3,7 +3,7 @@
 #######################################################################
 
 # Absolute path to Trimmomatic jar file
-t_path="/media/hqyone/mnt/sdc/trna/software/Trimmomatic-0.39/trimmomatic-0.39.jar"
+t_path="/home/hqyone/mnt/2tb/tools/Trimmomatic-0.39/trimmomatic-0.39.jar"
 
 # absolute path to blastn execute file
 blastn = "/usr/bin/blastn"
