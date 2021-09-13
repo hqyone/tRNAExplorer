@@ -3,4 +3,5 @@ $ cat .gitignore
 test/
 images
 # ignore all pyc files
-*.pyc
+**.pyc
+lib_code/test*
