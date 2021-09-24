@@ -7,7 +7,7 @@ tRNAExplorer is a Python pipeline optimized for analyzing tRF (tRNA-derived frag
     * Discover new base additions on tRFs 
     * Comparison and visualization of tRF profile across multiple samples
 * References:
-    Sun, Z., Tan, J., Zhao, M. et al. Integrated genomic analysis reveals regulatory pathways and dynamic landscapes of the tRNA transcriptome. Sci Rep 11, 5226 (2021). https://doi.org/10.1038/s41598-021-83469-6
+    * Sun, Z., Tan, J., Zhao, M. et al. Integrated genomic analysis reveals regulatory pathways and dynamic landscapes of the tRNA transcriptome. Sci Rep 11, 5226 (2021). https://doi.org/10.1038/s41598-021-83469-6
 
 ## 2. Requirements
 Docker or Followings
