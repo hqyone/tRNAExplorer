@@ -22,8 +22,11 @@ import shutil
 
 version = 1.0
 # A singleton decorator
+
+
 def singleton(class_):
     instances = {}
+
     @wraps(class_)
     def getinstance(*args, **kwargs):
         if class_ not in instances:
@@ -32,22 +35,26 @@ def singleton(class_):
     return getinstance
 
 # A time decorator
+
+
 def timethis(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
         r = func(*args, **kwargs)
         end = time.time()
-        return [end-start,r]
+        return [end-start, r]
     return wrapper
+
 
 class Config():
     """ Config base class
     """
+
     def __init__(self, *keys, **kwags):
-        self.config_key_ls= keys
-        self.config= kwags
-    
+        self.config_key_ls = keys
+        self.config = kwags
+
     def loadConfigFile(self, config_file):
         if os.path.isfile(config_file):
             with open(config_file, 'r') as FILE:
@@ -92,7 +99,8 @@ class Config():
         print('## Setting testing .... ')
 
     def validation(self):
-        pass  
+        pass
+
 
 @singleton
 class tRNAExplorerConfig(Config):
@@ -104,42 +112,48 @@ class tRNAExplorerConfig(Config):
     def validate(self):
         result = True
         if not os.path.isfile(self.config["blastn"]):
-            print("The BLASTN path "+self.config["blastn"]+" is not valid. Abort!!!\n")
+            print("The BLASTN path " +
+                  self.config["blastn"]+" is not valid. Abort!!!\n")
             print("Please modify the file <wdir>/init \n")
             result = False
         if not os.path.isfile(self.config["mkdb"]):
             print("The BLASTN mkdb path " +
-                self.config["mkdb"]+" is not valid. Abort!!!\n")
+                  self.config["mkdb"]+" is not valid. Abort!!!\n")
             print("Please modify the file <wdir>/init \n")
             result = False
         return result
-    
+
     # Create the visual setting file
     def createVisualSettingFile(self):
         visual_config = self.config["out_dir"] + "/visual_config.tsv"
         with open(visual_config, 'w') as VISUAL_CONFIG:
             VISUAL_CONFIG.write("out_dir="+self.config["out_dir"]+"\n")
             VISUAL_CONFIG.write("sample_tsv=" + self.config["sample_tsv"]+"\n")
-            VISUAL_CONFIG.write("trna_anno_bed=" + self.config["trna_anno_bed"])
+            VISUAL_CONFIG.write("trna_anno_bed=" +
+                                self.config["trna_anno_bed"])
+
 
 class pipeline():
     def __init__(self, config):
-      self.config = config
-    
+        self.config = config
+
     def run(self):
         pass
 
 # Function for running BLASTN and classify/quantify tRFs for samples
 # Create multiple matrix and tab file to summarize the results
+
+
 class rseqBlastnPipeline(pipeline):
     """ The class of RNA-Seq BLAST pipeline for tRNAs
 
     Args:
         pipeline (base object): the general class of pipeline.
     """
+
     def __init__(self, config):
-      self.config = config
-    
+        self.config = config
+
     def run(self):
         cfg = self.config
         loginfor = {}
@@ -153,10 +167,12 @@ class rseqBlastnPipeline(pipeline):
             tRNA_dic = rseqBlastnPipeline.load_tRNA_database(trna_anno_bed)
 
             # Load sample information
-            sample_dic = rseqBlastnPipeline.loadSampleInfor(cfg["sample_tsv"], cfg["out_dir"])
+            sample_dic = rseqBlastnPipeline.loadSampleInfor(
+                cfg["sample_tsv"], cfg["out_dir"])
 
             # Get list of fastq files
-            ext,fastq_files = rseqBlastnPipeline.getFastqList(cfg["fastq_dir"])
+            ext, fastq_files = rseqBlastnPipeline.getFastqList(
+                cfg["fastq_dir"])
 
             # Process FASTQ file one by one
             if not cfg["no_alignment"]:
@@ -166,35 +182,40 @@ class rseqBlastnPipeline(pipeline):
                     fastq_dir = os.path.dirname(os.path.abspath(f))
                     if s_id in sample_dic:
                         start_time = time.time()
-                        
+
                         # Trimed fastq
-                        trim_time, [trimmed_fastq] = self.runTrimmomatics(s_id, ext)
+                        trim_time, [trimmed_fastq] = self.runTrimmomatics(
+                            s_id, ext)
 
                         # Transform FASTQ to FASTQ file and filtering
                         filter_time, [static_infor, filtered_fasta, num_dic_txt] = \
-                            self.fastq2Fasta(sample_dic, s_id, fastq_dir, trimmed_fastq)
-                        
+                            self.fastq2Fasta(sample_dic, s_id,
+                                             fastq_dir, trimmed_fastq)
+
                         # Mapping with BLASTN
                         blast_time, [tRNA_reads_count_file, tRNA_reads_hit_file] = \
-                            self.doMapping(s_id, num_dic_txt, tRNA_dic, filtered_fasta)
+                            self.doMapping(s_id, num_dic_txt,
+                                           tRNA_dic, filtered_fasta)
 
                         end_time = time.time()
                         processing_time = end_time - start_time
-                        print("Processing time :" + str(round(processing_time, 3))+" Secs")
-                        
+                        print("Processing time :" +
+                              str(round(processing_time, 3))+" Secs")
+
                         # recoding time stamps in loginfor
                         loginfor[s_id] = static_infor
                         loginfor[s_id]["start_time"] = time.asctime(
                             time.localtime(start_time))
                         loginfor[s_id]["end_time"] = time.asctime(
                             time.localtime(end_time))
-                        loginfor[s_id]["processing_time"] = str(int(processing_time))
+                        loginfor[s_id]["processing_time"] = str(
+                            int(processing_time))
                         loginfor[s_id]["trim_time"] = str(int(trim_time))
                         loginfor[s_id]["filter_time"] = str(int(filter_time))
                         loginfor[s_id]["blastn_time"] = str(int(blast_time))
             else:
                 print("Skip indexing and alignment for FASTQ files")
-            
+
             # Summarize all information from all fastq files
             static_dic = make_report.getTrfReportFile(
                 proj_name, out_dir, tRNA_dic, sample_dic, out_dir)
@@ -208,7 +229,7 @@ class rseqBlastnPipeline(pipeline):
             print('Some things wrong during pipeline running!')
             return -1
             # sys.exit(2)
-    
+
     @classmethod
     def load_tRNA_database(cls, trna_anno_bed):
         '''
@@ -217,7 +238,7 @@ class rseqBlastnPipeline(pipeline):
         '''
         if not os.path.isfile(trna_anno_bed):
             print("The tRNA annotation bed file :" +
-                    trna_anno_bed+" is not exist. Abort!")
+                  trna_anno_bed+" is not exist. Abort!")
             return -1
         tRNA_dic = {}
         with open(trna_anno_bed, 'r') as tRNAFile:
@@ -227,7 +248,7 @@ class rseqBlastnPipeline(pipeline):
                     t.LoadStr(line.strip())
                     tRNA_dic[t.name] = t
         return tRNA_dic
-    
+
     @classmethod
     def loadSampleInfor(cls, sample_tsv, out_dir):
         # Load sample information
@@ -238,7 +259,8 @@ class rseqBlastnPipeline(pipeline):
         # Copy sample tsv for visualization
         if not os.path.isdir(out_dir):
             try:
-                print(f"Output dir {out_dir} is not a directory. Try to create it ...append() ")
+                print(
+                    f"Output dir {out_dir} is not a directory. Try to create it ...append() ")
                 os.mkdir(out_dir)
             except Exception as inst:
                 print("Create output directory :"+out_dir+" fail. Abort!")
@@ -256,18 +278,18 @@ class rseqBlastnPipeline(pipeline):
                     if len(contents) > 2:
                         sample_dic[contents[0]]['adapters'] = contents[2]
         return sample_dic
-    
+
     @classmethod
-    def getFastqList(cls,fastq_dir):
+    def getFastqList(cls, fastq_dir):
         ext = ".fastq"
         fastq_files = share.getExtFileList(fastq_dir, ".fastq")
         if len(fastq_files) == 0:
             fastq_files = share.getExtFileList(fastq_dir, ".fq")
             ext = ".fq"
-        
+
         return [ext, fastq_files]
-    
-    def writeLogFile(self,static_dic, loginfor, sample_dic):
+
+    def writeLogFile(self, static_dic, loginfor, sample_dic):
         cfg = self.config
         out_dir = cfg["out_dir"]
         # Write login information
@@ -284,13 +306,14 @@ class rseqBlastnPipeline(pipeline):
                 # LOG.write("#FASTQ_STATISTICS\n")
                 title = ""
                 key_ls = ['total_num', 'removed_num', 'survived_num',
-                            'non_redundent_num', 'start_time', 'end_time', 'processing_time',
-                            'trim_time', 'filter_time', 'blastn_time', 'A', 'B', 'C', 'D', 'E',
-                            'F', 'G', 'H', 'I', 'total', 'intro_cl_ratio', 'u5_cl_ratio', 'u3_cl_ratio', 'cca_add_ratio']
+                          'non_redundent_num', 'start_time', 'end_time', 'processing_time',
+                          'trim_time', 'filter_time', 'blastn_time', 'A', 'B', 'C', 'D', 'E',
+                          'F', 'G', 'H', 'I', 'total', 'intro_cl_ratio', 'u5_cl_ratio', 'u3_cl_ratio', 'cca_add_ratio']
                 for s_id in loginfor:
                     statis_obj = loginfor[s_id]
                     if title == "":
-                        title = "#SampleID"+"\tDescription\t" + "\t".join(key_ls)
+                        title = "#SampleID" + \
+                            "\tDescription\t" + "\t".join(key_ls)
                         LOG.write(title + "\n")
 
                     sample_des = s_id
@@ -303,6 +326,7 @@ class rseqBlastnPipeline(pipeline):
                         else:
                             line += "\t" + ""
                     LOG.write(line+"\n")
+
     @timethis
     def fastq2Fasta(self, sample_dic, s_id, fastq_dir, trimmed_fastq):
         # Process adapter information
@@ -322,15 +346,15 @@ class rseqBlastnPipeline(pipeline):
             min_read_qscore = cfg["min_read_qscore"]
             min_reads_count = cfg["min_reads_count"]
             static_infor = share.filterFastQ2FastA(trimmed_fastq, filtered_fasta, num_dic_txt,
-                                        f_patterm=f_adapter, r_patterm=r_adapter, qcutoff=min_read_qscore, num_cutoff=min_reads_count)
+                                                   f_patterm=f_adapter, r_patterm=r_adapter, qcutoff=min_read_qscore, num_cutoff=min_reads_count)
             print(static_infor)
         else:
-            print("Skip filtering and indexing FASTQ flie : "+ trimmed_fastq)
+            print("Skip filtering and indexing FASTQ flie : " + trimmed_fastq)
             # delete trmmed fastq to save space
         if cfg["t_do"] != 0 and os.path.exists(trimmed_fastq):
             os.remove(trimmed_fastq)
         return [static_infor, filtered_fasta, num_dic_txt]
-    
+
     @timethis
     def doMapping(self, s_id, num_dic_txt, tRNA_dic, fasta):
         cfg = self.config
@@ -347,7 +371,7 @@ class rseqBlastnPipeline(pipeline):
         # Do BLASTN
         lastn_start_time = time.time()
         blast_out_file = blast_tools.RunBLASTN(
-                blastn, mkdb, s_id, trna_fa, fasta, out_dir, eval=blastn_e_cutoff, hit_number=blastn_max_hit_num)
+            blastn, mkdb, s_id, trna_fa, fasta, out_dir, eval=blastn_e_cutoff, hit_number=blastn_max_hit_num)
         #blast_out_file = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer/test_data/RNASeq/output/SRR1836126_1_tRNA_blast_out.tab"
         # Analysis BLASTN result
         tRNA_reads_count_file = ""
@@ -357,7 +381,7 @@ class rseqBlastnPipeline(pipeline):
             tRNA_reads_count_file = out_dir + "/" + s_id + "_" + proj_name + "_count.tab"
             tRNA_reads_hit_file = out_dir + "/" + s_id + "_" + proj_name + "_hit.tab"
             blast_tools.AnalysisBlastOut2(blast_out_file, num_dic_txt, tRNA_dic,
-                                tRNA_reads_count_file, tRNA_reads_hit_file, url_len, max_mismatch=blastn_max_mismatch, pident=blastn_pident)
+                                          tRNA_reads_count_file, tRNA_reads_hit_file, url_len, max_mismatch=blastn_max_mismatch, pident=blastn_pident)
             print("Hit file :"+tRNA_reads_hit_file)
         else:
             print("Something wrong while blastn " + s_id)
@@ -367,11 +391,11 @@ class rseqBlastnPipeline(pipeline):
 
     @timethis
     def runTrimmomatics(self, s_id, ext):
-        cfg= self.config
+        cfg = self.config
         out_file = ""
         fastq_dir = cfg["fastq_dir"]
         raw_fastq = fastq_dir + "/" + s_id + ext
-        if cfg["t_do"] != 0:    
+        if cfg["t_do"] != 0:
             t_adapter = cfg["t_adapter"]
             t_path = cfg["t_path"]
             t_phred = cfg["t_phred"]
@@ -385,11 +409,12 @@ class rseqBlastnPipeline(pipeline):
             trimmed_fastq = fastq_dir + "/" + s_id + "_trimmed"+ext
             T = Trimmomatic(t_path)
             T.trimSE(raw_fastq, trimmed_fastq, adapter_fa=t_adapter, phred=t_phred, LEADING=t_leading,
-                                    TRAILING=t_tailing, SLIDINGWINDOW=t_slidingwindow, MINLEN=t_minlen, threads=t_threads)
+                     TRAILING=t_tailing, SLIDINGWINDOW=t_slidingwindow, MINLEN=t_minlen, threads=t_threads)
             out_file = trimmed_fastq
         else:
             out_file = raw_fastq
-        return [out_file] 
+        return [out_file]
+
 
 def printHelpInfor():
     print('# Usage: python tRNAExplorer.py -c <configfile> ')
@@ -412,25 +437,27 @@ def printHelpInfor():
     print('# Output 7: <out_dir>/cleavage_sites.tsv , Cleavage sites information for tRNAs in different samples')
     print('# Output 8: <out_dir>/profiles.tsv , Pileup information for tRNAs in different samples')
     print(
-            '# Output 9: <out_dir>/variants.tsv , A tsv file to summarize mismatched sites in each gene for all samples .')
+        '# Output 9: <out_dir>/variants.tsv , A tsv file to summarize mismatched sites in each gene for all samples .')
     print(
-            '# Output 10: <out_dir>/visual_config.tsv , A tsv file including paths of files required for the visualization module')
+        '# Output 10: <out_dir>/visual_config.tsv , A tsv file including paths of files required for the visualization module')
 
 # Main function
+
+
 def main(argv):
     currentDirectory = pathlib.Path(__file__).parent.absolute()
     wdir = pathlib.Path(__file__).parent.absolute()
 
     default_config_keys = [
-        "proj_name","trna_fa","trna_anno_bed",
-        "sample_tsv","fastq_dir","out_dir",
-        "url_len","no_indexing","no_alignment",
-        "t_do","t_path","t_adapter","t_phred",
-        "t_leading","t_tailing","t_slidingwindow",
-        "t_minlen","t_threads","min_read_qscore",
-        "min_read_length","blastn",
-        "mkdb","blastn_e_cutoff","blastn_pident",
-        "blastn_max_mismatch","blastn_max_hit_num",
+        "proj_name", "trna_fa", "trna_anno_bed",
+        "sample_tsv", "fastq_dir", "out_dir",
+        "url_len", "no_indexing", "no_alignment",
+        "t_do", "t_path", "t_adapter", "t_phred",
+        "t_leading", "t_tailing", "t_slidingwindow",
+        "t_minlen", "t_threads", "min_read_qscore",
+        "min_read_length", "blastn",
+        "mkdb", "blastn_e_cutoff", "blastn_pident",
+        "blastn_max_mismatch", "blastn_max_hit_num",
         "min_trf_len"
     ]
     # Default configuration
@@ -483,7 +510,7 @@ def main(argv):
         # TRF analyiss settinss
         #########################################################
         "min_trf_len": 18
-    }  
+    }
     c = tRNAExplorerConfig(*default_config_keys, **default_configs)
     config_file = ""
     try:
@@ -546,11 +573,11 @@ def main(argv):
             print("Use default settings")
     else:
         print("No Config file was given, run for test data!")
-    
+
     c.printConfig()
     if c.validate():
         print('## Run tRNAExplorer pipeline ..... ')
-        if rseqBlastnPipeline(c.config).run()==0:
+        if rseqBlastnPipeline(c.config).run() == 0:
             c.createVisualSettingFile()
             print('## The Pipeline processing done successfully ... ')
             exit(0)
@@ -560,6 +587,7 @@ def main(argv):
     else:
         print("Configuration can be validated. Please check it.")
         exit(-2)
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
@@ -572,6 +600,6 @@ if __name__ == "__main__":
 # c.loadConfig(config_file)
 #c = Config()
 #p = rseqBlastnPipeline(c.config)
-#p.run()
+# p.run()
 # print("tRNA pipeline finish successfully!")
 # sys.exit(0)

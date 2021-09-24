@@ -6,12 +6,11 @@
 #  Freely distributed under the GNU General Public License (GPLv3)
 #
 
-import os, subprocess
+import os
+import subprocess
 import lib_code.share as share
 import lib_code.trna as trna
 from lib_code.cmd_tools import BLASTN, CMDTool
-
-
 
 
 # Indexing the tRNA FASTA file
@@ -20,20 +19,22 @@ def CreateBLASTdb(mkdb, fasta):
         base = os.path.basename(fasta)
         out_name = os.path.splitext(base)[0]
         db_maker = BLASTDBMaker(mkdb)
-        return db_maker.formatDB(fasta,out_name)
+        return db_maker.formatDB(fasta, out_name)
     else:
         return -1
 
 # Run BLAST for a bam file
+
+
 def RunBLASTN(blastn, mkdb, id, db_fasta, query_fasta, blast_out_dir, eval=0.01, hit_number=30):
     try:
         print("Begin process "+id+" ...")
         blast_out_file = blast_out_dir + "/"+id+"_tRNA_blast_out.tab"
-        #qseqid sseqid nident sstart send
+        # qseqid sseqid nident sstart send
         blastn = BLASTN(blastn)
         if not os.path.isfile(db_fasta+".nhr"):
             CreateBLASTdb(mkdb, db_fasta)
-        if blastn.alignment(db_fasta,query_fasta,eval,blast_out_file,hit_number)==0:
+        if blastn.alignment(db_fasta, query_fasta, eval, blast_out_file, hit_number) == 0:
             return blast_out_file
         else:
             return ""
@@ -68,26 +69,26 @@ def RunBLASTN(blastn, mkdb, id, db_fasta, query_fasta, blast_out_dir, eval=0.01,
 # trna_read_dic is unique map reads number
 def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_count_file, tRNA_reads_hit_file, url_len, max_mismatch=2, pident=98):
     dist_dic = {}
-    trna_unique_read_dic={}  #For quantifiation
+    trna_unique_read_dic = {}  # For quantifiation
 
     BLAST_OUT = open(blast_out_file, 'r')
     # Load tRNA structure annotations
-    tRNA_anno_dic={}
+    tRNA_anno_dic = {}
     tRNA_id_family_dic = {}
     for t_id in tRNA_dic:
         t = tRNA_dic[t_id]
-        tRNA_anno_dic[t.name]=t
+        tRNA_anno_dic[t.name] = t
         tRNA_id_family_dic[t.name] = t.family
 
     # Read the read numnber map
     READ_NUM = open(read_num_dic_file, 'r')
-    read_num_dic ={}
-    read_seq_dic={}
+    read_num_dic = {}
+    read_seq_dic = {}
     for line in READ_NUM:
         contents = line.strip().split("\t")
-        if len(contents)>1:
+        if len(contents) > 1:
             read_num_dic[contents[0]] = int(contents[1])
-        if len(contents)>2:
+        if len(contents) > 2:
             read_seq_dic[contents[0]] = contents[2]
     READ_NUM.close()
 
@@ -95,16 +96,16 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
     # -outfmt "6 qseqid sseqid pident length mismatch gaps qstart qend sstart send qseq sseq qlen slen evalue"
     for line in BLAST_OUT:
         contents = line.strip().split("\t")
-        cur_read_id = contents[0] #qseqid
-        cur_tRNA_id = contents[1] #sseqid
-        cur_percent = float(contents[2]) #pident
-        cur_length = int(contents[3]) #length
-        cur_mismatch = int(contents[4])  #mismatch
-        cur_gap = int(contents[5]) #gaps
-        read_start = float(contents[6]) #qstart
-        read_end = int(contents[7])  #qend
-        trna_start = float(contents[8]) #sstart
-        trna_end = int(contents[9])  #send
+        cur_read_id = contents[0]  # qseqid
+        cur_tRNA_id = contents[1]  # sseqid
+        cur_percent = float(contents[2])  # pident
+        cur_length = int(contents[3])  # length
+        cur_mismatch = int(contents[4])  # mismatch
+        cur_gap = int(contents[5])  # gaps
+        read_start = float(contents[6])  # qstart
+        read_end = int(contents[7])  # qend
+        trna_start = float(contents[8])  # sstart
+        trna_end = int(contents[9])  # send
         qseq = contents[10]  # qseq
         sseq = contents[11]  # sseq
         qlen = int(contents[12])  # qlen
@@ -112,7 +113,7 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
         evalue = float(contents[14])  # evalue
         direction = "+"
         # As we use DNA to BLAST to mRNA so the sequences should be reversed complemental so the tRF ID will not redundent
-        if trna_start>trna_end:
+        if trna_start > trna_end:
             a = trna_end
             trna_end = trna_start
             trna_start = a
@@ -122,39 +123,39 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             qseq = share.reverse_complement(qseq)
             sseq = share.reverse_complement(sseq)
             direction = "-"
-        #Cutoff here 98 means only reads length longer than 60 bp were allowed for two missmatch
-        if cur_mismatch+cur_gap<=max_mismatch:
+        # Cutoff here 98 means only reads length longer than 60 bp were allowed for two missmatch
+        if cur_mismatch+cur_gap <= max_mismatch:
             if cur_read_id not in read_trna_dic:
                 read_trna_dic[cur_read_id] = {
                     "percent": cur_percent,
                     "length": cur_length,
-                    "direction":direction,
+                    "direction": direction,
                     "evalue": evalue,
-                    "sseq":sseq,
-                    "hit_type":"", # multiple or unique
+                    "sseq": sseq,
+                    "hit_type": "",  # multiple or unique
                     "tRNAs": {}
                 }
                 trans_type = cur_tRNA_id.split("::")
-                if len(trans_type)==2:
+                if len(trans_type) == 2:
                     trna_seq_classes = trans_type[0].strip()
                     trna_id = trans_type[1].strip()
-                    read_trna_dic[cur_read_id]["tRNAs"][trna_id]= {}
+                    read_trna_dic[cur_read_id]["tRNAs"][trna_id] = {}
                 for trans_type in trna_seq_classes:
-                    read_trna_dic[cur_read_id]["tRNAs"][trna_id][trans_type]={
-                            "read_start": read_start,
-                            "read_end": read_end,
-                            "trna_start": trna_start,
-                            "trna_end": trna_end,
-                            "qseq": qseq,
-                            "sseq": sseq,
-                            "qlen": qlen,  # read length
-                            "slen": slen,
-                            "evalue": evalue
-                        }
+                    read_trna_dic[cur_read_id]["tRNAs"][trna_id][trans_type] = {
+                        "read_start": read_start,
+                        "read_end": read_end,
+                        "trna_start": trna_start,
+                        "trna_end": trna_end,
+                        "qseq": qseq,
+                        "sseq": sseq,
+                        "qlen": qlen,  # read length
+                        "slen": slen,
+                        "evalue": evalue
+                    }
             else:
                 # Get the best hits for each read and accumulate matched tRNA id
                 obj = read_trna_dic[cur_read_id]
-                if evalue<=obj["evalue"] and cur_percent>=float(pident) and cur_length >= obj["length"] and cur_tRNA_id not in obj["tRNAs"] and (sseq == obj["sseq"] or sseq == share.reverse_complement(obj["sseq"])):
+                if evalue <= obj["evalue"] and cur_percent >= float(pident) and cur_length >= obj["length"] and cur_tRNA_id not in obj["tRNAs"] and (sseq == obj["sseq"] or sseq == share.reverse_complement(obj["sseq"])):
                     obj["percent"] = cur_percent
                     obj["length"] = cur_length
                     obj["sseq"] = sseq
@@ -179,19 +180,21 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                             }
 
     # Create mean reads number for every tRNA
-    tRNA_mean_read_dic = {} #Seperate
+    tRNA_mean_read_dic = {}  # Seperate
     pretRNA_mean_read_dic = {}
     tRNA_total_obj_dic = {}
     for cur_read_id in read_trna_dic:
         # Get all unique read for tRNA
         if "tRNAs" in read_trna_dic[cur_read_id]:
-            read_trna_dic[cur_read_id]["hit_tRNAs_num"] = len(read_trna_dic[cur_read_id]["tRNAs"].keys())
+            read_trna_dic[cur_read_id]["hit_tRNAs_num"] = len(
+                read_trna_dic[cur_read_id]["tRNAs"].keys())
             for tRNA_id in read_trna_dic[cur_read_id]["tRNAs"]:
                 number = read_num_dic[cur_read_id]
-                mean_exp_number = float(number)/len(read_trna_dic[cur_read_id]["tRNAs"].keys())
+                mean_exp_number = float(
+                    number)/len(read_trna_dic[cur_read_id]["tRNAs"].keys())
                 if not tRNA_id in tRNA_mean_read_dic:
                     tRNA_mean_read_dic[tRNA_id] = 0
-                tRNA_mean_read_dic[tRNA_id]+= mean_exp_number
+                tRNA_mean_read_dic[tRNA_id] += mean_exp_number
 
                 if tRNA_id not in tRNA_total_obj_dic:
                     tRNA_total_obj_dic[tRNA_id] = {}
@@ -199,12 +202,13 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                     tRNA_total_obj_dic[tRNA_id][cur_read_id] = {}
                 tRNA_total_obj_dic[tRNA_id][cur_read_id]["mean_exp"] = mean_exp_number
                 tRNA_total_obj_dic[tRNA_id][cur_read_id]["strand"] = mean_exp_number
-                tRNA_total_obj_dic[tRNA_id][cur_read_id]["hit_tRNAs_num"] =read_trna_dic[cur_read_id]["hit_tRNAs_num"]
+                tRNA_total_obj_dic[tRNA_id][cur_read_id]["hit_tRNAs_num"] = read_trna_dic[cur_read_id]["hit_tRNAs_num"]
                 tRNA_total_obj_dic[tRNA_id][cur_read_id]["direction"] = read_trna_dic[cur_read_id]["direction"]
                 if "classes" not in tRNA_total_obj_dic[tRNA_id][cur_read_id]:
                     tRNA_total_obj_dic[tRNA_id][cur_read_id]["classes"] = {}
                 for trans_type in read_trna_dic[cur_read_id]["tRNAs"][tRNA_id]:
-                    tRNA_total_obj_dic[tRNA_id][cur_read_id]["classes"][trans_type]={}
+                    tRNA_total_obj_dic[tRNA_id][cur_read_id]["classes"][trans_type] = {
+                    }
                     read_start = read_trna_dic[cur_read_id]["tRNAs"][tRNA_id][trans_type]["read_start"]
                     read_end = read_trna_dic[cur_read_id]["tRNAs"][tRNA_id][trans_type]["read_end"]
                     qseq = read_trna_dic[cur_read_id]["tRNAs"][tRNA_id][trans_type]["qseq"]
@@ -226,23 +230,24 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
                     }
 
     # Write the result to files
-    tRNA_READS_COUNT = open(tRNA_reads_count_file,'w')
+    tRNA_READS_COUNT = open(tRNA_reads_count_file, 'w')
     tRNA_READS_COUNT.write("#tRNA_family\ttRNA_id\ttotal_reads\n")
     for tRNA_id in tRNA_mean_read_dic:
         family_id = tRNA_id
         if tRNA_id in tRNA_id_family_dic:
             family_id = tRNA_id_family_dic[tRNA_id]
         total_reads = tRNA_mean_read_dic[tRNA_id]
-        tRNA_READS_COUNT.write(family_id+"\t"+tRNA_id+"\t"+str(total_reads)+"\n")
+        tRNA_READS_COUNT.write(family_id+"\t"+tRNA_id +
+                               "\t"+str(total_reads)+"\n")
     tRNA_READS_COUNT.close()
 
-    tRNA_READS_HIT = open(tRNA_reads_hit_file,'w')
-    tRNA_READS_HIT.write("#tRNA_family\ttRNA_id\tread_id\tdirection"+  #4
-                         "\tI\tI_read_start\tI_read_end\tI_trna_start\tI_trna_end"+ #5
-                         "\tP\tP_read_start\tP_read_end\tP_trna_start\tP_trna_end"+
-                         "\tM\tM_read_start\tM_read_end\tM_trna_start\tM_trna_end"+
-                         "\tC\tC_read_start\tC_read_end\tC_trna_start\tC_trna_end"+
-                         "\t5T\t3T\t5C\t3C\tmean_number\thit_tRNAs_num\tTRF_type\tbrief_mapping_infor\tRead_type"+
+    tRNA_READS_HIT = open(tRNA_reads_hit_file, 'w')
+    tRNA_READS_HIT.write("#tRNA_family\ttRNA_id\tread_id\tdirection" +  # 4
+                         "\tI\tI_read_start\tI_read_end\tI_trna_start\tI_trna_end" +  # 5
+                         "\tP\tP_read_start\tP_read_end\tP_trna_start\tP_trna_end" +
+                         "\tM\tM_read_start\tM_read_end\tM_trna_start\tM_trna_end" +
+                         "\tC\tC_read_start\tC_read_end\tC_trna_start\tC_trna_end" +
+                         "\t5T\t3T\t5C\t3C\tmean_number\thit_tRNAs_num\tTRF_type\tbrief_mapping_infor\tRead_type" +
                          "\tmapping_ratio\tread_5_fragment\tread_fragment\tread_3_fragment\n")
     for tRNA_id in tRNA_total_obj_dic:
         family_id = tRNA_id
@@ -259,10 +264,14 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             M_3T = 0  # End at 3' termimal
             M_5C = 0  # Cover 5 terminal
             M_3C = 0  # Cover 3 terminal
-            I, I_read_start, I_read_end, I_trna_start, I_trna_end, I_qseq, I_sseq = 0, -1, -1, -1, -1,"",""
-            P, P_read_start, P_read_end, P_trna_start, P_trna_end, P_qseq, P_sseq  = 0, -1, -1, -1, -1,"",""
-            M, M_read_start, M_read_end, M_trna_start, M_trna_end, M_qseq, M_sseq  = 0, -1, -1, -1, -1,"",""
-            C, C_read_start, C_read_end, C_trna_start, C_trna_end, C_qseq, C_sseq  = 0, -1, -1, -1, -1,"",""
+            I, I_read_start, I_read_end, I_trna_start, I_trna_end, I_qseq, I_sseq = 0, - \
+                1, -1, -1, -1, "", ""
+            P, P_read_start, P_read_end, P_trna_start, P_trna_end, P_qseq, P_sseq = 0, - \
+                1, -1, -1, -1, "", ""
+            M, M_read_start, M_read_end, M_trna_start, M_trna_end, M_qseq, M_sseq = 0, - \
+                1, -1, -1, -1, "", ""
+            C, C_read_start, C_read_end, C_trna_start, C_trna_end, C_qseq, C_sseq = 0, - \
+                1, -1, -1, -1, "", ""
             read_start = 0
             read_end = 0
             brief_mapping_infor = ""
@@ -270,76 +279,76 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             trna_end = 0
             qseq = ""
             sseq = ""
-            overhand_3=0
+            overhand_3 = 0
             for trans_type in class_obj:
                 obj = class_obj[trans_type]
                 read_start = obj["read_start"]
                 read_end = obj["read_end"]
-                if trans_type=="I":
-                    I, I_read_start, I_read_end, I_trna_start, I_trna_end,I_qseq, I_sseq = 1, obj["read_start"], obj["read_end"],obj[
-                        "trna_start"],obj["trna_end"],obj["qseq"], obj["sseq"]
-                    trna_start, trna_end,qseq, sseq  = obj["trna_start"],obj["trna_end"],obj["qseq"], obj["sseq"]
-                if trans_type=="P":
+                if trans_type == "I":
+                    I, I_read_start, I_read_end, I_trna_start, I_trna_end, I_qseq, I_sseq = 1, obj["read_start"], obj["read_end"], obj[
+                        "trna_start"], obj["trna_end"], obj["qseq"], obj["sseq"]
+                    trna_start, trna_end, qseq, sseq = obj["trna_start"], obj["trna_end"], obj["qseq"], obj["sseq"]
+                if trans_type == "P":
                     P, P_read_start, P_read_end, P_trna_start, P_trna_end, P_qseq, P_sseq = 1, obj["read_start"], obj["read_end"], obj[
-                        "trna_start"], obj["trna_end"],obj["qseq"], obj["sseq"]
+                        "trna_start"], obj["trna_end"], obj["qseq"], obj["sseq"]
                     trna_start, trna_end, qseq, sseq = obj["trna_start"], obj["trna_end"], obj["qseq"], obj["sseq"]
-                if trans_type=="M":
-                    M, M_read_start, M_read_end, M_trna_start, M_trna_end, M_qseq, M_sseq= 1, obj["read_start"], obj["read_end"], obj[
-                        "trna_start"], obj["trna_end"],obj["qseq"], obj["sseq"]
+                if trans_type == "M":
+                    M, M_read_start, M_read_end, M_trna_start, M_trna_end, M_qseq, M_sseq = 1, obj["read_start"], obj["read_end"], obj[
+                        "trna_start"], obj["trna_end"], obj["qseq"], obj["sseq"]
                     trna_start, trna_end, qseq, sseq = obj["trna_start"], obj["trna_end"], obj["qseq"], obj["sseq"]
-                if trans_type=="C":
-                    C, C_read_start, C_read_end, C_trna_start, C_trna_end, C_qseq, C_sseq= 1, obj["read_start"], obj["read_end"], obj[
-                        "trna_start"], obj["trna_end"],obj["qseq"], obj["sseq"]
+                if trans_type == "C":
+                    C, C_read_start, C_read_end, C_trna_start, C_trna_end, C_qseq, C_sseq = 1, obj["read_start"], obj["read_end"], obj[
+                        "trna_start"], obj["trna_end"], obj["qseq"], obj["sseq"]
                     trna_start, trna_end, qseq, sseq = obj["trna_start"], obj["trna_end"], obj["qseq"], obj["sseq"]
-                if trans_type=="I" or trans_type=="P":
-                    if obj["trna_start"]<url_len-2:
+                if trans_type == "I" or trans_type == "P":
+                    if obj["trna_start"] < url_len-2:
                         M_5C = 1
-                    if obj["trna_end"]>obj["slen"]-url_len+1:
+                    if obj["trna_end"] > obj["slen"]-url_len+1:
                         M_3C = 1
-                else: # M or C
-                    if obj["trna_start"]<=1:
+                else:  # M or C
+                    if obj["trna_start"] <= 1:
                         M_5T = 1
-                    if obj["trna_end"]>=obj["slen"]-1:
+                    if obj["trna_end"] >= obj["slen"]-1:
                         M_3T = 1
                     else:
-                        overhand_3 =obj["slen"]-obj["trna_end"]
+                        overhand_3 = obj["slen"]-obj["trna_end"]
             Read_type = ""
             # Get read type based on (I, P, M, C) and location information
             # Detailed can be found figure 1 in manuscript
-            if I==1 and P==1 and M==0 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
+            if I == 1 and P == 1 and M == 0 and C == 0 and M_5T == 0 and M_3T == 0 and M_5C == 0 and M_3C == 0:
                 Read_type += "A"
-            if I==1 and P==1 and M==0 and C==0 and M_5T==0 and M_3T==0 and M_5C==1 and M_3C==0:
+            if I == 1 and P == 1 and M == 0 and C == 0 and M_5T == 0 and M_3T == 0 and M_5C == 1 and M_3C == 0:
                 Read_type += "B"
-            if I==1 and P==1 and M==1 and C==1 and M_5T==1 and M_3T==0 and M_5C==0 and M_3C==0:
+            if I == 1 and P == 1 and M == 1 and C == 1 and M_5T == 1 and M_3T == 0 and M_5C == 0 and M_3C == 0:
                 Read_type += "C"
-            if I==1 and P==1 and M==1 and C==1 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
+            if I == 1 and P == 1 and M == 1 and C == 1 and M_5T == 0 and M_3T == 0 and M_5C == 0 and M_3C == 0:
                 Read_type += "D"
-            if I==1 and P==0 and M==0 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
+            if I == 1 and P == 0 and M == 0 and C == 0 and M_5T == 0 and M_3T == 0 and M_5C == 0 and M_3C == 0:
                 Read_type += "E"
-            if I==0 and P==1 and M==1 and C==1 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:             
+            if I == 0 and P == 1 and M == 1 and C == 1 and M_5T == 0 and M_3T == 0 and M_5C == 0 and M_3C == 0:
                 Read_type += "F"
-            if I==1 and P==1 and M==0 and C==0 and M_3C==1:
+            if I == 1 and P == 1 and M == 0 and C == 0 and M_3C == 1:
                 Read_type += "G"
-            if I==1 and P==1 and M==1 and C==1 and M_5T==0 and M_3T==1 and M_5C==0 and M_3C==0:   
+            if I == 1 and P == 1 and M == 1 and C == 1 and M_5T == 0 and M_3T == 1 and M_5C == 0 and M_3C == 0:
                 Read_type += "H"
-            if I==0 and P==0 and M==0 and C==1 and M_3T==1:
-                Read_type += "I"    
+            if I == 0 and P == 0 and M == 0 and C == 1 and M_3T == 1:
+                Read_type += "I"
             # Few unexpected situations
-            if Read_type=="":
-                if I==1 and P==1 and M==1 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
+            if Read_type == "":
+                if I == 1 and P == 1 and M == 1 and C == 0 and M_5T == 0 and M_3T == 0 and M_5C == 0 and M_3C == 0:
                     Read_type += "D"
-                elif I==0 and P==0 and M==1 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
+                elif I == 0 and P == 0 and M == 1 and C == 0 and M_5T == 0 and M_3T == 0 and M_5C == 0 and M_3C == 0:
                     Read_type += "F"
-                elif I==0 and P==1 and M==0 and C==0 and M_5T==0 and M_3T==0 and M_5C==0 and M_3C==0:
+                elif I == 0 and P == 1 and M == 0 and C == 0 and M_5T == 0 and M_3T == 0 and M_5C == 0 and M_3C == 0:
                     #print(f"keys={class_obj.keys()}:P_trna_start={P_trna_start}, P_trna_end={P_trna_end}:I={I}:P={P}:M={M}:C={C}:M_3T={M_3T}:M_5T={M_5T}::M_3C={M_3C}:M_5C={M_5C}")
                     Read_type += "B"
-                elif C + M_3T>=1:
-                # Some time a read have an additional C to match to C type transcript
-                # reads : XXXXXXC
-                # trans : XXXXXXCCA
-                # We conside the read as type H and remove the last matched base
+                elif C + M_3T >= 1:
+                    # Some time a read have an additional C to match to C type transcript
+                    # reads : XXXXXXC
+                    # trans : XXXXXXCCA
+                    # We conside the read as type H and remove the last matched base
                     Read_type += "H"
-                    trna_end-=overhand_3
+                    trna_end -= overhand_3
                     qseq = qseq[:-1*overhand_3]
                     sseq = sseq[:-1*overhand_3]
                 else:
@@ -356,25 +365,28 @@ def AnalysisBlastOut2(blast_out_file, read_num_dic_file, tRNA_dic, tRNA_reads_co
             read_fragment = read_seq[read_start - 1:read_end]
             read_3_fragment = read_seq[read_end:]
 
-            trf_type="Unknown"
+            trf_type = "Unknown"
             mapping_ratio = 0.0
             if tRNA_id in tRNA_anno_dic:
                 t = tRNA_anno_dic[tRNA_id]
                 if "P" in class_obj:
-                    trf_type = trna.getTRFType(t.GetKeySitesInfor("P"), class_obj["P"]["trna_start"], class_obj["P"]["trna_end"])
-                    mapping_ratio = round((float((class_obj["P"]["trna_end"] - class_obj["P"]["trna_start"] + 1))/ class_obj["P"]["qlen"]),3)
+                    trf_type = trna.getTRFType(t.GetKeySitesInfor(
+                        "P"), class_obj["P"]["trna_start"], class_obj["P"]["trna_end"])
+                    mapping_ratio = round((float(
+                        (class_obj["P"]["trna_end"] - class_obj["P"]["trna_start"] + 1)) / class_obj["P"]["qlen"]), 3)
                 else:
                     for trans_type in class_obj:
                         trf_type = trna.getTRFType(t.GetKeySitesInfor(trans_type),
                                                    class_obj[trans_type]["trna_start"], class_obj[trans_type]["trna_end"])
-                        mapping_ratio=round(float((class_obj[trans_type]["trna_end"]-class_obj[trans_type]["trna_start"]+1))/class_obj[trans_type]["qlen"],3)
+                        mapping_ratio = round(float(
+                            (class_obj[trans_type]["trna_end"]-class_obj[trans_type]["trna_start"]+1))/class_obj[trans_type]["qlen"], 3)
                         break
-            tRNA_READS_HIT.write(family_id+"\t"+tRNA_id + "\t" + read_id +"\t" +str(direction)+
-                                 "\t" +str(I)+"\t" +str(I_read_start)+"\t" +str(I_read_end)+"\t" +str(I_trna_start)+"\t" +str(I_trna_end)+
-                                 "\t" +str(P) + "\t" +str(P_read_start) + "\t" + str(P_read_end) + "\t" + str(P_trna_start) + "\t" + str(P_trna_end) +
-                                 "\t" +str(M)+"\t" +str(M_read_start)+"\t" +str(M_read_end)+"\t" +str(M_trna_start)+"\t" +str(M_trna_end)+
-                                 "\t" +str(C)+"\t" +str(C_read_start)+"\t" +str(C_read_end)+"\t" +str(C_trna_start)+"\t" +str(C_trna_end)+
-                                 "\t"+str(M_5T)+"\t"+str(M_3T)+"\t"+str(M_5C)+"\t"+str(M_3C)+ "\t" + str(round(mean_exp,3)) +"\t"+
-                                 str(hit_tRNAs_num) + "\t"+trf_type+"\t"+brief_mapping_infor+ "\t"+Read_type+"\t"+str(mapping_ratio)+"\t"+read_5_fragment+"\t"+read_fragment+"\t"+read_3_fragment+"\n")
+            tRNA_READS_HIT.write(family_id+"\t"+tRNA_id + "\t" + read_id + "\t" + str(direction) +
+                                 "\t" + str(I)+"\t" + str(I_read_start)+"\t" + str(I_read_end)+"\t" + str(I_trna_start)+"\t" + str(I_trna_end) +
+                                 "\t" + str(P) + "\t" + str(P_read_start) + "\t" + str(P_read_end) + "\t" + str(P_trna_start) + "\t" + str(P_trna_end) +
+                                 "\t" + str(M)+"\t" + str(M_read_start)+"\t" + str(M_read_end)+"\t" + str(M_trna_start)+"\t" + str(M_trna_end) +
+                                 "\t" + str(C)+"\t" + str(C_read_start)+"\t" + str(C_read_end)+"\t" + str(C_trna_start)+"\t" + str(C_trna_end) +
+                                 "\t"+str(M_5T)+"\t"+str(M_3T)+"\t"+str(M_5C)+"\t"+str(M_3C) + "\t" + str(round(mean_exp, 3)) + "\t" +
+                                 str(hit_tRNAs_num) + "\t"+trf_type+"\t"+brief_mapping_infor + "\t"+Read_type+"\t"+str(mapping_ratio)+"\t"+read_5_fragment+"\t"+read_fragment+"\t"+read_3_fragment+"\n")
     tRNA_READS_HIT.close()
     return dist_dic
