@@ -383,7 +383,7 @@ def main(argv):
     db_name = "hg38_tRNA"
     tRNA_bed = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/ucsc_hg38_tRNA.bed"
     ref_fasta = "/Users/hqyone/Desktop/hg38/hg38.fa"
-    tRNAscanSE = "/usr/local/bin/tRNAscan-SE"
+    tRNAscanSE = "/usr/bin/tRNAscan-SE"
     offset = 60
     no_mit_tRNA = True
     no_pseudogenes = True
@@ -397,7 +397,7 @@ def main(argv):
         print('# -b <bed> : Absolute path of bed file for tRNAs')
         print('# -r <ref> : Absolute path of Genome FASTA file coordinating with bed file')
         print('# -s <tRNAScanSE> : Absolute path of tRNAscan SE program')
-        print('# -u <offset> : The length of UTRs')
+        print('# -u <offset> : The length of upstream and downstream region default=60')
         print('# --no_mit <1/else> : 1 means removing all nucleic mitochondrial tRNA genes')
         print('# --no_pseu <1/else> : 1 means removing all pseudogene tRNA genes')
         print('# --minq <number> : The minimum of quality scores of tRNAs, default 30')
@@ -434,7 +434,7 @@ def main(argv):
             print("genome references: " + ref_fasta)
         elif opt in ("-s", "--scan"):
             tRNAscanSE = arg
-            print("tRNAscanSE: " + tRNAscanSE)
+            print("tRNAscanSE: " + tRNAscanSE) 
         elif opt in ("-u", "--offset"):
             offset = int(arg)
             print("offset: " + str(offset))
@@ -456,8 +456,7 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    pass
-    #main(sys.argv[1:])
+    main(sys.argv[1:])
 
 # Local Test
 # bed = "/Users/hqyone/OneDrive/MyProjects/testrepo/new_tools/tRNAExplorer_Old/test_data/ChIP/ucsc_hg38_tRNA.bed"
